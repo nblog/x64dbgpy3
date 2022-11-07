@@ -7,8 +7,8 @@
 ### Use
 `x64dbgpy3 [port]`
 
-![run service](imgs/run%20service.png)
-![vscode python](imgs/vscode%20python.png)
+![run service](screenshot/run%20service.png)
+![vscode python](screenshot/vscode%20python.png)
 
 
 ### Design

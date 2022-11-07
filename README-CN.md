@@ -5,8 +5,8 @@ x64dbgpy3是一个通过HTTP方式和`x64dbgpy3svr`进行远程调用的插件�
 ### 使用方式
 `x64dbgpy3 [port]`
 
-![run service](imgs/run%20service.png)
-![vscode python](imgs/vscode%20python.png)
+![run service](screenshot/run%20service.png)
+![vscode python](screenshot/vscode%20python.png)
 
 ### 设计
 - 禁止自动推导出现**Any**类型
