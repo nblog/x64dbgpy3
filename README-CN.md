@@ -1,6 +1,6 @@
 
 ## x64dbgpy3
-x64dbgpy3是一个通过HTTP方式和`x64dbgpy3svr`进行远程调用的插件。欢迎PR，提issues的，我劝你谨言慎行。
+x64dbgpy3是一个通过HTTP方式和`x64dbgpy3svr`进行远程调用的插件。欢迎[PRs](https://github.com/nblog/x64dbgpy3/pulls)，提issues的，我劝你谨言慎行。
 
 ### 使用方式
 `x64dbgpy3 [port]`

@@ -1,7 +1,7 @@
 
 ## x64dbgpy3
 - [中文说明](README-CN.md)
-- x64dbgpy3 is a plugin for remote invocation via HTTP and `x64dbgpy3svr`. [PRs](pulls) are welcome.
+- x64dbgpy3 is a plugin for remote invocation via HTTP and `x64dbgpy3svr`. [PRs](https://github.com/nblog/x64dbgpy3/pulls) are welcome.
 
 
 ### Use
