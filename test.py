@@ -14,100 +14,100 @@ dbgLogging.logprint("hello "), dbgLogging.logprint("python3\n")
 
 
 
-if (dbgMisc.IsDebugging()):
-    '''  '''
-
-    for bp in dbgDebug.GetBreakpointList():
-        print( "bp: {}  {:#x}  {}  {}  {}".format(
-            ( "soft" if (1 == bp.type) else ( "hard" if (2 == bp.type) else "蔡徐坤" ) ),
-            bp.addr, bp.mod, 
-            ( "once" if (bp.singleshoot) else ( "enable" if (bp.enabled) else "disable" ) ), 
-            bp.hitCount ) )
-
-    for book in dbgBookmark.GetBookmarkList():
-        print( "book: {}+{:#x}".format( book.mod,  book.rva ) )
-
-    for note in dbgComment.GetCommentList():
-        print( "note: {}  {}+{:#x}".format( note.text, note.mod,  note.rva ) )
-
-    for label in dbgLabel.GetLabelList():
-        print( "label: {}  {}+{:#x}".format( label.text, label.mod,  label.rva ) )
+if (not dbgMisc.IsDebugging()):
+    dbgGui.Message( "please start debugging" ), exit(0)
 
 
-    # for sym in dbgSymbol.GetSymbolList():
-    #     {  }
+for bp in dbgDebug.GetBreakpointList():
+    print( "bp: {}  {:#x}  {}  {}  {}".format(
+        ( "soft" if (1 == bp.type) else ( "hard" if (2 == bp.type) else "蔡徐坤" ) ),
+        bp.addr, bp.mod, 
+        ( "once" if (bp.singleshoot) else ( "enable" if (bp.enabled) else "disable" ) ), 
+        bp.hitCount ) )
 
-    # for func in dbgFunction.GetFunctionList():
-    #     {  }
+for book in dbgBookmark.GetBookmarkList():
+    print( "book: {}+{:#x}".format( book.mod,  book.rva ) )
 
-    # for argument in dbgArgument.GetArgumentList():
-    #     {  }
+for note in dbgComment.GetCommentList():
+    print( "note: {}  {}+{:#x}".format( note.text, note.mod,  note.rva ) )
+
+for label in dbgLabel.GetLabelList():
+    print( "label: {}  {}+{:#x}".format( label.text, label.mod,  label.rva ) )
 
 
-    print( "id: {}, handle: {:#x}".format( dbgProcess.ProcessId(), dbgProcess.NativeHandle() ) )
+# for sym in dbgSymbol.GetSymbolList():
+#     {  }
 
-    print(
-        "peb: {:#x}\nteb: {:#x}".format( 
-            dbgMisc.ParseExpression("peb()"), dbgMisc.ParseExpression("teb()")
-        )
+# for func in dbgFunction.GetFunctionList():
+#     {  }
+
+# for argument in dbgArgument.GetArgumentList():
+#     {  }
+
+
+print( "id: {}, handle: {:#x}".format( dbgProcess.ProcessId(), dbgProcess.NativeHandle() ) )
+
+print(
+    "peb: {:#x}\nteb: {:#x}".format( 
+        dbgMisc.ParseExpression("peb()"), dbgMisc.ParseExpression("teb()")
     )
+)
 
-    assert( dbgMisc.ResolveLabel("LoadLibraryA") == \
-        dbgMisc.RemoteGetProcAddress("kernel32.dll", "LoadLibraryA") )
-
-
-    a, b = dbgGui.SelectionGet( dbgGui.DBGGUIWINDOW.DisassemblyWindow )
-    print( "CPU Viewer: {:#x}-{:#x}\npc: {:#x}  flags:{:#x}".format( a, b, \
-        dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.CIP) ,
-        dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.CFLAGS) ) )
-
-    dbgGui.SelectionSet( dbgGui.DBGGUIWINDOW.DisassemblyWindow, a + 10, b + 10 )
-
-    for m in dbgMemory.MemMaps():
-        print( "{:#x}  {:#x}  {}  {}  {}".format(
-            m.BaseAddress, m.RegionSize, 
-            dbgMemory.MEM_TYPE.str(m.Type), dbgMemory.MEM_PROTECT.str(m.Protect), 
-            m.info ) )
+assert( dbgMisc.ResolveLabel("LoadLibraryA") == \
+    dbgMisc.RemoteGetProcAddress("kernel32.dll", "LoadLibraryA") )
 
 
-    for t in dbgThread.GetThreadList():
-        print( "id:{} entry:{:#x} teb:{:#x} suspend:{} name:{}".format(
-            t.ThreadId, t.ThreadStartAddress, 
-            t.ThreadLocalBase, t.SuspendCount, t.threadName) )
+a, b = dbgGui.SelectionGet( dbgGui.DBGGUIWINDOW.DisassemblyWindow )
+print( "CPU Viewer: {:#x}-{:#x}\npc: {:#x}  flags:{:#x}".format( a, b, \
+    dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.CIP) ,
+    dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.CFLAGS) ) )
+
+dbgGui.SelectionSet( dbgGui.DBGGUIWINDOW.DisassemblyWindow, a + 10, b + 10 )
+
+for m in dbgMemory.MemMaps():
+    print( "{:#x}  {:#x}  {}  {}  {}".format(
+        m.BaseAddress, m.RegionSize, 
+        dbgMemory.MEM_TYPE.str(m.Type), dbgMemory.MEM_PROTECT.str(m.Protect), 
+        m.info ) )
 
 
-    for m in dbgModule.GetModuleList():
-        print( "{:#x}  {:#x}  {}".format(
-            m.base, m.size, m.path
-        ) )
+for t in dbgThread.GetThreadList():
+    print( "id:{} entry:{:#x} teb:{:#x} suspend:{} name:{}".format(
+        t.ThreadId, t.ThreadStartAddress, 
+        t.ThreadLocalBase, t.SuspendCount, t.threadName) )
 
-    for s in dbgModule.GetMainModuleSectionList():
-        print( "{:#x}  {:#x}  {}".format(
-            s.addr, s.size, s.name
-        ) )
 
-    m = dbgModule.GetMainModuleInfo()
+for m in dbgModule.GetModuleList():
     print( "{:#x}  {:#x}  {}".format(
         m.base, m.size, m.path
     ) )
 
-    for iat in dbgModule.GetImportsFromAddr( m.base ):
-        print( "{:#x}  {}".format(
-            iat.iatVa, iat.name
-        ) )
+for s in dbgModule.GetMainModuleSectionList():
+    print( "{:#x}  {:#x}  {}".format(
+        s.addr, s.size, s.name
+    ) )
 
-    for eat in dbgModule.GetExportsFromAddr( m.base ):
-        print( "{:#x}  {}".format(
-            eat.rva, eat.name
-        ) )
+m = dbgModule.GetMainModuleInfo()
+print( "{:#x}  {:#x}  {}".format(
+    m.base, m.size, m.path
+) )
+
+for iat in dbgModule.GetImportsFromAddr( m.base ):
+    print( "{:#x}  {}".format(
+        iat.iatVa, iat.name
+    ) )
+
+for eat in dbgModule.GetExportsFromAddr( m.base ):
+    print( "{:#x}  {}".format(
+        eat.rva, eat.name
+    ) )
 
 
-    ''' HELLO  '''
-    MSGBIN = open("test\\BINMSG.BIN", "rb").read()
-    remoteaddr = dbgMemory.Alloc( 4096 )
-    dbgMemory.Write( remoteaddr, MSGBIN ), time.sleep(1)
+''' HELLO  '''
+MSGBIN = open("test\\BINMSG.BIN", "rb").read()
+remoteaddr = dbgMemory.Alloc( 4096 )
+dbgMemory.Write( remoteaddr, MSGBIN ), time.sleep(1)
 
-    dbgDebug.Run(), time.sleep(1), \
-        dbgThread.CreateThread( remoteaddr, 0 )
+dbgDebug.Run(), time.sleep(1), \
+    dbgThread.CreateThread( remoteaddr, 0 )
 
-else: dbgGui.Message( "please start debugging" )
