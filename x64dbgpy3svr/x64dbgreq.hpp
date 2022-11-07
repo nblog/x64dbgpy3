@@ -124,10 +124,10 @@ public:
 
         AddHandler(dbgLabel::GetLabelList, {  });
 
+        AddHandler(dbgFunction::GetFunctionList, {  });
+
         AddHandler(dbgArgument::GetArgumentList, {  });
 
-        AddHandler(dbgFunction::GetFunctionList, {  });
-        
         AddHandler(dbgModule::GetModuleList, {  });
         AddHandler(dbgModule::GetMainModuleInfo, {  });
         AddHandler(dbgModule::InfoFromAddr, {  });
@@ -173,6 +173,7 @@ public:
         AddHandler(dbgDebug::StepOver, {  });
         AddHandler(dbgDebug::StepOut, {  });
 
+        AddHandler(dbgDebug::GetBreakpointList, {  });
         AddHandler(dbgDebug::SetBreakpoint, {  });
         AddHandler(dbgDebug::DeleteBreakpoint, {  });
         AddHandler(dbgDebug::DisableBreakpoint, {  });

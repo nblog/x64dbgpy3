@@ -17,6 +17,33 @@ dbgLogging.logprint("hello "), dbgLogging.logprint("python3\n")
 if (dbgMisc.IsDebugging()):
     '''  '''
 
+    for bp in dbgDebug.GetBreakpointList():
+        print( "bp: {}  {:#x}  {}  {}  {}".format(
+            ( "soft" if (1 == bp.type) else ( "hard" if (2 == bp.type) else "蔡徐坤" ) ),
+            bp.addr, bp.mod, 
+            ( "once" if (bp.singleshoot) else ( "enable" if (bp.enabled) else "disable" ) ), 
+            bp.hitCount ) )
+
+    for book in dbgBookmark.GetBookmarkList():
+        print( "book: {}+{:#x}".format( book.mod,  book.rva ) )
+
+    for note in dbgComment.GetCommentList():
+        print( "note: {}  {}+{:#x}".format( note.text, note.mod,  note.rva ) )
+
+    for label in dbgLabel.GetLabelList():
+        print( "label: {}  {}+{:#x}".format( label.text, label.mod,  label.rva ) )
+
+
+    # for sym in dbgSymbol.GetSymbolList():
+    #     {  }
+
+    # for func in dbgFunction.GetFunctionList():
+    #     {  }
+
+    # for argument in dbgArgument.GetArgumentList():
+    #     {  }
+
+
     print( "id: {}, handle: {:#x}".format( dbgProcess.ProcessId(), dbgProcess.NativeHandle() ) )
 
     print(
@@ -29,7 +56,7 @@ if (dbgMisc.IsDebugging()):
         dbgMisc.RemoteGetProcAddress("kernel32.dll", "LoadLibraryA") )
 
 
-    a,b = dbgGui.SelectionGet( dbgGui.DBGGUIWINDOW.DisassemblyWindow )
+    a, b = dbgGui.SelectionGet( dbgGui.DBGGUIWINDOW.DisassemblyWindow )
     print( "CPU Viewer: {:#x}-{:#x}\npc: {:#x}  flags:{:#x}".format( a, b, \
         dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.CIP) ,
         dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.CFLAGS) ) )

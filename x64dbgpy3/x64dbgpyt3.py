@@ -132,7 +132,6 @@ class dbgSymbol:
 
     @staticmethod
     def GetSymbolList():
-        raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgSymbol), [  ] )
         if (not res): return [ ]
         return [ dbgSymbol.DBGSYMBOLINFO(**i) for i in res ]
@@ -147,7 +146,6 @@ class dbgBookmark:
 
     @staticmethod
     def GetBookmarkList():
-        raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgBookmark), [  ] )
         if (not res): return [ ]
         return [ dbgBookmark.DBGBOOKMARKINFO(**i) for i in res ]
@@ -175,7 +173,6 @@ class dbgComment:
 
     @staticmethod
     def GetCommentList():
-        raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgComment), [  ] )
         if (not res): return [ ]
         return [ dbgComment.DBGCOMMENTINFO(**i) for i in res ]
@@ -211,10 +208,41 @@ class dbgLabel:
 
     @staticmethod
     def GetLabelList():
-        raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgLabel), [  ] )
         if (not res): return [ ]
         return [ dbgLabel.DBGLABELINFO(**i) for i in res ]
+
+    @staticmethod
+    def Set():
+        raise NotImplementedError
+
+    @staticmethod
+    def Get():
+        raise NotImplementedError
+
+    @staticmethod
+    def Del():
+        raise NotImplementedError
+
+class dbgFunction:
+    '''  '''
+
+    class DBGFUNCTIONINFO(DBGNS):
+        mod:str
+        rvaStart:ptr_t
+        rvaEnd:str
+        manual:bool
+        instructioncount:ptr_t
+
+    @staticmethod
+    def Overlaps():
+        raise NotImplementedError
+
+    @staticmethod
+    def GetFunctionList():
+        res = X64DBGREQ.req_call( FUNCTION_NAME(dbgFunction), [  ] )
+        if (not res): return [ ]
+        return [ dbgFunction.DBGFUNCTIONINFO(**i) for i in res ]
 
     @staticmethod
     def Set():
@@ -244,46 +272,12 @@ class dbgArgument:
 
     @staticmethod
     def GetArgumentList():
-        raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgArgument), [  ] )
         if (not res): return [ ]
         return [ dbgArgument.DBGARGUMENTINFO(**i) for i in res ]
 
     @staticmethod
     def Add():
-        raise NotImplementedError
-
-    @staticmethod
-    def Get():
-        raise NotImplementedError
-
-    @staticmethod
-    def Del():
-        raise NotImplementedError
-
-class dbgFunction:
-    '''  '''
-
-    class DBGFUNCTIONINFO(DBGNS):
-        mod:str
-        rvaStart:ptr_t
-        rvaEnd:str
-        manual:bool
-        instructioncount:ptr_t
-
-    @staticmethod
-    def Overlaps():
-        raise NotImplementedError
-
-    @staticmethod
-    def GetFunctionList():
-        raise NotImplementedError
-        res = X64DBGREQ.req_call( FUNCTION_NAME(dbgFunction), [  ] )
-        if (not res): return [ ]
-        return [ dbgFunction.DBGFUNCTIONINFO(**i) for i in res ]
-
-    @staticmethod
-    def Set():
         raise NotImplementedError
 
     @staticmethod
@@ -616,6 +610,25 @@ class dbgDebug:
     @staticmethod
     def StepOut():
         X64DBGREQ.req_call( FUNCTION_NAME(dbgDebug), [  ], True )
+
+
+    class DBGBREAKPOINTINFO(DBGNS):
+        class BPXTYPE:
+            bp_none, bp_normal, bp_hardware = 0, 1, 2
+        type:BPXTYPE
+        addr:ptr_t
+        enabled:bool
+        singleshoot:bool
+        active:bool
+        name:str
+        mod:str
+        hitCount:int
+
+    @staticmethod
+    def GetBreakpointList(bpxtype:DBGBREAKPOINTINFO.BPXTYPE=DBGBREAKPOINTINFO.BPXTYPE.bp_none):
+        res = X64DBGREQ.req_call( FUNCTION_NAME(dbgDebug), [ bpxtype ] )
+        if (not res): return [ ]
+        return [ dbgDebug.DBGBREAKPOINTINFO(**i) for i in res ]
 
     @staticmethod
     def SetBreakpoint(addr:ptr_t):

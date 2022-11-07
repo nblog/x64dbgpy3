@@ -41,15 +41,17 @@ namespace x64dbgSvrWrapper {
 
     namespace dbgNS {
 
-        struct FUNCTION_INFO_WRAPPER {
+        /* BRIDGEBP */
+        struct BREAKPOINT_INFO_WRAPPER {
+            int32_t type; /* BPXTYPE */
+            ptr_t addr;
+            bool enabled, singleshoot, active;
+            std::string name;
             std::string mod;
-            ptr_t rvaStart;
-            ptr_t rvaEnd;
-            bool manual;
-            ptr_t instructioncount;
+            uint32_t hitCount;
         };
-        NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FUNCTION_INFO_WRAPPER, \
-            mod, rvaStart, rvaEnd, manual, instructioncount)
+        NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BREAKPOINT_INFO_WRAPPER, \
+            type, addr, enabled, singleshoot, active, name, mod, hitCount)
 
         struct ARGUMENT_INFO_WRAPPER {
             std::string mod;
@@ -59,6 +61,16 @@ namespace x64dbgSvrWrapper {
             ptr_t instructioncount;
         };
         NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ARGUMENT_INFO_WRAPPER, \
+            mod, rvaStart, rvaEnd, manual, instructioncount)
+
+        struct FUNCTION_INFO_WRAPPER {
+            std::string mod;
+            ptr_t rvaStart;
+            ptr_t rvaEnd;
+            bool manual;
+            ptr_t instructioncount;
+        };
+        NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FUNCTION_INFO_WRAPPER, \
             mod, rvaStart, rvaEnd, manual, instructioncount)
 
         struct LABEL_INFO_WRAPPER {
@@ -241,27 +253,125 @@ namespace x64dbgSvrWrapper {
 
 
     namespace dbgSymbol {
-        auto GetSymbolList() {  }
+        auto GetSymbolList() {
+            nlohmann::json symbols;
+
+            BridgeList<Script::Symbol::SymbolInfo> list;
+
+            if (!Script::Symbol::GetList(&list))
+                return symbols;
+
+            for (int i = 0; i < list.Count(); i++) {
+                symbols[i] = dbgNS::SYMBOL_INFO_WRAPPER{
+                    list[i].mod,
+                    list[i].rva,
+                    list[i].name,
+                    list[i].manual,
+                    list[i].type
+                };
+            } return symbols;
+        }
     }
 
     namespace dbgBookmark {
-        auto GetBookmarkList() {  }
+        auto GetBookmarkList() {
+            nlohmann::json bookmarks;
+
+            BridgeList<Script::Bookmark::BookmarkInfo> list;
+
+            if (!Script::Bookmark::GetList(&list))
+                return bookmarks;
+
+            for (int i = 0; i < list.Count(); i++) {
+                bookmarks[i] = dbgNS::BOOKMARK_INFO_WRAPPER{
+                    list[i].mod,
+                    list[i].rva,
+                    list[i].manual
+                };
+            } return bookmarks;
+        }
     }
 
     namespace dbgComment {
-        auto GetCommentList() {  }
+        auto GetCommentList() { 
+            nlohmann::json comments;
+
+            BridgeList<Script::Comment::CommentInfo> list;
+
+            if (!Script::Comment::GetList(&list))
+                return comments;
+
+            for (int i = 0; i < list.Count(); i++) {
+                comments[i] = dbgNS::COMMENT_INFO_WRAPPER{
+                    list[i].mod,
+                    list[i].rva,
+                    list[i].text,
+                    list[i].manual
+                };
+            } return comments;
+        }
     }
 
     namespace dbgLabel {
-        auto GetLabelList() {  }
-    }
+        auto GetLabelList() { 
+            nlohmann::json labels;
 
-    namespace dbgArgument {
-        auto GetArgumentList() {  }
+            BridgeList<Script::Label::LabelInfo> list;
+
+            if (!Script::Label::GetList(&list))
+                return labels;
+
+            for (int i = 0; i < list.Count(); i++) {
+                labels[i] = dbgNS::LABEL_INFO_WRAPPER{
+                    list[i].mod,
+                    list[i].rva,
+                    list[i].text,
+                    list[i].manual
+                };
+            } return labels;
+        }
     }
 
     namespace dbgFunction {
-        auto GetFunctionList() {  }
+        auto GetFunctionList() {
+            nlohmann::json functions;
+
+            BridgeList<Script::Function::FunctionInfo> list;
+
+            if (!Script::Function::GetList(&list))
+                return functions;
+
+            for (int i = 0; i < list.Count(); i++) {
+                functions[i] = dbgNS::FUNCTION_INFO_WRAPPER{
+                    list[i].mod,
+                    list[i].rvaStart,
+                    list[i].rvaEnd,
+                    list[i].manual,
+                    list[i].instructioncount
+                };
+            } return functions;
+        }
+    }
+
+    namespace dbgArgument {
+        auto GetArgumentList() {
+            nlohmann::json arguments;
+
+            BridgeList<Script::Argument::ArgumentInfo> list;
+
+            if (!Script::Argument::GetList(&list))
+                return arguments;
+
+            for (int i = 0; i < list.Count(); i++) {
+                arguments[i] = dbgNS::ARGUMENT_INFO_WRAPPER{
+                    list[i].mod,
+                    list[i].rvaStart,
+                    list[i].rvaEnd,
+                    list[i].manual,
+                    list[i].instructioncount
+                };
+            } return arguments;
+        }
     }
 
 
@@ -410,6 +520,7 @@ namespace x64dbgSvrWrapper {
 
             THREADLIST tl{};
             DbgGetThreadList(&tl);
+
             for (int i = 0; i < tl.count; i++) {
                 threads[i] = dbgNS::THREAD_INFO_WRAPPER{
                     tl.list[i].BasicInfo.ThreadNumber,
@@ -470,7 +581,9 @@ namespace x64dbgSvrWrapper {
             nlohmann::json mmaps;
 
             MEMMAP maps{};
-            DbgMemMap(&maps);
+            if (!DbgMemMap(&maps))
+                return mmaps;
+
             for (int i = 0; i < maps.count; i++) {
                 mmaps[i] = dbgNS::MEMORY_INFO_WRAPPER{
                     ptr_t(maps.page[i].mbi.BaseAddress),
@@ -507,7 +620,7 @@ namespace x64dbgSvrWrapper {
             return Script::Memory::GetBase(addr, reserved, cache);
         }
         auto Size(ptr_t addr, bool reserved, bool cache) { 
-            return Script::Memory::GetSize(addr, reserved, cache);
+            return size_t(Script::Memory::GetSize(addr, reserved, cache));
         }
     }
 
@@ -530,6 +643,25 @@ namespace x64dbgSvrWrapper {
         auto StepIn() { return Script::Debug::StepIn(); }
         auto StepOver() { return Script::Debug::StepOver(); }
         auto StepOut() { return Script::Debug::StepOut(); }
+
+        auto GetBreakpointList(int32_t bpxtype) {
+            nlohmann::json breaks;
+
+            BPMAP bps{};
+            if (!DbgGetBpList(BPXTYPE(bpxtype), &bps))
+                return breaks;
+
+            for (int i = 0; i < bps.count; i++) {
+                breaks[i] = dbgNS::BREAKPOINT_INFO_WRAPPER{
+                    bps.bp[i].type,
+                    bps.bp[i].addr,
+                    bps.bp[i].enabled, bps.bp[i].singleshoot, bps.bp[i].active,
+                    bps.bp[i].name, bps.bp[i].mod,
+                    bps.bp[i].hitCount
+                };
+            }
+            BridgeFree(bps.bp); return breaks;
+        }
 
         auto SetBreakpoint(ptr_t addr) { 
             return Script::Debug::SetBreakpoint(addr); 
