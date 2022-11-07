@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
+import time
 
 from x64dbgpy3.x64dbgpyt3 import *
 
@@ -77,9 +78,9 @@ if (dbgMisc.IsDebugging()):
     ''' HELLO  '''
     MSGBIN = open("test\\BINMSG.BIN", "rb").read()
     remoteaddr = dbgMemory.Alloc( 4096 )
-    dbgMemory.Write( remoteaddr, MSGBIN )
-    dbgThread.CreateThread( remoteaddr, 0 )
+    dbgMemory.Write( remoteaddr, MSGBIN ), time.sleep(1)
 
-    dbgDebug.Run()
+    dbgDebug.Run(), time.sleep(1), \
+        dbgThread.CreateThread( remoteaddr, 0 )
 
 else: dbgGui.Message( "please start debugging" )
