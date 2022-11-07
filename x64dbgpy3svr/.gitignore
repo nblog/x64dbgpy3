@@ -1,0 +1,7 @@
+
+pluginsdk/
+third_party/
+debug/
+release/
+
+*.vcxproj.user
