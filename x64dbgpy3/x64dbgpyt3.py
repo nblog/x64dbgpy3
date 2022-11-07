@@ -121,18 +121,36 @@ class dbgAssembler:
 class dbgSymbol:
     '''  '''
 
+    class DBGSYMBOLINFO(DBGNS):
+        class DBGSYMBOLTYPE:
+            FUNCTION, IMPORT, EXPORT = 0, 1, 2
+        mod:str
+        rva:ptr_t
+        name:str
+        manual:bool
+        type:DBGSYMBOLTYPE
+
     @staticmethod
     def GetSymbolList():
         raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgSymbol), [  ] )
+        if (not res): return [ ]
+        return [ dbgSymbol.DBGSYMBOLINFO(**i) for i in res ]
 
 class dbgBookmark:
     '''  '''
+
+    class DBGBOOKMARKINFO(DBGNS):
+        mod:str
+        rva:ptr_t
+        manual:bool
 
     @staticmethod
     def GetBookmarkList():
         raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgBookmark), [  ] )
+        if (not res): return [ ]
+        return [ dbgBookmark.DBGBOOKMARKINFO(**i) for i in res ]
 
     @staticmethod
     def Set():
@@ -149,10 +167,18 @@ class dbgBookmark:
 class dbgComment:
     '''  '''
 
+    class DBGCOMMENTINFO(DBGNS):
+        mod:str
+        rva:ptr_t
+        text:str
+        manual:bool
+
     @staticmethod
     def GetCommentList():
         raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgComment), [  ] )
+        if (not res): return [ ]
+        return [ dbgComment.DBGCOMMENTINFO(**i) for i in res ]
 
     @staticmethod
     def Set():
@@ -169,6 +195,12 @@ class dbgComment:
 class dbgLabel:
     '''  '''
 
+    class DBGLABELINFO(DBGNS):
+        mod:str
+        rva:ptr_t
+        text:str
+        manual:bool
+
     @staticmethod
     def IsTemporary():
         raise NotImplementedError
@@ -181,6 +213,8 @@ class dbgLabel:
     def GetLabelList():
         raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgLabel), [  ] )
+        if (not res): return [ ]
+        return [ dbgLabel.DBGLABELINFO(**i) for i in res ]
 
     @staticmethod
     def Set():
@@ -197,6 +231,13 @@ class dbgLabel:
 class dbgArgument:
     '''  '''
 
+    class DBGARGUMENTINFO(DBGNS):
+        mod:str
+        rvaStart:ptr_t
+        rvaEnd:str
+        manual:bool
+        instructioncount:ptr_t
+
     @staticmethod
     def Overlaps():
         raise NotImplementedError
@@ -205,6 +246,8 @@ class dbgArgument:
     def GetArgumentList():
         raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgArgument), [  ] )
+        if (not res): return [ ]
+        return [ dbgArgument.DBGARGUMENTINFO(**i) for i in res ]
 
     @staticmethod
     def Add():
@@ -221,6 +264,13 @@ class dbgArgument:
 class dbgFunction:
     '''  '''
 
+    class DBGFUNCTIONINFO(DBGNS):
+        mod:str
+        rvaStart:ptr_t
+        rvaEnd:str
+        manual:bool
+        instructioncount:ptr_t
+
     @staticmethod
     def Overlaps():
         raise NotImplementedError
@@ -229,6 +279,8 @@ class dbgFunction:
     def GetFunctionList():
         raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgFunction), [  ] )
+        if (not res): return [ ]
+        return [ dbgFunction.DBGFUNCTIONINFO(**i) for i in res ]
 
     @staticmethod
     def Set():

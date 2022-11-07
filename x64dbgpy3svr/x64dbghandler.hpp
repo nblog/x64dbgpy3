@@ -41,6 +41,62 @@ namespace x64dbgSvrWrapper {
 
     namespace dbgNS {
 
+        struct FUNCTION_INFO_WRAPPER {
+            std::string mod;
+            ptr_t rvaStart;
+            ptr_t rvaEnd;
+            bool manual;
+            ptr_t instructioncount;
+        };
+        NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FUNCTION_INFO_WRAPPER, \
+            mod, rvaStart, rvaEnd, manual, instructioncount)
+
+        struct ARGUMENT_INFO_WRAPPER {
+            std::string mod;
+            ptr_t rvaStart;
+            ptr_t rvaEnd;
+            bool manual;
+            ptr_t instructioncount;
+        };
+        NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ARGUMENT_INFO_WRAPPER, \
+            mod, rvaStart, rvaEnd, manual, instructioncount)
+
+        struct LABEL_INFO_WRAPPER {
+            std::string mod;
+            ptr_t rva;
+            std::string text;
+            bool manual;
+        };
+        NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LABEL_INFO_WRAPPER, \
+            mod, rva, text, manual)
+
+        struct COMMENT_INFO_WRAPPER {
+            std::string mod;
+            ptr_t rva;
+            std::string text;
+            bool manual;
+        };
+        NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(COMMENT_INFO_WRAPPER, \
+            mod, rva, text, manual)
+
+        struct BOOKMARK_INFO_WRAPPER {
+            std::string mod;
+            ptr_t rva;
+            bool manual;
+        };
+        NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BOOKMARK_INFO_WRAPPER, \
+            mod, rva, manual)
+
+        struct SYMBOL_INFO_WRAPPER {
+            std::string mod;
+            ptr_t rva;
+            std::string name;
+            bool manual;
+            int32_t type; /* Script::Symbol::SymbolType */
+        };
+        NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SYMBOL_INFO_WRAPPER, \
+            mod, rva, name, manual, type)
+
         struct MODULE_IMPORT_WRAPPER {
             ptr_t iatRva;
             ptr_t iatVa;
