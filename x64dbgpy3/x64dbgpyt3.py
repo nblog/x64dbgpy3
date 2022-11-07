@@ -122,10 +122,20 @@ class dbgAssembler:
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgAssembler), [ addr, instruction ] )
         return bool( res )
 
+    class DBGDISASMINFO(DBGNS):
+        class INSTRUCTIONTYPE:
+            VALUE, MEMORY, ADDRESS = 1, 2, 4
+        type:INSTRUCTIONTYPE
+        addr:ptr_t
+        branch:bool
+        call:bool
+        size:int
+        instruction:str
+
     @staticmethod
     def DisasmFast(addr:ptr_t):
-        raise NotImplementedError
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgAssembler), [ addr ] )
+        return dbgAssembler.DBGDISASMINFO(**res)
 
 
 class dbgSymbol:
