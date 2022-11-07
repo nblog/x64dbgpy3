@@ -59,7 +59,7 @@ assert( dbgMisc.ResolveLabel("LoadLibraryA") == \
 
 a, b = dbgGui.SelectionGet( dbgGui.DBGGUIWINDOW.DisassemblyWindow )
 print( "CPU Viewer: {:#x}-{:#x}\npc: {:#x}  flags:{:#x}".format( a, b, \
-    dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.CIP) ,
+    dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.CIP),
     dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.CFLAGS) ) )
 
 dbgGui.SelectionSet( dbgGui.DBGGUIWINDOW.DisassemblyWindow, a + 10, b + 10 )

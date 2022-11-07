@@ -41,6 +41,22 @@ namespace x64dbgSvrWrapper {
 
     namespace dbgNS {
 
+        /* BASIC_INSTRUCTION_INFO */
+        struct INSTRUCTION_INFO_WRAPPER {
+            uint32_t type;
+            /* MEMORY_INFO */
+            ptr_t mem_value;
+            int32_t mem_size;
+            std::string mem_mnemonic;
+
+            ptr_t addr;
+            bool branch, call;
+            int size;
+            std::string instruction;
+        };
+        NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INSTRUCTION_INFO_WRAPPER, \
+            type, mem_value, mem_size, mem_mnemonic, addr, branch, call, size, instruction)
+
         /* BRIDGEBP */
         struct BREAKPOINT_INFO_WRAPPER {
             int32_t type; /* BPXTYPE */
@@ -197,6 +213,10 @@ namespace x64dbgSvrWrapper {
             return DbgIsDebugging();
         }
 
+        auto IsRunning() {
+            return DbgIsRunning();
+        }
+
         auto ParseExpression(const std::string& expr) {
             duint v = 0;
             return Script::Misc::ParseExpression(expr.c_str(), &v) ? v : 0;
@@ -246,8 +266,28 @@ namespace x64dbgSvrWrapper {
 
 
     namespace dbgAssembler {
-        auto AssembleMem(ptr_t addr, const std::string& ins) {
-            return Script::Assembler::AssembleMem(addr, ins.c_str());
+        auto Assemble(ptr_t addr, const std::string& ins) {
+            return DbgAssembleAt(addr, ins.c_str());
+        }
+
+        auto DisasmFast(ptr_t addr) {
+            nlohmann::json disasm;
+
+            BASIC_INSTRUCTION_INFO info{};
+            DbgDisasmFastAt(addr, &info);
+
+            disasm = dbgNS::INSTRUCTION_INFO_WRAPPER{
+                info.type,
+                /* MEMORY_INFO */
+                info.memory.value,
+                info.memory.size,
+                info.memory.mnemonic,
+                info.addr,
+                info.branch, info.call,
+                info.size,
+                info.instruction
+            };
+            return disasm;
         }
     }
 

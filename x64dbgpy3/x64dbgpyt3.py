@@ -45,6 +45,11 @@ class dbgMisc:
         return bool(res)
 
     @staticmethod
+    def IsRunning():
+        res = X64DBGREQ.req_call( FUNCTION_NAME(dbgMisc), [  ] )
+        return bool(res)
+
+    @staticmethod
     def ParseExpression(expr:str):
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgMisc), [ expr ] )
         return ptr_t(res)
@@ -113,9 +118,14 @@ class dbgAssembler:
     '''  '''
 
     @staticmethod
-    def AssembleMem(addr:ptr_t, instruction:str):
+    def Assemble(addr:ptr_t, instruction:str):
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgAssembler), [ addr, instruction ] )
         return bool( res )
+
+    @staticmethod
+    def DisasmFast(addr:ptr_t):
+        raise NotImplementedError
+        res = X64DBGREQ.req_call( FUNCTION_NAME(dbgAssembler), [ addr ] )
 
 
 class dbgSymbol:

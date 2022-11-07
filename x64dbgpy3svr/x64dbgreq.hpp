@@ -38,6 +38,8 @@ public:
                         { "x64dbg", false },
 #endif
                         { "window", uintptr_t(GuiGetWindowHandle()) },
+
+                        { "engine", int32_t(DbgGetDebugEngine()) },
                     }
                 ).dump(), "application/json");
             });
@@ -101,6 +103,7 @@ public:
         AddHandler(dbgLogging::logputs, {  });
 
         AddHandler(dbgMisc::IsDebugging, {  });
+        AddHandler(dbgMisc::IsRunning, {  });
         AddHandler(dbgMisc::ParseExpression, {  });
         AddHandler(dbgMisc::RemoteGetProcAddress, {  });
         AddHandler(dbgMisc::ResolveLabel, {  });
@@ -114,7 +117,8 @@ public:
 
         AddHandler(dbgPattern::FindPattern, {  });
 
-        AddHandler(dbgAssembler::AssembleMem, {  });
+        AddHandler(dbgAssembler::Assemble, {  });
+        AddHandler(dbgAssembler::DisasmFast, {  });
 
         AddHandler(dbgSymbol::GetSymbolList, {  });
 
