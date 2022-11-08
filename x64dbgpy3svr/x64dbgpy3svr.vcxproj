@@ -130,8 +130,8 @@ copy "$(TargetPath)" "%X64DBG%\release\x32\plugins\"</Command>
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>SET X64DBG=C:\Users\r0th3r\Downloads\Tools\x64dbg
-copy "$(TargetPath)" "%X64DBG%\release\x32\plugins\"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -174,8 +174,8 @@ copy "$(TargetPath)" "%X64DBG%\release\x64\plugins\"</Command>
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>SET X64DBG=C:\Users\r0th3r\Downloads\Tools\x64dbg
-copy "$(TargetPath)" "%X64DBG%\release\x64\plugins\"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
