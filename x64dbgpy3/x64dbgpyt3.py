@@ -94,11 +94,6 @@ class dbgGui:
         return bool( res )
 
     @staticmethod
-    def SelectionSet(win:DBGGUIWINDOW, start:ptr_t, end:ptr_t):
-        res = X64DBGREQ.req_call( FUNCTION_NAME(dbgGui), [ win, start, end ] )
-        return bool( res )
-
-    @staticmethod
     def SelectionGet(win:DBGGUIWINDOW):
         res = X64DBGREQ.req_call( FUNCTION_NAME(dbgGui), [ win ] )
         return ( ptr_t(res[0]), ptr_t(res[1]) )
