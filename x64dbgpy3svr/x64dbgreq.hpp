@@ -37,9 +37,11 @@ public:
 #else
                         { "x64dbg", false },
 #endif
-                        { "window", uintptr_t(GuiGetWindowHandle()) },
+                        { "dbgver", int32_t(BridgeGetDbgVersion()) },
 
-                        { "engine", int32_t(DbgGetDebugEngine()) },
+                        { "dbghwnd", uintptr_t(GuiGetWindowHandle()) },
+
+                        { "dbgengine", int32_t(DbgGetDebugEngine()) },
                     }
                 ).dump(), "application/json");
             });
