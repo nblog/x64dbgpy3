@@ -11,10 +11,6 @@
 ![vscode python](screenshot/vscode%20python.png)
 
 
-### Design
-- Deduced type **Any** is not allowed in `x64dbgpyt3.py` template
-
-
 ### Credits
 - [jsonrpcx](https://github.com/jsonrpcx/json-rpc-cxx)
 - [cpp-httplib](https://github.com/yhirose/cpp-httplib)
