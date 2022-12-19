@@ -2,7 +2,7 @@
 # coding=utf-8
 
 
-import requests
+import httpx
 
 
 
@@ -11,7 +11,8 @@ class reqException(Exception):
 
 class reqJson:
     def __init__(self, hostUrl:str):
-        self.session, self.hostUrl = requests.session(), hostUrl
+        self.hostUrl, self.session = hostUrl, \
+            httpx.Client(proxies={})
 
     def x64dbg_info(self):
         res = self.session.get( "/".join( [ self.hostUrl, "x64dbginfo" ] ) )
@@ -34,6 +35,8 @@ class reqJson:
         if (void): return None
 
         ''' result '''
-        if ("result" in res.json()): return res.json()["result"]
+        rtJson = res.json()
+        if ("result" in rtJson): return rtJson["result"]
 
-        raise reqException( res.json()["error"] )
+        ''' exception '''
+        raise reqException( rtJson["error"] )
