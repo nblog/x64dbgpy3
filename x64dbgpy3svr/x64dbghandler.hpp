@@ -20,12 +20,12 @@ namespace x64dbgSvrUtil {
         static const std::string deserialize(const std::string& buffer) {
             std::string b = std::string();
 
-            std::regex ws_re("\\s+");
-            std::vector<std::string> v(
-                std::sregex_token_iterator(buffer.begin(), buffer.end(), ws_re, -1),
-                std::sregex_token_iterator());
-            for (auto&& s : v)
-                b.append(1, uint8_t(strtoul(s.c_str(), 0, 16)));
+            std::stringstream ss(buffer);
+
+            while (ss.good()) {
+                int c = 0; ss >> std::hex >> c;
+                b.append(1, uint8_t(c));
+            }
             return b;
         }
     };
