@@ -60,9 +60,15 @@ namespace x64dbgSvrWrapper {
             std::string name;
             std::string mod;
             uint32_t hitCount;
+            std::string breakCondition;
+            std::string logCondition;
+            std::string commandCondition;
+            std::string logText;
+            std::string commandText;
         };
         NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BREAKPOINT_INFO_WRAPPER, \
-            type, addr, enabled, singleshoot, active, name, mod, hitCount)
+            type, addr, enabled, singleshoot, active, name, mod, hitCount,
+            breakCondition, logCondition, commandCondition, logText, commandText)
 
         struct ARGUMENT_INFO_WRAPPER {
             std::string mod;
@@ -688,27 +694,32 @@ namespace x64dbgSvrWrapper {
                     bps.bp[i].addr,
                     bps.bp[i].enabled, bps.bp[i].singleshoot, bps.bp[i].active,
                     bps.bp[i].name, bps.bp[i].mod,
-                    bps.bp[i].hitCount
+                    bps.bp[i].hitCount,
+                    bps.bp[i].breakCondition,
+                    bps.bp[i].logCondition,
+                    bps.bp[i].commandCondition,
+                    bps.bp[i].logText,
+                    bps.bp[i].commandText,
                 };
             }
             BridgeFree(bps.bp); return breaks;
         }
 
         auto SetBreakpoint(ptr_t addr) { 
-            return Script::Debug::SetBreakpoint(addr); 
+            return Script::Debug::SetBreakpoint(addr);
         }
         auto DeleteBreakpoint(ptr_t addr) {
             return Script::Debug::DeleteBreakpoint(addr);
         }
         auto DisableBreakpoint(ptr_t addr) { 
-            return Script::Debug::DisableBreakpoint(addr); 
+            return Script::Debug::DisableBreakpoint(addr);
         }
 
         auto SetHardwareBreakpoint(ptr_t addr, int32_t hard) {
-            return Script::Debug::SetHardwareBreakpoint(addr, Script::Debug::HardwareType(hard)); 
+            return Script::Debug::SetHardwareBreakpoint(addr, Script::Debug::HardwareType(hard));
         }
         auto DeleteHardwareBreakpoint(ptr_t addr) {
-            return Script::Debug::DeleteHardwareBreakpoint(addr); 
+            return Script::Debug::DeleteHardwareBreakpoint(addr);
         }
     }
 };

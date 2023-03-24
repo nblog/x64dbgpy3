@@ -641,6 +641,11 @@ class dbgDebug:
         name:str
         mod:str
         hitCount:int
+        breakCondition:str
+        logCondition:str
+        commandCondition:str
+        logText:str
+        commandText:str
 
     @staticmethod
     def GetBreakpointList(bpxtype:DBGBREAKPOINTINFO.BPXTYPE=DBGBREAKPOINTINFO.BPXTYPE.bp_none):

@@ -19,11 +19,26 @@ if (not dbgMisc.IsDebugging()):
 
 
 for bp in dbgDebug.GetBreakpointList():
-    print( "bp: {}  {:#x}  {}  {}  {}".format(
+    descriptor = []
+    if (bp.breakCondition):
+        descriptor.append( "breakif({})".format(bp.breakCondition) )
+    if (bp.logText):
+        descriptor.append(
+            "logif({}, \"{}\")".format(bp.logCondition, bp.logText) \
+                if (bp.logCondition) else "log(\"{}\")".format(bp.logText)
+        )
+    if (bp.commandText):
+        descriptor.append(
+            "cmdif({}, \"{}\")".format(bp.commandCondition, bp.commandText) \
+                if (bp.commandCondition) else "cmd(\"{}\")".format(bp.commandText)
+        )
+
+    print( "bp: {}  {:#x}  {}  {}  {}  {}".format(
         ( "soft" if (1 == bp.type) else ( "hard" if (2 == bp.type) else "蔡徐坤" ) ),
         bp.addr, bp.mod, 
         ( "once" if (bp.singleshoot) else ( "enable" if (bp.enabled) else "disable" ) ), 
-        bp.hitCount ) )
+        bp.hitCount,
+        ', '.join(descriptor) ) )
 
 for book in dbgBookmark.GetBookmarkList():
     print( "book: {}+{:#x}".format( book.mod,  book.rva ) )
