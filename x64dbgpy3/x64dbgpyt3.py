@@ -7,7 +7,8 @@ from .x64dbgreq import *
 
 
 ''' HTTP REQ '''
-DEFAULT_PORT, DEFAULT_HOST = 27043, "localhost"
+import os
+DEFAULT_PORT, DEFAULT_HOST = 27043, os.environ.get("REMOTEHOST", "localhost")
 X64DBGREQ = reqJson( "http://{}:{}".format(DEFAULT_HOST, DEFAULT_PORT) )
 
 
@@ -15,7 +16,9 @@ X64DBGREQ = reqJson( "http://{}:{}".format(DEFAULT_HOST, DEFAULT_PORT) )
 class XDBGINFO(DBGNS):
     ver:int
     x64dbg:bool
-    hWnd:ptr_t
+    dbgver:int
+    dbgengine:int
+    dbghwnd:ptr_t
 X64DBGINFO = XDBGINFO(**X64DBGREQ.x64dbg_info())
 
 

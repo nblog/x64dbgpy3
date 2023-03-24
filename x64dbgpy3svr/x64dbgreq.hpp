@@ -56,7 +56,7 @@ public:
     bool StartListening() {
         if (httpServer.is_running())
             return false;
-        this->thread = std::thread([this]() { this->httpServer.listen("localhost", port); });
+        this->thread = std::thread([this]() { this->httpServer.listen("0.0.0.0", port); });
         return true;
     }
 
