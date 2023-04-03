@@ -104,12 +104,13 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>plugintemplate;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
 set x64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-xcopy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
+copy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -130,12 +131,13 @@ xcopy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>plugintemplate;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
 set x64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-xcopy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
+copy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -152,12 +154,13 @@ xcopy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>plugintemplate;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
 set x64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-xcopy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
+copy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -178,12 +181,13 @@ xcopy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>plugintemplate;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
 set x64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-xcopy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
+copy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -193,13 +197,13 @@ xcopy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="src\plugin.cpp" />
-    <ClCompile Include="src\pluginmain.cpp" />
+    <ClCompile Include="plugintemplate\plugin.cpp" />
+    <ClCompile Include="plugintemplate\pluginmain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="egg.h" />
-    <ClInclude Include="src\plugin.h" />
-    <ClInclude Include="src\pluginmain.h" />
+    <ClInclude Include="plugintemplate\plugin.h" />
+    <ClInclude Include="plugintemplate\pluginmain.h" />
     <ClInclude Include="x64dbghandler.hpp" />
     <ClInclude Include="x64dbgreq.hpp" />
   </ItemGroup>
