@@ -108,9 +108,9 @@
     </Link>
     <PostBuildEvent>
       <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
-set x64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
+set X64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-copy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
+copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,9 +135,9 @@ copy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
     </Link>
     <PostBuildEvent>
       <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
-set x64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
+set X64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-copy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
+copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -158,9 +158,9 @@ copy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
     </Link>
     <PostBuildEvent>
       <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
-set x64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
+set X64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-copy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
+copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -185,9 +185,9 @@ copy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
     </Link>
     <PostBuildEvent>
       <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
-set x64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
+set X64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-copy /Y "$(TargetPath)" "%x64DBGPLUGIN%$(TargetFileName)"</Command>
+copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
