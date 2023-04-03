@@ -1,9 +1,8 @@
 
 .vs/
+**.vcxproj.*
 
-pluginsdk/
 third_party/
-debug/
+pluginsdk/
 release/
-
-*.vcxproj.user
+debug/
