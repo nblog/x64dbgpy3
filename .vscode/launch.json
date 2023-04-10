@@ -8,7 +8,8 @@
             "name": "test",
             "type": "python",
             "request": "launch",
-            "program": "test.py"
+            "program": "test.py",
+            "env": { "REMOTEHOST": "localhost" }
         }
     ]
 }

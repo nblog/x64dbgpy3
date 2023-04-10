@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# coding=utf-8
+# -*- coding: utf-8 -*-
 
 from .x64dbgutil import *
 from .x64dbgreq import *
