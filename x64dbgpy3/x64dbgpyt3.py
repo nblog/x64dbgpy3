@@ -9,12 +9,17 @@ from .x64dbgreq import *
 ''' HTTP REQ '''
 import os
 DEFAULT_PORT = 27043; DEFAULT_HOST = "localhost"
-DEFAULT_TARGET = os.environ.get("REMOTEHOST", f"{DEFAULT_HOST}:{DEFAULT_PORT}")
-try:
-    DEFAULT_HOST = DEFAULT_TARGET.split(":")[0]
-    DEFAULT_PORT = int(DEFAULT_TARGET.split(":")[1])
-except: pass
-X64DBGREQ = reqJson( "http://{}:{}".format(DEFAULT_HOST, DEFAULT_PORT) )
+
+def target():
+    global DEFAULT_PORT, DEFAULT_HOST
+    host = os.environ.get("REMOTEHOST", f"{DEFAULT_HOST}:{DEFAULT_PORT}")
+    try:
+        DEFAULT_PORT = int(host.split(":")[1])
+        DEFAULT_HOST = host.split(":")[0]
+    except: pass
+    return f"{DEFAULT_HOST}:{DEFAULT_PORT}"
+
+X64DBGREQ = reqJson( f"http://{target()}" )
 
 
 ''' X64DBG INFO '''
