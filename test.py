@@ -123,7 +123,7 @@ MSGBIN = open("test\\BINMSG.BIN", "rb").read()
 remoteaddr = dbgMemory.Alloc( 4096 )
 dbgMemory.Write( remoteaddr, MSGBIN ), time.sleep(1)
 
-dbgDebug.Run(); time.sleep(1); dbgThread.CreateThread( remoteaddr, 0 )
+dbgThread.CreateThread( remoteaddr, 0 )
 
 
 ''' FLIRT '''
