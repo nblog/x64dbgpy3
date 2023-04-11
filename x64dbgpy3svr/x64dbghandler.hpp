@@ -367,6 +367,14 @@ namespace x64dbgSvrWrapper {
                 };
             } return labels;
         }
+
+        auto Set(ptr_t addr, const std::string& text, bool manual, bool temporary) { 
+			return Script::Label::Set(addr, text.c_str(), manual, temporary);
+		}
+
+        auto Del(ptr_t addr) { 
+            return Script::Label::Delete(addr);
+        }
     }
 
     namespace dbgFunction {
@@ -675,11 +683,11 @@ namespace x64dbgSvrWrapper {
     }
 
     namespace dbgDebug {
-        auto Stop() { return Script::Debug::Stop(); }
-        auto Run() { return Script::Debug::Run(); }
-        auto StepIn() { return Script::Debug::StepIn(); }
-        auto StepOver() { return Script::Debug::StepOver(); }
-        auto StepOut() { return Script::Debug::StepOut(); }
+        auto Stop() { Script::Debug::Stop(); }
+        auto Run() { Script::Debug::Run(); }
+        auto StepIn() { Script::Debug::StepIn(); }
+        auto StepOver() { Script::Debug::StepOver(); }
+        auto StepOut() { Script::Debug::StepOut(); }
 
         auto GetBreakpointList(int32_t bpxtype) {
             nlohmann::json breaks;

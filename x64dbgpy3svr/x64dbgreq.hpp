@@ -129,6 +129,8 @@ public:
         AddHandler(dbgComment::GetCommentList, {  });
 
         AddHandler(dbgLabel::GetLabelList, {  });
+        AddHandler(dbgLabel::Set, {  });
+        AddHandler(dbgLabel::Del, {  });
 
         AddHandler(dbgFunction::GetFunctionList, {  });
 

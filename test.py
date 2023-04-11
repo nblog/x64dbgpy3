@@ -123,6 +123,19 @@ MSGBIN = open("test\\BINMSG.BIN", "rb").read()
 remoteaddr = dbgMemory.Alloc( 4096 )
 dbgMemory.Write( remoteaddr, MSGBIN ), time.sleep(1)
 
-dbgDebug.Run(), time.sleep(1), \
-    dbgThread.CreateThread( remoteaddr, 0 )
+dbgDebug.Run(); time.sleep(1); dbgThread.CreateThread( remoteaddr, 0 )
+
+
+''' FLIRT '''
+from pyflirt.signature import idasig
+from pyflirt.flirt import matcher
+
+sign = idasig(
+    open("test\\libcrypto-3.sig", "rb").read())
+
+# Search for code sections, presence or absence of `Openssl Crypto` function
+sec = dbgModule.GetMainModuleSectionList()[0]
+for fn in matcher(sec.addr, sec.size).match(sign):
+    dbgLabel.Set( fn.addr, fn.name )
+    print( "found: {:#x}  {}".format( fn.addr, fn.name ) )
 

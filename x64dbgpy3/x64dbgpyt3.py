@@ -174,11 +174,11 @@ class dbgBookmark:
         return [ dbgBookmark.DBGBOOKMARKINFO(**i) for i in res ]
 
     @staticmethod
-    def Set():
+    def Get():
         raise NotImplementedError
 
     @staticmethod
-    def Get():
+    def Set():
         raise NotImplementedError
 
     @staticmethod
@@ -201,11 +201,11 @@ class dbgComment:
         return [ dbgComment.DBGCOMMENTINFO(**i) for i in res ]
 
     @staticmethod
-    def Set():
+    def Get():
         raise NotImplementedError
 
     @staticmethod
-    def Get():
+    def Set():
         raise NotImplementedError
 
     @staticmethod
@@ -236,16 +236,18 @@ class dbgLabel:
         return [ dbgLabel.DBGLABELINFO(**i) for i in res ]
 
     @staticmethod
-    def Set():
-        raise NotImplementedError
-
-    @staticmethod
     def Get():
         raise NotImplementedError
 
     @staticmethod
-    def Del():
-        raise NotImplementedError
+    def Set(addr:ptr_t, label:str, manual:bool=False, temporary:bool=False):
+        res = X64DBGREQ.req_call( FUNCTION_NAME(dbgLabel), [ addr, label, manual, temporary ] )
+        return bool( res )
+
+    @staticmethod
+    def Del(addr:ptr_t):
+        res = X64DBGREQ.req_call( FUNCTION_NAME(dbgLabel), [ addr ] )
+        return bool( res )
 
 class dbgFunction:
     '''  '''
@@ -268,11 +270,11 @@ class dbgFunction:
         return [ dbgFunction.DBGFUNCTIONINFO(**i) for i in res ]
 
     @staticmethod
-    def Set():
+    def Get():
         raise NotImplementedError
 
     @staticmethod
-    def Get():
+    def Set():
         raise NotImplementedError
 
     @staticmethod
@@ -300,11 +302,11 @@ class dbgArgument:
         return [ dbgArgument.DBGARGUMENTINFO(**i) for i in res ]
 
     @staticmethod
-    def Add():
+    def Get():
         raise NotImplementedError
 
     @staticmethod
-    def Get():
+    def Add():
         raise NotImplementedError
 
     @staticmethod
