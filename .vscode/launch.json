@@ -9,7 +9,6 @@
             "type": "python",
             "request": "launch",
             "program": "test.py",
-            "env": { "REMOTEHOST": "localhost" }
         }
     ]
 }
