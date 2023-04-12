@@ -90,7 +90,7 @@ class idasig:
 		# check for compression
 		if self.header["features"] & self.flag["features"]["COMPRESSED"]:
 			# zlib(15) or deflate(-15)
-			wbit = zlib.MAX_WBITS if ord(self.binary[self.skip]) == 0x78 else -zlib.MAX_WBITS
+			wbit = zlib.MAX_WBITS if self.binary[self.skip] == 0x78 else -zlib.MAX_WBITS
 			self.buffer = zlib.decompress(self.binary[self.skip:], wbit)
 		else:
 			self.buffer = self.binary[self.skip:]
