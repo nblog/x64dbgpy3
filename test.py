@@ -145,14 +145,5 @@ for fn in m.match(sign):
     dbgLabel.Set( fn.addr, fn.name )
     print( "found: {:#x}  {}".format( fn.addr, fn.name ) )
 
-if (not X64DBGINFO.x64dbg):
-    # current sample `openssl-native.3.0.8 (x86)`, for testing only
-    sign = idasig(
-        open("test\\32\\libcrypto-3.sig", "rb").read())
-
-    for fn in m.match(sign):
-        dbgLabel.Set( fn.addr, fn.name )
-        print( "found: {:#x}  {}".format( fn.addr, fn.name ) )
-
 
 ''' BYE '''

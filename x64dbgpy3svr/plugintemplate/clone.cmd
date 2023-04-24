@@ -4,8 +4,7 @@
 cd %~dp0
 
 
-set GHPROXY=https://ghproxy.com/
-set GIT=%GHPROXY%https://github.com/x64dbg/PluginTemplate/
+set GIT=https://github.com/x64dbg/PluginTemplate/
 
 setlocal enabledelayedexpansion
 
@@ -18,6 +17,6 @@ for /l %%i in (0, 1, 1) do ( curl -L %GIT%blob/main/src/!PLUGIN[%%i]!.h?raw=true
 
 
 :: pluginsdk
-curl %GHPROXY%https://github.com/x64dbg/x64dbg/releases/download/snapshot/snapshot_2023-03-04_02-26.zip -o x64dbg.zip
+curl https://github.com/x64dbg/x64dbg/releases/download/snapshot/snapshot_2023-04-15_16-57.zip -o x64dbg.zip
 tar -xf x64dbg.zip pluginsdk/
 del /Q x64dbg.zip
