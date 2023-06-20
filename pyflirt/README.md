@@ -20,8 +20,6 @@ if you use `pyflirt`, you need to install `pip install capstone` separately.
 
 [pyflirt](https://github.com/williballenthin/lancelot/tree/master/pyflirt): another python flirt library.
 
-[](https://github.com/williballenthin/viv-utils/blob/master/viv_utils/flirt.py)
-
 
 ## Credits
 [mokhdzanifaeq/pyflirt](https://github.com/mokhdzanifaeq/pyflirt)
