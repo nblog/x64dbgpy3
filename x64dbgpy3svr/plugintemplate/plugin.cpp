@@ -6,6 +6,8 @@
 
 #include "x64dbgreq.hpp"
 
+#define DEFAULT_PORT 27041
+
 
 enum enum_menu_entry {
     MENU_ABOUT = 20221102,
@@ -27,10 +29,9 @@ private:
 
 
 
-
 static bool start_httpsvr(int argc, char* argv[])
 {
-    int port = 2 > argc ? 27043 : int(strtoul(argv[1], 0, 0));
+    int port = 2 > argc ? DEFAULT_PORT : int(strtoul(argv[1], 0, 0));
 
     httpsvr::clear(svr);
 
