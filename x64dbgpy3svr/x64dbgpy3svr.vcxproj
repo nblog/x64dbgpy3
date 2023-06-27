@@ -207,6 +207,11 @@ copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
     <ClInclude Include="x64dbghandler.hpp" />
     <ClInclude Include="x64dbgreq.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="third_party\lz4-1.9.4\build\VS2022\liblz4\liblz4.vcxproj">
+      <Project>{9092c5cc-3e71-41b3-bf68-4a7bdd8a5476}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
