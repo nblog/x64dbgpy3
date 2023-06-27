@@ -9,7 +9,7 @@ from .x64dbgreq import *
 ''' HTTP REQ '''
 def target():
     import os
-    HOST = os.environ.get("REMOTEHOST", "localhost:27043")
+    HOST = os.environ.get("REMOTEHOST", "localhost:27041")
     try:
         return "{}:{}".format(HOST.split(":")[0], int(HOST.split(":")[1]))
     except: return HOST
@@ -499,32 +499,38 @@ class dbgMemory:
 
     @staticmethod
     def Read(addr:ptr_t, size:size_t):
-        ''' slice '''
-        it = [4096] * int(size / 4096)
-        if ( size % 4096 ): it.append( size % 4096 )
+        # it = [4096] * int(size / 4096)
+        # if ( size % 4096 ): it.append( size % 4096 )
 
-        rv, offset = b'', int(0)
-        for length in it:
-            res = X64DBGREQ.req_call( FUNCTION_NAME(dbgMemory), [ 
-                addr+offset, length ] )
-            rv += reqBuffer.deserialize(res)
-            offset += length
-        return rv
+        # rv, offset = b'', int(0)
+        # for length in it:
+        #     res = X64DBGREQ.req_call( FUNCTION_NAME(dbgMemory), [ 
+        #         addr+offset, length ] )
+        #     rv += reqBuffer.deserialize(res)
+        #     offset += length
+        # return rv
+
+        res = X64DBGREQ.req_call( FUNCTION_NAME(dbgMemory), [
+            addr, size ] )
+        return reqBuffer.deserialize(res)
 
     @staticmethod
     def Write(addr:ptr_t, data:bytes):
-        size, offset = len(data), int(0)
+        # size, offset = len(data), int(0)
 
-        ''' slice '''
-        it = [4096] * int(size / 4096)
-        if ( size % 4096 ): it.append( size % 4096 )
+        # it = [4096] * int(size / 4096)
+        # if ( size % 4096 ): it.append( size % 4096 )
 
-        for length in it:
-            res = X64DBGREQ.req_call( FUNCTION_NAME(dbgMemory), [ \
-                addr, reqBuffer.serialize(data[offset:offset+length]) ] )
-            if (not bool(res)): return False
-            offset += length
-        return True
+        # for length in it:
+        #     res = X64DBGREQ.req_call( FUNCTION_NAME(dbgMemory), [ \
+        #         addr, reqBuffer.serialize(data[offset:offset+length]) ] )
+        #     if (not bool(res)): return False
+        #     offset += length
+        # return True
+
+        res = X64DBGREQ.req_call( FUNCTION_NAME(dbgMemory), [
+            addr, reqBuffer.serialize(data) ] )
+        return bool(res)
 
     @staticmethod
     def Free(addr:ptr_t):

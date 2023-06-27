@@ -1,36 +1,142 @@
 #pragma once
 
-
 #include <array>
 
 #define FMT_HEADER_ONLY
-#include "third_party/fmt-9.1.0/include/fmt/format.h"
+#include "third_party/fmt-10.0.0/include/fmt/format.h"
 
+#include "third_party/base64.hpp"
+
+#include "third_party/lz4-1.9.4/lib/lz4frame_static.h"
 
 
 namespace x64dbgSvrUtil {
 
     struct reqBuffer {
-        /* test => 74 65 73 74 */
         static const std::string serialize(const std::string& buffer) {
-            return fmt::format("{:x}",
-                fmt::join(std::vector<uint8_t>(buffer.begin(), buffer.end()), " "));
-        }
-        /* 74 65 73 74 => test */
-        static const std::string deserialize(const std::string& buffer) {
-            std::string b = std::string();
+            const size_t IN_BUFF_SIZE = 1024;
 
-            std::stringstream ss(buffer);
-
-            while (ss.good()) {
-                int c = 0; ss >> std::hex >> c;
-                b.append(1, uint8_t(c));
+            std::string raw_buffer(LZ4F_compressBound(buffer.size(), NULL), 0);
+            if (IN_BUFF_SIZE < buffer.size()) {
+                raw_buffer.resize(LZ4F_compressFrame(
+                    raw_buffer.data(), raw_buffer.size(), buffer.c_str(), buffer.size(), NULL));
             }
-            return b;
+            else {
+                raw_buffer = buffer;
+            }
+
+            return nlohmann::json({ 
+                { "compressed", IN_BUFF_SIZE < buffer.size() && 0x184D2204 == *(uint32_t*)(&raw_buffer[0]) },
+                { "payload", boost::beast::detail::base64_encode(raw_buffer)}
+                }).dump();
+        }
+        static const std::string deserialize(const std::string& buffer) {
+            auto payload = nlohmann::json::parse(buffer);
+            auto raw_buffer = boost::beast::detail::base64_decode(payload["payload"]);
+
+            /* https://github.com/python-lz4/python-lz4/blob/master/lz4/frame/_frame.c `__decompress` */
+            static auto decompressFrame = [](LZ4F_dctx* context, const std::string& raw_buffer, std::string& tmpbuffer) {
+                LZ4F_frameInfo_t frame_info;
+                LZ4F_decompressOptions_t options;
+                size_t result = 0;
+
+                size_t source_remain;
+                size_t source_read;
+                char* source_cursor;
+                char* source_end;
+                char* destination;
+                size_t destination_write;
+                char* destination_cursor;
+                size_t destination_written;
+                size_t destination_size;
+
+                source_cursor = (char*)raw_buffer.data();
+                source_end = (char*)(raw_buffer.data() + raw_buffer.size());
+                source_remain = raw_buffer.size();
+
+                result = LZ4F_getFrameInfo(context, &frame_info,
+                    source_cursor, &source_read);
+                if (LZ4F_isError(result)) return false;
+
+                source_cursor += source_read;
+                source_remain -= source_read;
+
+                if (frame_info.contentSize > 0)
+                    destination_size = size_t(frame_info.contentSize);
+                else
+                    destination_size = 2 * source_remain;
+
+                tmpbuffer.resize(destination_size * sizeof * destination);
+                destination = tmpbuffer.data();
+
+                options.stableDst = 1;
+
+                source_read = source_remain;
+
+                destination_write = destination_size;
+                destination_cursor = destination;
+                destination_written = 0;
+
+                while (1) {
+                    result = LZ4F_decompress(context,
+                        destination_cursor,
+                        &destination_write,
+                        source_cursor,
+                        &source_read,
+                        &options);
+                    if (LZ4F_isError(result)) return false;
+
+                    destination_written += destination_write;
+                    source_cursor += source_read;
+                    source_read = source_end - source_cursor;
+
+                    if (result == 0)
+                    {
+                        /* We've reached the end of the frame. */
+                        break;
+                    }
+                    else if (source_cursor == source_end)
+                    {
+                        /* We've reached end of input. */
+                        break;
+                    }
+                    else if (destination_written == destination_size)
+                    {
+                        /* Destination buffer is full. So, stop decompressing if
+                           max_length is set. Otherwise expand the destination
+                           buffer. */
+                    }
+                    /* Data still remaining to be decompressed, so increment the destination
+                       cursor location, and reset destination_write ready for the next
+                       iteration. Important to re-initialize destination_cursor here (as
+                       opposed to simply incrementing it) so we're pointing to the realloc'd
+                       memory location. */
+                    destination_cursor = destination + destination_written;
+                    destination_write = destination_size - destination_written;
+                }
+
+                return true;
+            };
+
+            std::string tmpbuffer = std::string();
+
+            if (bool(payload["compressed"])) {
+                LZ4F_dctx* context{};
+
+                LZ4F_errorCode_t err = LZ4F_createDecompressionContext(&context, LZ4F_VERSION);
+
+                if (LZ4F_isError(err)) return std::string();
+
+                if (!decompressFrame(context, raw_buffer, tmpbuffer))
+                    return std::string();
+
+                LZ4F_freeDecompressionContext(context);
+            }
+
+            return bool(payload["compressed"]) ? tmpbuffer : raw_buffer;
         }
     };
 }
-
 
 
 
@@ -260,7 +366,7 @@ namespace x64dbgSvrWrapper {
 
     namespace dbgPattern {
         auto FindPattern(ptr_t addr, const std::string& pattern) {
-            std::string fmtV = fmt::format("findall {:x},{}", addr, pattern);
+            std::string fmtV = fmt::format("findallmem {:x},{}", addr, pattern);
             return DbgCmdExecDirect(fmtV.c_str());
         }
     }

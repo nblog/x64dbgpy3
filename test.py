@@ -130,7 +130,7 @@ dbgThread.CreateThread( remoteaddr, 0 )
 from pyflirt.signature import idasig
 from pyflirt.flirt import matcher
 
-# Search for code sections, presence or absence of `Openssl Crypto` function
+# Search for code sections
 sec = dbgModule.GetMainModuleSectionList()[0]
 
 # Pull memory, create matcher
