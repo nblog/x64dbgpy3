@@ -9,7 +9,7 @@ from .x64dbgreq import *
 ''' HTTP REQ '''
 def target():
     import os
-    HOST = os.environ.get("REMOTEHOST", "localhost:27041")
+    HOST = os.environ.get("X64DBGPY3_HOST", "localhost:27041")
     try:
         return "{}:{}".format(HOST.split(":")[0], int(HOST.split(":")[1]))
     except: return HOST

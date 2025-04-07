@@ -1,0 +1,14 @@
+[project]
+name = "x64dbgpy3"
+version = "0.1.0"
+description = "A Python 3 framework for automating x64dbg operations via scripting."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx",
+    "lz4",
+    "pydantic",
+]
+
+[project.optional-dependencies]
+dev = ["capstone"]
