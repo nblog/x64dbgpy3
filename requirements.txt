@@ -1,6 +1,7 @@
 
 httpx
 lz4
+construct
 
 # pyflirt
 capstone
