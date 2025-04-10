@@ -6,10 +6,10 @@
     "configurations": [
         {
             "name": "test",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "test.py",
-            "env": { "REMOTEHOST": "${env:REMOTEHOST}:27041" }
+            "env": { "X64DBGPY3_HOST": "localhost:27041" }
         }
     ]
 }

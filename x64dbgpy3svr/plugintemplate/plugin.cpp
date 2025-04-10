@@ -3,10 +3,8 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include "plugin.h"
-
 #include "x64dbgreq.hpp"
 
-#define DEFAULT_PORT 27041
 
 
 enum enum_menu_entry {
@@ -28,10 +26,11 @@ private:
 }; httpsvr *svr = nullptr;
 
 
+#define X64DBGPY3_DEFAULT_PORT 27041
 
 static bool start_httpsvr(int argc, char* argv[])
 {
-    int port = 2 > argc ? DEFAULT_PORT : int(strtoul(argv[1], 0, 0));
+    int port = 2 > argc ? X64DBGPY3_DEFAULT_PORT : int(strtoul(argv[1], 0, 0));
 
     httpsvr::clear(svr);
 
