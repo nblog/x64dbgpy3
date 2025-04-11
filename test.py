@@ -6,12 +6,9 @@ import time
 from x64dbgpy3.x64dbgpyt3 import *
 
 
-
-
 dbgLogging.logclear()
 dbgLogging.logputs("hello python3")
 dbgLogging.logprint("hello "), dbgLogging.logprint("python3\n")
-
 
 
 if (not dbgMisc.IsDebugging()):
@@ -85,13 +82,6 @@ for m in dbgMemory.MemMaps():
         dbgMemory.MEM_TYPE.str(m.Type), dbgMemory.MEM_PROTECT.str(m.Protect), 
         m.info ) )
 
-
-for t in dbgThread.GetThreadList():
-    print( "id:{} entry:{:#x} teb:{:#x} suspend:{} name:{}".format(
-        t.ThreadId, t.ThreadStartAddress, 
-        t.ThreadLocalBase, t.SuspendCount, t.threadName) )
-
-
 for m in dbgModule.GetModuleList():
     print( "{:#x}  {:#x}  {}".format(
         m.base, m.size, m.path
@@ -118,12 +108,16 @@ for eat in dbgModule.GetExportsFromAddr( m.base ):
     ) )
 
 
-''' HELLO  '''
-MSGBIN = open("test\\BINMSG.BIN", "rb").read()
-remoteaddr = dbgMemory.Alloc( 4096 )
-dbgMemory.Write( remoteaddr, MSGBIN ), time.sleep(1)
+for t in dbgThread.GetThreadList():
+    print( "id:{} entry:{:#x} teb:{:#x} suspend:{} name:{}".format(
+        t.ThreadId, t.ThreadStartAddress, 
+        t.ThreadLocalBase, t.SuspendCount, t.threadName) )
 
-dbgThread.CreateThread( remoteaddr, 0 )
+
+''' SHELLCODE '''
+PAYLOAD = open("test\\BINMSG.BIN", "rb").read()
+remoteaddr = dbgMemory.Alloc( 4096 )
+dbgMemory.Write( remoteaddr, PAYLOAD ); dbgThread.CreateThread( remoteaddr, 0 )
 
 
 ''' FLIRT '''

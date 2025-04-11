@@ -2,7 +2,4 @@
 .vs/
 **.vcxproj.*
 
-third_party/
 pluginsdk/
-release/
-debug/
