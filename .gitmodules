@@ -1,0 +1,11 @@
+[submodule "x64dbgpy3svr/third_party/lz4"]
+	path = x64dbgpy3svr/third_party/lz4
+	url = https://github.com/lz4/lz4
+	branch = v1.10.0
+[submodule "x64dbgpy3svr/third_party/glaze"]
+	path = x64dbgpy3svr/third_party/glaze
+	url = https://github.com/stephenberry/glaze
+	branch = v5.1.0
+[submodule "x64dbgpy3svr/third_party/json-rpc-cxx"]
+	path = x64dbgpy3svr/third_party/json-rpc-cxx
+	url = https://github.com/jsonrpcx/json-rpc-cxx
