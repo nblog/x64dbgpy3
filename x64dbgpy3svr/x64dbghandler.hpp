@@ -4,10 +4,8 @@
 
 #define FMT_HEADER_ONLY
 #include "third_party/fmt-10.0.0/include/fmt/format.h"
-
-#include "third_party/base64.hpp"
-
 #include "third_party/lz4-1.9.4/lib/lz4frame_static.h"
+#include "third_party/base64.hpp"
 
 
 namespace x64dbgSvrUtil {

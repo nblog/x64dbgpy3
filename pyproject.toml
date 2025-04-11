@@ -7,8 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "httpx",
     "lz4",
-    "pydantic",
 ]
 
 [project.optional-dependencies]
-dev = ["capstone"]
+dev = ["capstone", "python-flirt"]
