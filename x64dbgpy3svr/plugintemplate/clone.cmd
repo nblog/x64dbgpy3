@@ -1,8 +1,6 @@
 @echo off
 
-
 cd /D %~dp0
-
 
 set X64TEMPLATE=https://github.com/x64dbg/PluginTemplate/
 
