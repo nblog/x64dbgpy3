@@ -3,3 +3,4 @@
 **.vcxproj.*
 
 pluginsdk/
+out/
