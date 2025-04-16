@@ -10,4 +10,4 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["capstone", "python-flirt"]
+dev = ["capstone", "python-flirt", "mcp[cli]"]
