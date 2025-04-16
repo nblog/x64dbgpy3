@@ -12,7 +12,7 @@ def target():
     try:
         return "{}:{}".format(HOST.split(":")[0], int(HOST.split(":")[1]))
     except: return HOST
-X64DBGCALL = reqJson("http://" + target())
+X64DBGCALL = RequestJsonRpc("http://" + target())
 
 
 ''' X64DBG INFORMATION '''
