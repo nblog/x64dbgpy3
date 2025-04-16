@@ -28,15 +28,15 @@ class dbgLogging:
     '''  '''
 
     @staticmethod
-    def logclear():
+    def logclear() -> None:
         X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgLogging), [  ], True )
 
     @staticmethod
-    def logputs(*values):
+    def logputs(*values) -> None:
         X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgLogging), [ ''.join([str(i) for i in values]) ], True )
 
     @staticmethod
-    def logprint(*values):
+    def logprint(*values) -> None:
         X64DBGCALL.x64dbg_call(FUNCTION_NAME(dbgLogging), [ ''.join([str(i) for i in values]) ], True)
 
 class dbgMisc:
