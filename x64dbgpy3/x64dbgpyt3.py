@@ -456,7 +456,7 @@ class dbgMemory:
     class MEM_TYPE:
         @staticmethod
         def str(v): 
-            return { 0x1000000:"IMG", 0x40000:"MAP", 0x20000:"PRV" }[v]
+            return { 0x1000000:"IMG", 0x40000:"MAP", 0x20000:"PRV" }.get(v, "N/A")
 
     class MEM_PROTECT:
         @staticmethod

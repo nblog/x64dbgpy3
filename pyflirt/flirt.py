@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from x64dbgpy3.x64dbgpyt3 import *
 
 from capstone import *
 from capstone.x86 import *
-
-from x64dbgpy3.x64dbgpyt3 import *
 
 
 class utils:
