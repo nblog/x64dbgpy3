@@ -8,19 +8,19 @@ class reqJson:
     def __init__(self, hostUrl:str):
         from httpx import Client
         self.hostUrl, self.session = hostUrl, \
-            httpx.Client(proxies={})
+            Client()
 
     def x64dbg_info(self):
-        res = self.session.get( "/".join( [ self.hostUrl, "x64dbginfo" ] ) )
+        res = self.session.get( "/".join( [ self.hostUrl, "x64dbg", "api", "info" ] ) )
         return res.json()
 
-    def req_call(self, method:str, args:..., void:bool=False):
+    def x64dbg_call(self, method:str, args:..., void:bool=False):
         reqJson = \
             dict( { } if void else { "id": '' },
             **{ "jsonrpc":"2.0", "method":method, "params": args } )
 
         res = self.session.post(
-            "/".join( [ self.hostUrl, "x64dbg/api/call" ] ), 
+            "/".join( [ self.hostUrl, "x64dbg", "api", "call" ] ), 
             json=reqJson
         )
 

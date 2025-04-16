@@ -204,11 +204,6 @@ namespace x64dbgSvrWrapper::dbgLogging {
     auto logprint(const std::string& text) {
         return _plugin_logprint(text.c_str());
     }
-
-    template <typename... Args>
-	auto logprintf(const std::string& fmt, Args&&... args) {
-        return;
-	}
 };
 
 namespace x64dbgSvrWrapper::dbgMisc {

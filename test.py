@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import time
-
 from x64dbgpy3.x64dbgpyt3 import *
 
 
 dbgLogging.logclear()
 dbgLogging.logputs("hello python3")
-dbgLogging.logprint("hello "), dbgLogging.logprint("python3\n")
+dbgLogging.logprint("hello", " ", "python3\n")
 
 
 if (not dbgMisc.IsDebugging()):
@@ -31,9 +29,9 @@ for bp in dbgDebug.GetBreakpointList():
         )
 
     print( "bp: {}  {:#x}  {}  {}  {}  {}".format(
-        ( "soft" if (1 == bp.type) else ( "hard" if (2 == bp.type) else "蔡徐坤" ) ),
+        ( "soft" if (1 == bp.type) else ( "hard" if (2 == bp.type) else "none?" ) ),
         bp.addr, bp.mod, 
-        ( "once" if (bp.singleshoot) else ( "enable" if (bp.enabled) else "disable" ) ), 
+        ( "disable" if not bp.enabled else ( "enable" if not bp.singleshoot else "once" ) ),
         bp.hitCount,
         ', '.join(descriptor) ) )
 
