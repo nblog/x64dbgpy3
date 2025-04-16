@@ -15,9 +15,10 @@ class RequestJsonRpc:
         return res.json()
 
     def x64dbg_call(self, method:str, args:..., no_result:bool=False):
+        from uuid import uuid4
         payload = \
-            dict( { } if no_result else { "id": '' },
-            **{ "jsonrpc": "2.0", "method": method, "params": args } )
+            dict( { } if no_result else { "id": str(uuid4()) }, \
+                 **{ "jsonrpc": "2.0", "method": method, "params": args } )
 
         res = self.session.post(
             "/".join( [ self.hostUrl, "x64dbg", "api", "call" ] ), 
@@ -27,11 +28,12 @@ class RequestJsonRpc:
         if (200 != res.status_code): 
             raise RequestException( {"code": -32003, "message": "client connector error"} )
 
-        if (no_result): return None
+        if not res.content: return None
 
-        ''' result '''
         rtJson = res.json()
-        if ("result" in rtJson): return rtJson["result"]
+        if "id" in rtJson and "result" in rtJson \
+            and rtJson["id"] == payload["id"]:
+            return rtJson["result"]
 
         ''' exception '''
         raise RequestException( rtJson["error"] )

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from x64dbgpy3.x64dbgpyt3 import *
+from x64dbgpy3.x64dbgpy3 import *
 
 
 dbgLogging.logclear()

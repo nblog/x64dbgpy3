@@ -43,7 +43,7 @@ class dbgMisc:
     '''  '''
 
     @staticmethod
-    def IsDebugging():
+    def IsDebugging() -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [  ] )
         return bool(res)
 
