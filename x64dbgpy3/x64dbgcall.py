@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-import httpx
-
-
-
 class reqException(Exception):
     '''  '''
 
 class reqJson:
     def __init__(self, hostUrl:str):
+        from httpx import Client
         self.hostUrl, self.session = hostUrl, \
             httpx.Client(proxies={})
 
@@ -20,11 +16,11 @@ class reqJson:
 
     def req_call(self, method:str, args:..., void:bool=False):
         reqJson = \
-            dict( { } if (void) else { "id": '' },
+            dict( { } if void else { "id": '' },
             **{ "jsonrpc":"2.0", "method":method, "params": args } )
 
         res = self.session.post(
-            "/".join( [ self.hostUrl, "x64dbgreq" ] ), 
+            "/".join( [ self.hostUrl, "x64dbg/api/call" ] ), 
             json=reqJson
         )
 

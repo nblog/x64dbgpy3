@@ -3,106 +3,124 @@
 /* ??? */
 #include "egg.h"
 
-
 #include <cpp-httplib/httplib.h>
 #include <jsonrpccxx/server.hpp>
 
-
-/* x64dbg script wrapper */
+/* x64dbg interface wrapper */
 #include "x64dbghandler.hpp"
 
 
 /* https://github.com/jsonrpcx/json-rpc-cxx/blob/master/examples/cpphttplibconnector.hpp#L23 */
 class CppHttpLibServerConnector {
 public:
-    explicit CppHttpLibServerConnector(int port, jsonrpccxx::JsonRpcServer& server) :
-        thread(),
-        server(server),
-        httpServer(),
-        port(port) {
-        httpServer.Get("/", [=](const httplib::Request& /*req*/, httplib::Response& res) { 
-#ifdef NDEBUG
+    ~CppHttpLibServerConnector() { this->StopListening(); }
+
+    explicit CppHttpLibServerConnector(jsonrpccxx::JsonRpcServer& server, int port, std::string host="localhost") :
+        server_(server),
+        port_(port),
+        host_(host) {
+        this->http_server_.Get("/", [=](const httplib::Request& /*req*/, httplib::Response& res) { 
+#ifndef NDEBUG
+            res.status = 200;
+            res.set_content("Hi!", "text/plain");
+#else
             /* ??? */
+            res.status = 200;
             res.set_content((const char*)egg_data, sizeof(egg_data), egg_mime);
 #endif
         });
 
-        httpServer.Get("/x64dbginfo", 
+        this->http_server_.Get("/x64dbg/api/info", 
             [=](const httplib::Request& /*req*/, httplib::Response& res) {
-                res.set_content(nlohmann::json(
-                    {
-                        { "ver", PLUGIN_VERSION },
+                try
+                {
+                    res.set_content(nlohmann::json({
+                        { "plugin", fmt::format("{}.{}.{}", ((PLUGIN_VERSION >> 16) & 0xFF), ((PLUGIN_VERSION >> 8) & 0xFF), (PLUGIN_VERSION & 0xFF)) },
 #ifdef _WIN64
                         { "x64dbg", true },
 #else
                         { "x64dbg", false },
 #endif
-                        { "dbgver", int32_t(BridgeGetDbgVersion()) },
-
-                        { "dbghwnd", uintptr_t(GuiGetWindowHandle()) },
-
-                        { "dbgengine", int32_t(DbgGetDebugEngine()) },
-                    }
-                ).dump(), "application/json");
+                        { "x64dbg_hwnd", uintptr_t(GuiGetWindowHandle()) },
+                        { "x64dbg_dir", BridgeUserDirectory() },
+                        }).dump(), "application/json");
+                }
+                catch (const std::exception& e)
+                {
+                    res.status = 500;
+                    res.set_content(nlohmann::json({
+                        { "error", e.what() }
+                        }).dump(), "application/json");
+                }
             });
-        httpServer.Post("/x64dbgreq",
+        this->http_server_.Post("/x64dbg/api/call",
             [this](const httplib::Request& req, httplib::Response& res) {
-                this->PostAction(req, res);
+                try {
+                    this->PostAction(req, res);
+                }
+                catch (const std::exception& e) {
+                    res.status = 500;
+                    res.set_content(nlohmann::json({
+                        { "error", e.what() }
+                        }).dump(), "application/json");
+                }
             });
     }
 
-    virtual ~CppHttpLibServerConnector() { StopListening(); }
-
-    bool StartListening() {
-        if (httpServer.is_running())
+    bool StartListening() noexcept {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (this->http_server_.is_running())
             return false;
-        this->thread = std::thread([this]() { this->httpServer.listen("0.0.0.0", port); });
-        return true;
+
+        this->thread_ = std::make_unique<std::thread>([this]() { 
+            this->http_server_.listen(this->host_.c_str(), this->port_); });
+        return this->thread_ ? true : false;
     }
 
-    void StopListening() {
-        if (httpServer.is_running()) {
-            httpServer.stop();
-            this->thread.join();
+    void StopListening() noexcept {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (this->thread_ && this->http_server_.is_running()) {
+            this->http_server_.stop();
+            this->thread_->join();
+            this->thread_.reset();
         }
     }
 
 private:
-    std::thread thread;
-    jsonrpccxx::JsonRpcServer& server;
-    httplib::Server httpServer;
-    int port;
+    std::string host_; int port_;
+    std::unique_ptr<std::thread> thread_;
+    std::mutex mutex_;
+	jsonrpccxx::JsonRpcServer& server_;
+    httplib::Server http_server_;
 
     void PostAction(const httplib::Request& req,
         httplib::Response& res) {
+        const std::string& response = this->server_.HandleRequest(req.body);
         res.status = 200;
-        res.set_content(this->server.HandleRequest(req.body), "application/json");
+        res.set_content(response, "application/json");
     }
 };
 
 
-
-
-
-
+#pragma push_macro("AddHandler")
+#undef AddHandler
 #define AddHandler(bindings, mapping) \
-    x64dbgBindings().Add(#bindings, GetHandle(&##bindings), mapping)
+       x64dbgBindings().Add(#bindings, GetHandle(&bindings), mapping)
 
-
-class x64dbgSvrBindings {
+class X64DbgServerBindings {
     /* x64dbgSvrWrapper app_; */
     jsonrpccxx::JsonRpc2Server x64dbgBindings_;
 
 public:
-    auto& x64dbgBindings() { return x64dbgBindings_; }
+    auto& x64dbgBindings() noexcept { return x64dbgBindings_; }
 
-    x64dbgSvrBindings() {
+    X64DbgServerBindings() {
         using namespace jsonrpccxx;
         using namespace x64dbgSvrWrapper;
 
         AddHandler(dbgLogging::logclear, {  });
-        AddHandler(dbgLogging::logprint, {  });
         AddHandler(dbgLogging::logputs, {  });
+        AddHandler(dbgLogging::logprint, {  });
 
         AddHandler(dbgMisc::IsDebugging, {  });
         AddHandler(dbgMisc::IsRunning, {  });
@@ -191,4 +209,4 @@ public:
     };
 };
 
-#undef AddHandler
+#pragma pop_macro("AddHandler")

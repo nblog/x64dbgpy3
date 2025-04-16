@@ -72,32 +72,32 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetExt>.dp$(PlatformArchitecture)</TargetExt>
-    <OutDir>$(SolutionDir)$(Configuration)\x$(PlatformArchitecture)\plugins\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)\x$(PlatformArchitecture)\temp\</IntDir>
+    <OutDir>$(SolutionDir)out\bin\$(Platform.ToLower())-$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)out\tmp\$(ProjectName)\$(Platform.ToLower())-$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetExt>.dp$(PlatformArchitecture)</TargetExt>
-    <OutDir>$(SolutionDir)$(Configuration)\x$(PlatformArchitecture)\plugins\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)\x$(PlatformArchitecture)\temp\</IntDir>
+    <OutDir>$(SolutionDir)out\bin\$(Platform.ToLower())-$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)out\tmp\$(ProjectName)\$(Platform.ToLower())-$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetExt>.dp$(PlatformArchitecture)</TargetExt>
-    <OutDir>$(SolutionDir)$(Configuration)\x$(PlatformArchitecture)\plugins\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)\x$(PlatformArchitecture)\temp\</IntDir>
+    <OutDir>$(SolutionDir)out\bin\$(Platform.ToLower())-$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)out\tmp\$(ProjectName)\$(Platform.ToLower())-$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetExt>.dp$(PlatformArchitecture)</TargetExt>
-    <OutDir>$(SolutionDir)$(Configuration)\x$(PlatformArchitecture)\plugins\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)\x$(PlatformArchitecture)\temp\</IntDir>
+    <OutDir>$(SolutionDir)out\bin\$(Platform.ToLower())-$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)out\tmp\$(ProjectName)\$(Platform.ToLower())-$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;X64DBGPY3SVR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx-0.3.1\include;$(ProjectDir)third_party\json-rpc-cxx-0.3.1\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -107,10 +107,10 @@
       <AdditionalLibraryDirectories>plugintemplate;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
+      <Command>set X64DBG=$(USERPROFILE)\Downloads\tools\x64dbg\
 set X64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
+xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -120,9 +120,9 @@ copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;X64DBGPY3SVR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx-0.3.1\include;$(ProjectDir)third_party\json-rpc-cxx-0.3.1\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -134,10 +134,10 @@ copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
       <AdditionalLibraryDirectories>plugintemplate;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
+      <Command>set X64DBG=$(USERPROFILE)\Downloads\tools\x64dbg\
 set X64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
+xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -145,9 +145,9 @@ copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;X64DBGPY3SVR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx-0.3.1\include;$(ProjectDir)third_party\json-rpc-cxx-0.3.1\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -157,10 +157,10 @@ copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
       <AdditionalLibraryDirectories>plugintemplate;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
+      <Command>set X64DBG=$(USERPROFILE)\Downloads\tools\x64dbg\
 set X64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
+xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -170,9 +170,9 @@ copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;X64DBGPY3SVR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx-0.3.1\include;$(ProjectDir)third_party\json-rpc-cxx-0.3.1\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -184,10 +184,10 @@ copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
       <AdditionalLibraryDirectories>plugintemplate;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>set X64DBG=$(USERPROFILE)\Downloads\Tools\x64dbg\
+      <Command>set X64DBG=$(USERPROFILE)\Downloads\tools\x64dbg\
 set X64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
+xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -205,12 +205,7 @@ copy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)"</Command>
     <ClInclude Include="plugintemplate\plugin.h" />
     <ClInclude Include="plugintemplate\pluginmain.h" />
     <ClInclude Include="x64dbghandler.hpp" />
-    <ClInclude Include="x64dbgreq.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="third_party\lz4-1.9.4\build\VS2022\liblz4\liblz4.vcxproj">
-      <Project>{9092c5cc-3e71-41b3-bf68-4a7bdd8a5476}</Project>
-    </ProjectReference>
+    <ClInclude Include="x64dbgcall.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
