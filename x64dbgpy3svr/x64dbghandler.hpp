@@ -230,6 +230,9 @@ namespace x64dbgSvrWrapper::dbgMisc {
 };
 
 namespace x64dbgSvrWrapper::dbgGui {
+    auto FocusView(int32_t win) {
+        return GuiFocusView(GUISELECTIONTYPE(win));
+    }
     auto Refresh() {
         return Script::Gui::Refresh();
     }
@@ -238,9 +241,6 @@ namespace x64dbgSvrWrapper::dbgGui {
     }
     auto MessageYesNo(const std::string& msg) {
         return Script::Gui::MessageYesNo(msg.c_str());
-    }
-    auto FocusView(int32_t win) {
-        return GuiFocusView(GUISELECTIONTYPE(win));
     }
     auto SelectionSet(int32_t win, ptr_t a, ptr_t b) {
         SELECTIONDATA select = { a, b };
@@ -320,6 +320,24 @@ namespace x64dbgSvrWrapper::dbgBookmark {
             };
         } return bookmarks;
     }
+
+	auto Get(ptr_t addr) {
+		Script::Bookmark::BookmarkInfo b{};
+		Script::Bookmark::GetInfo(addr, &b);
+		return nlohmann::json() = dbgUtils::BOOKMARK_INFO_WRAPPER{
+			b.mod,
+			b.rva,
+			b.manual
+		};
+	}
+
+	auto Set(ptr_t addr, bool manual) {
+		return Script::Bookmark::Set(addr, manual);
+	}
+
+	auto Del(ptr_t addr) {
+		return Script::Bookmark::Delete(addr);
+	}
 };
 
 namespace x64dbgSvrWrapper::dbgComment {
@@ -340,6 +358,25 @@ namespace x64dbgSvrWrapper::dbgComment {
             };
         } return comments;
     }
+
+    auto Get(ptr_t addr) {
+        Script::Comment::CommentInfo c{};
+        Script::Comment::GetInfo(addr, &c);
+        return nlohmann::json() = dbgUtils::COMMENT_INFO_WRAPPER{
+            c.mod,
+            c.rva,
+            c.text,
+            c.manual
+        };
+    }
+
+	auto Set(ptr_t addr, const std::string& text, bool manual) {
+		return Script::Comment::Set(addr, text.c_str(), manual);
+	}
+
+	auto Del(ptr_t addr) {
+		return Script::Comment::Delete(addr);
+	}
 };
 
 namespace x64dbgSvrWrapper::dbgLabel {
@@ -361,12 +398,32 @@ namespace x64dbgSvrWrapper::dbgLabel {
         } return labels;
     }
 
+    auto Get(ptr_t addr) {
+        Script::Label::LabelInfo l{};
+        Script::Label::GetInfo(addr, &l);
+        return nlohmann::json() = dbgUtils::LABEL_INFO_WRAPPER{
+            l.mod,
+            l.rva,
+            l.text,
+            l.manual
+        };
+    }
+
     auto Set(ptr_t addr, const std::string& text, bool manual, bool temporary) {
         return Script::Label::Set(addr, text.c_str(), manual, temporary);
     }
 
     auto Del(ptr_t addr) {
         return Script::Label::Delete(addr);
+    }
+
+	auto IsTemporary(ptr_t addr) {
+		return Script::Label::IsTemporary(addr);
+	}
+
+	auto FromString(const char* label) {
+		duint addr = 0;
+        return ptr_t(Script::Label::FromString(label, &addr) ? addr : 0);
     }
 };
 
@@ -389,6 +446,26 @@ namespace x64dbgSvrWrapper::dbgFunction {
             };
         } return functions;
     }
+
+	auto Get(ptr_t addr) {
+		Script::Function::FunctionInfo f{};
+		Script::Function::GetInfo(addr, &f);
+		return nlohmann::json() = dbgUtils::FUNCTION_INFO_WRAPPER{
+			f.mod,
+			f.rvaStart,
+			f.rvaEnd,
+			f.manual,
+			f.instructioncount
+		};
+	}
+
+	auto Add(ptr_t start, ptr_t end, bool manual, ptr_t instructionCount) {
+		return Script::Function::Add(start, end, manual, instructionCount);
+	}
+
+	auto Del(ptr_t addr) {
+		return Script::Function::Delete(addr);
+	}
 };
 
 namespace x64dbgSvrWrapper::dbgArgument {
@@ -410,6 +487,26 @@ namespace x64dbgSvrWrapper::dbgArgument {
             };
         } return arguments;
     }
+
+    auto Get(ptr_t addr) {
+        Script::Argument::ArgumentInfo a{};
+        Script::Argument::GetInfo(addr, &a);
+        return nlohmann::json() = dbgUtils::ARGUMENT_INFO_WRAPPER{
+            a.mod,
+            a.rvaStart,
+            a.rvaEnd,
+            a.manual,
+            a.instructioncount
+        };
+    }
+
+	auto Add(ptr_t addr, ptr_t end, bool manual, ptr_t instructionCount) {
+		return Script::Argument::Add(addr, end, manual, instructionCount);
+	}
+
+	auto Del(ptr_t addr) {
+		return Script::Argument::Delete(addr);
+	}
 };
 
 namespace x64dbgSvrWrapper::dbgModule {

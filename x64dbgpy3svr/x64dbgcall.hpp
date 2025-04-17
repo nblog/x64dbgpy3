@@ -143,16 +143,31 @@ public:
         AddHandler(dbgSymbol::GetSymbolList, {  });
 
         AddHandler(dbgBookmark::GetBookmarkList, {  });
+		AddHandler(dbgBookmark::Get, {  });
+		AddHandler(dbgBookmark::Set, {  });
+		AddHandler(dbgBookmark::Del, {  });
 
         AddHandler(dbgComment::GetCommentList, {  });
+		AddHandler(dbgComment::Get, {  });
+		AddHandler(dbgComment::Set, {  });
+		AddHandler(dbgComment::Del, {  });
 
         AddHandler(dbgLabel::GetLabelList, {  });
+		AddHandler(dbgLabel::Get, {  });
         AddHandler(dbgLabel::Set, {  });
         AddHandler(dbgLabel::Del, {  });
+        //AddHandler(dbgLabel::IsTemporary, {  });
+        //AddHandler(dbgLabel::FromString, {  });
 
         AddHandler(dbgFunction::GetFunctionList, {  });
+		AddHandler(dbgFunction::Get, {  });
+		AddHandler(dbgFunction::Add, {  });
+		AddHandler(dbgFunction::Del, {  });
 
         AddHandler(dbgArgument::GetArgumentList, {  });
+		AddHandler(dbgArgument::Get, {  });
+		AddHandler(dbgArgument::Add, {  });
+		AddHandler(dbgArgument::Del, {  });
 
         AddHandler(dbgModule::GetModuleList, {  });
         AddHandler(dbgModule::GetMainModuleInfo, {  });

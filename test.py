@@ -35,6 +35,9 @@ for bp in dbgDebug.GetBreakpointList():
         bp.hitCount,
         ', '.join(descriptor) ) )
 
+# for sym in dbgSymbol.GetSymbolList():
+#     {  }
+
 for book in dbgBookmark.GetBookmarkList():
     print( "book: {}+{:#x}".format( book.mod,  book.rva ) )
 
@@ -44,16 +47,11 @@ for note in dbgComment.GetCommentList():
 for label in dbgLabel.GetLabelList():
     print( "label: {}  {}+{:#x}".format( label.text, label.mod,  label.rva ) )
 
-
-# for sym in dbgSymbol.GetSymbolList():
-#     {  }
-
 # for func in dbgFunction.GetFunctionList():
-#     {  }
+#     print( "func: {}+{:#x} - {}+{:#x}".format( func.mod, func.rvaStart, func.mod, func.rvaEnd ) )
 
-# for argument in dbgArgument.GetArgumentList():
-#     {  }
-
+# for args in dbgArgument.GetArgumentList():
+#     print( "arg: {}+{:#x} - {}+{:#x}".format( args.mod, args.rvaStart, args.mod, args.rvaEnd ) )
 
 print( "id: {}, handle: {:#x}".format( dbgProcess.ProcessId(), dbgProcess.NativeHandle() ) )
 

@@ -11,7 +11,7 @@ class ptr_t(int):
 class size_t(int):
     '''  '''
 
-class reqBuffer:
+class RequestBuffer:
 
     @staticmethod
     def serialize(buffer:bytearray):
@@ -22,7 +22,7 @@ class reqBuffer:
         raise NotImplementedError
 
 
-class DBGUtils:
+class DBGSTRUCT:
     def __init__(self, **kwargs):
         for n in kwargs: self.__setattr__(n, kwargs[n])
 FUNCTION_NAME = lambda n: "::".join([ getattr(n, "__name__"), inspect.currentframe().f_back.f_code.co_name ])
