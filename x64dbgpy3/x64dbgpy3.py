@@ -45,27 +45,27 @@ class dbgMisc:
     @staticmethod
     def IsDebugging() -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [  ] )
-        return bool(res)
+        return bool( res )
 
     @staticmethod
     def IsRunning() -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [  ] )
-        return bool(res)
+        return bool( res )
 
     @staticmethod
     def ParseExpression(expr:str) -> ptr_t:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [ expr ] )
-        return ptr_t(res)
+        return ptr_t( res )
 
     @staticmethod
     def ResolveLabel(label:str) -> ptr_t:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [ label ] )
-        return ptr_t(res)
+        return ptr_t( res )
 
     @staticmethod
     def RemoteGetProcAddress(module:str, api:str) -> ptr_t:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [ module, api ] )
-        return ptr_t(res)
+        return ptr_t( res )
 
 class dbgGui:
     '''  '''
@@ -425,37 +425,37 @@ class dbgThread:
     @staticmethod
     def GetFirstThreadId() -> int:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgThread), [  ] )
-        return int(res)
+        return int( res )
 
     @staticmethod
     def GetActiveThreadId() -> int:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgThread), [  ] )
-        return int(res)
+        return int( res )
 
     @staticmethod
     def SetActiveThreadId(threadid:int) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgThread), [ threadid ] )
-        return bool(res)
+        return bool( res )
 
     @staticmethod
     def SuspendThreadId(threadid:int) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgThread), [ threadid ] )
-        return bool(res)
+        return bool( res )
 
     @staticmethod
     def ResumeThreadId(threadid:int) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgThread), [ threadid ] )
-        return bool(res)
+        return bool( res )
 
     @staticmethod
     def KillThread(threadid:int, code:int=0) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgThread), [ threadid, code ] )
-        return bool(res)
+        return bool( res )
 
     @staticmethod
     def CreateThread(entry:ptr_t, arg0:ptr_t=0) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgThread), [ entry, arg0 ] )
-        return bool(res)
+        return bool( res )
 
 class dbgProcess:
     '''  '''
@@ -463,12 +463,12 @@ class dbgProcess:
     @staticmethod
     def ProcessId() -> int:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgProcess), [  ] )
-        return int(res)
+        return int( res )
 
     @staticmethod
     def NativeHandle() -> ptr_t:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgProcess), [  ] )
-        return ptr_t(res)
+        return ptr_t( res )
 
 class dbgMemory:
     '''  '''
@@ -503,19 +503,7 @@ class dbgMemory:
     @staticmethod
     def ValidPtr(addr:ptr_t) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMemory), [ addr ] )
-        return bool(res)
-
-    @staticmethod
-    def Read(addr:ptr_t, size:size_t) -> bytes:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMemory), [
-            addr, size ] )
-        return RequestBuffer.deserialize(res)
-
-    @staticmethod
-    def Write(addr:ptr_t, data:bytes) -> bool:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMemory), [
-            addr, RequestBuffer.serialize(data) ] )
-        return bool(res)
+        return bool( res )
 
     @staticmethod
     def Free(addr:ptr_t) -> bool:
@@ -536,6 +524,18 @@ class dbgMemory:
     def Size(addr:ptr_t, reserved:bool=False, cache:bool=True) -> size_t:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMemory), [ addr, reserved, cache ] )
         return size_t( res )
+
+    @staticmethod
+    def Write(addr:ptr_t, data:bytes) -> bool:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMemory), [
+            addr, RequestBuffer.serialize(data) ] )
+        return bool( res )
+
+    @staticmethod
+    def Read(addr:ptr_t, size:size_t) -> bytes:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMemory), [
+            addr, size ] )
+        return RequestBuffer.deserialize( res )
 
 class dbgStack:
     '''  '''
@@ -651,17 +651,17 @@ class dbgDebug:
     @staticmethod
     def SetBreakpoint(addr:ptr_t) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr ] )
-        return bool(res)
+        return bool( res )
 
     @staticmethod
     def DeleteBreakpoint(addr:ptr_t) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr ] )
-        return bool(res)
+        return bool( res )
 
     @staticmethod
     def DisableBreakpoint(addr:ptr_t) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr ] )
-        return bool(res)
+        return bool( res )
 
     class DBGHARDWARETYPE:
         HardwareAccess, \
@@ -671,9 +671,9 @@ class dbgDebug:
     @staticmethod
     def SetHardwareBreakpoint(addr:ptr_t, hard:DBGHARDWARETYPE) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr, hard ] )
-        return bool(res)
+        return bool( res )
 
     @staticmethod
     def DeleteHardwareBreakpoint(addr:ptr_t) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr ] )
-        return bool(res)
+        return bool( res )

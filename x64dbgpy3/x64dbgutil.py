@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
 import inspect, base64, json, struct
-
 
 
 class ptr_t(int):
@@ -14,7 +12,7 @@ class size_t(int):
 class RequestBuffer:
 
     @staticmethod
-    def serialize(buffer:bytearray):
+    def serialize(buffer:bytes):
         raise NotImplementedError
 
     @staticmethod

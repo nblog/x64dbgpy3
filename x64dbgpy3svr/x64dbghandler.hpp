@@ -734,15 +734,6 @@ namespace x64dbgSvrWrapper::dbgMemory {
     auto ValidPtr(ptr_t addr) {
         return Script::Memory::IsValidPtr(addr);
     }
-    auto Read(ptr_t addr, size_t size) {
-        std::string reqbuff(size, '\00');
-        Script::Memory::Read(addr, reqbuff.data(), reqbuff.size(), 0);
-        return x64dbgSvrUtil::RequestBuffer::Serialize(reqbuff);
-    }
-    auto Write(ptr_t addr, const std::string& reqbuff) {
-        std::string buffer = x64dbgSvrUtil::RequestBuffer::Deserialize(reqbuff);
-        return Script::Memory::Write(addr, buffer.data(), buffer.size(), 0);
-    }
     auto Free(ptr_t addr) {
         return Script::Memory::RemoteFree(addr);
     }
@@ -754,6 +745,15 @@ namespace x64dbgSvrWrapper::dbgMemory {
     }
     auto Size(ptr_t addr, bool reserved, bool cache) {
         return size_t(Script::Memory::GetSize(addr, reserved, cache));
+    }
+    auto Write(ptr_t addr, const std::string& reqbuff) {
+        std::string buffer = x64dbgSvrUtil::RequestBuffer::Deserialize(reqbuff);
+        return Script::Memory::Write(addr, buffer.data(), buffer.size(), 0);
+    }
+    auto Read(ptr_t addr, size_t size) {
+        std::string reqbuff(size, '\00');
+        Script::Memory::Read(addr, reqbuff.data(), reqbuff.size(), 0);
+        return x64dbgSvrUtil::RequestBuffer::Serialize(reqbuff);
     }
 };
 

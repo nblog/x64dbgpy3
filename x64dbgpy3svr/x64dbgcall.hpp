@@ -193,12 +193,12 @@ public:
 
         AddHandler(dbgMemory::MemMaps, {  });
         AddHandler(dbgMemory::ValidPtr, {  });
-        AddHandler(dbgMemory::Read, {  });
-        AddHandler(dbgMemory::Write, {  });
         AddHandler(dbgMemory::Free, {  });
         AddHandler(dbgMemory::Alloc, {  });
         AddHandler(dbgMemory::Base, {  });
         AddHandler(dbgMemory::Size, {  });
+        AddHandler(dbgMemory::Write, {  });
+        AddHandler(dbgMemory::Read, {  });
 
         AddHandler(dbgStack::Pop, {  });
         AddHandler(dbgStack::Push, {  });
