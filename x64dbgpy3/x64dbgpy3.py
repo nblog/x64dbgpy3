@@ -6,13 +6,7 @@ from .x64dbgcall import *
 
 
 ''' HTTP REQUEST '''
-def target():
-    from os import getenv
-    HOST = getenv("X64DBGPY3_HOST", "localhost:27041")
-    try:
-        return "{}:{}".format(HOST.split(":")[0], int(HOST.split(":")[1]))
-    except: return HOST
-X64DBGCALL = RequestJsonRpc("http://" + target())
+X64DBGCALL = RequestJsonRpc("http://" + ':'.join(get_debugger_host()))
 
 
 ''' X64DBG INFORMATION '''
