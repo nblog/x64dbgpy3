@@ -4,6 +4,12 @@ x64dbgpy3 是 [x64dbg](https://x64dbg.com/) 的一个插件，通过 [HTTP-RPC](
 
 ---
 
+### x64dbgpy3
+
+为了提高使用体验，禁止Python接口中返回或者字段出现 **Any** 类型
+
+---
+
 ### 快速开始
 
 使用以下命令启动服务端：
@@ -21,12 +27,6 @@ x64dbgpy3svr [port=27041] [host=0.0.0.0]
 
 ![vscode python](screenshot/vscode%20python.png)  
 *在 VSCode 中用 Python 测试*
-
----
-
-### x64dbgpy3
-
-禁止自动推导出现 **Any** 类型
 
 ---
 
