@@ -3,6 +3,10 @@
 #include <array>
 #include <memory>
 #include <optional>
+
+#define FMT_HEADER_ONLY
+#include "third_party/fmt/include/fmt/format.h"
+
 #include "plugintemplate/plugin.h"
 #include "plugintemplate/pluginsdk/lz4/lz4.h"
 #ifdef _WIN64
@@ -11,11 +15,8 @@
 #pragma comment(lib, "pluginsdk/lz4/lz4_x86.lib")
 #endif
 
-#define FMT_HEADER_ONLY
-#include "third_party/fmt/include/fmt/format.h"
-
-#include "simdutf.cpp"
-#include "simdutf.h"
+#include "third_party/simdutf-6.5.0/singleheader/simdutf.cpp"
+#include "third_party/simdutf-6.5.0/singleheader/simdutf.h"
 
 
 namespace x64dbgSvrUtil {

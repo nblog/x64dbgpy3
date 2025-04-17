@@ -5,14 +5,6 @@
 	path = x64dbgpy3svr/third_party/fmt
 	url = https://github.com/fmtlib/fmt
 	branch = 11.1.4
-[submodule "x64dbgpy3svr/third_party/simdutf"]
-	path = x64dbgpy3svr/third_party/simdutf
-	url = https://github.com/simdutf/simdutf
-	branch = v6.5.0
-[submodule "x64dbgpy3svr/third_party/lz4"]
-	path = x64dbgpy3svr/third_party/lz4
-	url = https://github.com/lz4/lz4
-	branch = v1.10.0
 [submodule "x64dbgpy3svr/third_party/glaze"]
 	path = x64dbgpy3svr/third_party/glaze
 	url = https://github.com/stephenberry/glaze
