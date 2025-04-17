@@ -10,14 +10,15 @@ class size_t(int):
     '''  '''
 
 class RequestBuffer:
+    from lz4.block import compress, decompress
 
     @staticmethod
     def serialize(buffer:bytes):
-        raise NotImplementedError
+        return base64.b64encode(RequestBuffer.compress(buffer)).decode()
 
     @staticmethod
     def deserialize(buffer:str):
-        raise NotImplementedError
+        return RequestBuffer.decompress(base64.b64decode(buffer))
 
 
 class DBGSTRUCT:

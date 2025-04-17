@@ -14,14 +14,67 @@
 #define FMT_HEADER_ONLY
 #include "third_party/fmt/include/fmt/format.h"
 
+#include "simdutf.cpp"
+#include "simdutf.h"
+
 
 namespace x64dbgSvrUtil {
     struct RequestBuffer {
-        static const std::string Serialize(const std::string& buffer) {
-			throw std::runtime_error("Not implemented");
+        static const size_t hdr_size = sizeof(uint32_t);
+
+        static std::string Serialize(const std::vector<uint8_t>& buffer) {
+            int maxCompressedSize = LZ4_compressBound(static_cast<int>(buffer.size()));
+            std::vector<uint8_t> compressed(maxCompressedSize + hdr_size);
+            *reinterpret_cast<uint32_t*>(compressed.data()) = static_cast<uint32_t>(buffer.size());
+
+            int compressedSize = LZ4_compress(
+                reinterpret_cast<const char*>(buffer.data()),
+                reinterpret_cast<char*>(compressed.data() + hdr_size),
+                static_cast<int>(buffer.size())
+            );
+			if (compressedSize < 0) {
+				throw std::runtime_error("Compression failed");
+			}
+
+            compressed.resize(compressedSize + hdr_size);
+
+            std::vector<char> base64buffer(simdutf::base64_length_from_binary(compressed.size()));
+            simdutf::binary_to_base64(
+                reinterpret_cast<const char*>(compressed.data()),
+                compressed.size(),
+                base64buffer.data()
+            );
+
+            return std::string(base64buffer.data(), base64buffer.size());
         }
-        static const std::string Deserialize(const std::string& buffer) {
-			throw std::runtime_error("Not implemented");
+
+        static std::vector<uint8_t> Deserialize(const std::string& base64buffer) {
+            std::vector<char> compressed(simdutf::maximal_binary_length_from_base64(
+                base64buffer.data(), base64buffer.size()));
+
+            simdutf::result r = simdutf::base64_to_binary(
+                base64buffer.data(), base64buffer.size(), compressed.data());
+            if (r.error) {
+                throw std::runtime_error("Base64 decoding failed");
+            }
+
+            compressed.resize(r.count);
+
+            uint32_t originalSize = *reinterpret_cast<const uint32_t*>(compressed.data());
+            std::vector<uint8_t> decompressed(originalSize);
+
+            int decompressedSize = LZ4_decompress_safe(
+                reinterpret_cast<const char*>(compressed.data() + hdr_size),
+                reinterpret_cast<char*>(decompressed.data()),
+                static_cast<int>(compressed.size() - hdr_size),
+                static_cast<int>(decompressed.size())
+            );
+
+            if (decompressedSize < 0 || static_cast<uint32_t>(decompressedSize) != originalSize) {
+                throw std::runtime_error("Decompression failed");
+            }
+
+            return decompressed;
         }
     };
 };
@@ -746,14 +799,14 @@ namespace x64dbgSvrWrapper::dbgMemory {
     auto Size(ptr_t addr, bool reserved, bool cache) {
         return size_t(Script::Memory::GetSize(addr, reserved, cache));
     }
-    auto Write(ptr_t addr, const std::string& reqbuff) {
-        std::string buffer = x64dbgSvrUtil::RequestBuffer::Deserialize(reqbuff);
+    auto Write(ptr_t addr, const std::string& reqbuffer) {
+        std::vector<uint8_t> buffer = x64dbgSvrUtil::RequestBuffer::Deserialize(reqbuffer);
         return Script::Memory::Write(addr, buffer.data(), buffer.size(), 0);
     }
     auto Read(ptr_t addr, size_t size) {
-        std::string reqbuff(size, '\00');
-        Script::Memory::Read(addr, reqbuff.data(), reqbuff.size(), 0);
-        return x64dbgSvrUtil::RequestBuffer::Serialize(reqbuff);
+		std::vector<uint8_t> buffer(size);
+        Script::Memory::Read(addr, buffer.data(), buffer.size(), 0);
+        return x64dbgSvrUtil::RequestBuffer::Serialize(buffer);
     }
 };
 

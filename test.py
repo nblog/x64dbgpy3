@@ -99,7 +99,7 @@ for iat in dbgModule.GetImportsFromAddr( m.base ):
 
 for eat in dbgModule.GetExportsFromAddr( m.base ):
     print( "{:#x}  {}".format(
-        eat.rva, eat.name
+        eat.va, eat.name
     ) )
 
 
