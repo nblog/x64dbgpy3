@@ -205,7 +205,7 @@ xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
     <ClInclude Include="plugintemplate\plugin.h" />
     <ClInclude Include="plugintemplate\pluginmain.h" />
     <ClInclude Include="x64dbghandler.hpp" />
-    <ClInclude Include="x64dbgcall.hpp" />
+    <ClInclude Include="x64dbgbindings.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

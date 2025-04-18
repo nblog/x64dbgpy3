@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .x64dbgutil import *
-from .x64dbgcall import *
+from .x64dbgreq import *
 
 
 ''' HTTP REQUEST '''

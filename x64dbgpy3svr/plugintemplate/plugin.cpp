@@ -1,7 +1,7 @@
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include "plugin.h"
-#include <x64dbgcall.hpp>
+#include <x64dbgbindings.hpp>
 
 // Examples: https://github.com/x64dbg/x64dbg/wiki/Plugins
 // References:
