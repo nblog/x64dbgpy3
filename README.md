@@ -17,10 +17,10 @@ x64dbgpy3svr [port=27041] [host=0.0.0.0]
 
 ### Screenshots
 
-![Run Service](screenshot/run%20service.png)  
+![run](screenshot/x64dbgpy3svr.png)  
 *Running the x64dbgpy3 server*
 
-![VSCode Python Test](screenshot/vscode%20python.png)  
+![python-test](screenshot/python-test.png)  
 *Testing with Python in VSCode*
 
 ---

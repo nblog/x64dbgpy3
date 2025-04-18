@@ -22,10 +22,10 @@ x64dbgpy3svr [port=27041] [host=0.0.0.0]
 
 ### 截图
 
-![run service](screenshot/run%20service.png)  
+![run](screenshot/x64dbgpy3svr.png)  
 *运行 x64dbgpy3 服务端*
 
-![vscode python](screenshot/vscode%20python.png)  
+![python-test](screenshot/python-test.png)  
 *在 VSCode 中用 Python 测试*
 
 ---
