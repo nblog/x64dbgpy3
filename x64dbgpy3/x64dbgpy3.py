@@ -255,7 +255,7 @@ class dbgFunction:
         rvaStart:ptr_t
         rvaEnd:str
         manual:bool
-        instructioncount:ptr_t
+        instructioncount:size_t
 
     @staticmethod
     def Overlaps():
@@ -273,7 +273,7 @@ class dbgFunction:
         return dbgFunction.DBGFUNCTIONINFO(**res)
 
     @staticmethod
-    def Add(start:ptr_t, end:ptr_t, manual:bool=False, instructionCount:int=0) -> bool:
+    def Add(start:ptr_t, end:ptr_t, manual:bool=False, instructionCount:size_t=0) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgFunction), [ start, end, manual, instructionCount ] )
         return bool( res )
 
@@ -290,7 +290,7 @@ class dbgArgument:
         rvaStart:ptr_t
         rvaEnd:str
         manual:bool
-        instructioncount:ptr_t
+        instructioncount:size_t
 
     @staticmethod
     def Overlaps():
@@ -308,7 +308,7 @@ class dbgArgument:
         return dbgArgument.DBGARGUMENTINFO(**res)
 
     @staticmethod
-    def Add(start:ptr_t, end:ptr_t, manual:bool=False, instructionCount:int=0) -> bool:
+    def Add(start:ptr_t, end:ptr_t, manual:bool=False, instructionCount:size_t=0) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgArgument), [ start, end, manual, instructionCount ] )
         return bool( res )
 

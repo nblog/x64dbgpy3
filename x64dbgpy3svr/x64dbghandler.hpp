@@ -83,6 +83,7 @@ namespace x64dbgSvrUtil {
 
 namespace x64dbgSvrWrapper {
     using ptr_t = duint;
+	using size_t = duint;
 
     static void rtcmsgbox(const std::string& msg) {
         return Script::Gui::Message(msg.c_str());
@@ -128,7 +129,7 @@ namespace x64dbgSvrWrapper::dbgUtils {
         ptr_t rvaStart;
         ptr_t rvaEnd;
         bool manual;
-        ptr_t instructioncount;
+        size_t instructioncount;
     };
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ARGUMENT_INFO_WRAPPER, \
         mod, rvaStart, rvaEnd, manual, instructioncount)
@@ -138,7 +139,7 @@ namespace x64dbgSvrWrapper::dbgUtils {
         ptr_t rvaStart;
         ptr_t rvaEnd;
         bool manual;
-        ptr_t instructioncount;
+        size_t instructioncount;
     };
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FUNCTION_INFO_WRAPPER, \
         mod, rvaStart, rvaEnd, manual, instructioncount)
@@ -513,7 +514,7 @@ namespace x64dbgSvrWrapper::dbgFunction {
 		};
 	}
 
-	auto Add(ptr_t start, ptr_t end, bool manual, ptr_t instructionCount) {
+	auto Add(ptr_t start, ptr_t end, bool manual, size_t instructionCount) {
 		return Script::Function::Add(start, end, manual, instructionCount);
 	}
 
@@ -554,7 +555,7 @@ namespace x64dbgSvrWrapper::dbgArgument {
         };
     }
 
-	auto Add(ptr_t addr, ptr_t end, bool manual, ptr_t instructionCount) {
+	auto Add(ptr_t addr, ptr_t end, bool manual, size_t instructionCount) {
 		return Script::Argument::Add(addr, end, manual, instructionCount);
 	}
 
