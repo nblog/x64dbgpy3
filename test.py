@@ -110,9 +110,10 @@ for t in dbgThread.GetThreadList():
 
 
 ''' SHELLCODE '''
-PAYLOAD = open("test\\BINMSG.BIN", "rb").read()
-remoteaddr = dbgMemory.Alloc( 4096 )
-dbgMemory.Write( remoteaddr, PAYLOAD ); dbgThread.CreateThread( remoteaddr, 0 )
+if dbgMisc.IsRunning():
+    PAYLOAD = open("test\\BINMSG.BIN", "rb").read()
+    remoteaddr = dbgMemory.Alloc( 4096 )
+    dbgMemory.Write( remoteaddr, PAYLOAD ); dbgThread.CreateThread( remoteaddr, 0 )
 
 
 ''' FLIRT '''

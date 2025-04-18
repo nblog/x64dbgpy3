@@ -15,7 +15,7 @@ x64dbgpy3 是 [x64dbg](https://x64dbg.com/) 的一个插件，通过 [HTTP-RPC](
 使用以下命令启动服务端：
 
 ```sh
-x64dbgpy3svr [port=27041] [host=0.0.0.0]
+x64dbgpy3svr [port=27041],[host=0.0.0.0]
 ```
 
 ---

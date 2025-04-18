@@ -10,7 +10,7 @@ Contributions are welcome! Please see our [Pull Requests](https://github.com/nbl
 Start the server with the following command:
 
 ```sh
-x64dbgpy3svr [port=27041] [host=0.0.0.0]
+x64dbgpy3svr [port=27041],[host=0.0.0.0]
 ```
 
 ---
