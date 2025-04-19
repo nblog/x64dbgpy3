@@ -124,6 +124,19 @@ namespace x64dbgSvrWrapper::dbgUtils {
         type, addr, enabled, singleshoot, active, name, mod, hitCount,
         breakCondition, logCondition, commandCondition, logText, commandText)
 
+    struct XREF_RECORD_WRAPPER {
+		ptr_t addr;
+		int32_t type; /* XREFTYPE */
+	};
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(XREF_RECORD_WRAPPER, \
+		addr, type)
+    struct XREF_INFO_WRAPPER {
+		size_t refcount;
+		std::vector<XREF_RECORD_WRAPPER> xrefs;
+    };
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(XREF_INFO_WRAPPER, \
+		refcount, xrefs)
+
     struct ARGUMENT_INFO_WRAPPER {
         std::string mod;
         ptr_t rvaStart;
@@ -269,6 +282,11 @@ namespace x64dbgSvrWrapper::dbgMisc {
     auto IsRunning() {
         return DbgIsRunning();
     }
+
+	auto GetStringAt(ptr_t addr) {
+		std::string text(MAX_STRING_SIZE, '\0');
+        return DbgGetStringAt(addr, text.data()) ? text : std::string();
+	}
 
     auto ParseExpression(const std::string& expr) {
         duint v = 0;
@@ -561,6 +579,43 @@ namespace x64dbgSvrWrapper::dbgArgument {
 
 	auto Del(ptr_t addr) {
 		return Script::Argument::Delete(addr);
+	}
+};
+
+namespace x64dbgSvrWrapper::dbgXref {
+	auto GetCountAt(ptr_t addr) {
+		return DbgGetXrefCountAt(addr);
+	}
+	auto GetTypeAt(ptr_t addr) {
+		return DbgGetXrefTypeAt(addr);
+	}
+    auto Get(ptr_t addr) {
+        nlohmann::json references;
+
+        XREF_INFO xref{};
+
+		if (!DbgXrefGet(addr, &xref))
+            return nlohmann::json();
+
+        for (size_t i = 0; i < xref.refcount; i++) {
+            references[i] = dbgUtils::XREF_RECORD_WRAPPER{
+                xref.references[i].addr,
+                xref.references[i].type
+            };
+        }
+
+        BridgeFree(xref.references);
+
+        return nlohmann::json() = dbgUtils::XREF_INFO_WRAPPER{
+            xref.refcount,
+            references,
+        };
+    }
+	auto Add(ptr_t addr, ptr_t from) {
+		return DbgXrefAdd(addr, from);
+	}
+	auto DelAll(ptr_t addr) {
+		return DbgXrefDelAll(addr);
 	}
 };
 
