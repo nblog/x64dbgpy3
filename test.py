@@ -117,23 +117,19 @@ if dbgMisc.IsRunning():
 
 
 ''' FLIRT '''
-from pyflirt.signature import idasig
-from pyflirt.flirt import matcher
+from pyflirt.utils import *
+from pyflirt.pyflirt import *
 
 # Search for code sections
 sec = dbgModule.GetMainModuleSectionList()[0]
 
-# Pull memory, create matcher
-m = matcher(sec.addr, sec.size)
+data = utils.read(sec.addr, sec.size)
 
-# vs2022 signature
-sign = idasig(
-    open("test\\{}\\VisualStudio2022.sig".format( 
-    "64" if (X64DBGINFO.x64dbg) else "32"), "rb").read())
-
-for fn in m.match(sign):
-    dbgLabel.Set( fn.addr, fn.name )
-    print( "found: {:#x}  {}".format( fn.addr, fn.name ) )
-
+header, root_node = load_flirt_file(
+    "test\\{}\\VisualStudio2022.sig".format(X64DBGINFO.x64dbg and "64" or "32"))
+matches = scan_buffer_with_flirt(root_node, data, sec.addr)
+for addr, func in matches:
+    print("found: {:#x}  {}".format(addr, func.name))
+    dbgLabel.Set( addr, func.name )
 
 ''' BYE '''
