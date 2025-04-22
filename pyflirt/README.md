@@ -1,27 +1,22 @@
+# pyflirt for x64dbgpy3
 
-## Flirt
-i simply converted `mokhdzanifaeq/pyflirt` to python3 and combined it into this project.
+This directory contains a Python 3 port of the `pyflirt` library, originally developed by `mokhdzanifaeq`. It has been integrated into the `x64dbgpy3` project to provide FLIRT signature matching capabilities.
 
-if you use `pyflirt`, you need to install `pip install capstone` separately.
+## Signature Databases
 
+Here are some resources for finding FLIRT signature files (`.sig`):
 
-## signatures
-[rizin-sigdb](https://github.com/rizinorg/sigdb): Rizin Signature Database
+*   [rizin-sigdb](https://github.com/rizinorg/sigdb): Rizin Signature Database
+*   [flirt_signatures](https://github.com/angr/flirt_signatures): Signatures used by the angr framework
+*   [FLIRTDB](https://github.com/Maktm/FLIRTDB): A community-driven collection of IDA FLIRT signature files
+*   [sig-database](https://github.com/push0ebp/sig-database): IDA FLIRT Signature Database by push0ebp
 
-[flirt_signatures](https://github.com/angr/flirt_signatures): angr Signature
+## Related Tools & Libraries
 
-[FLIRTDB](https://github.com/Maktm/FLIRTDB): A community driven collection of IDA FLIRT signature files
-
-[sig-database](https://github.com/push0ebp/sig-database): IDA FLIRT Signature Database
-
-
-## Reference
-[rz-sign](https://github.com/rizinorg/rizin/releases/tag/v0.4.0): for converting a library to a `.sig` file.
-
-[pyflirt](https://github.com/williballenthin/lancelot/tree/master/pyflirt): another python flirt library.
-
+*   [rz-sign](https://github.com/rizinorg/rizin/releases/tag/v0.4.0): A tool from the Rizin framework for creating `.sig` files from library files.
+*   [pyflirt (lancelot)](https://github.com/williballenthin/lancelot/tree/master/pyflirt): Another Python implementation of FLIRT signature matching, part of the lancelot project.
 
 ## Credits
-[mokhdzanifaeq/pyflirt](https://github.com/mokhdzanifaeq/pyflirt)
 
-[thebabush/nampa](https://github.com/thebabush/nampa)
+*   **Original pyflirt (Python 2):** [mokhdzanifaeq/pyflirt](https://github.com/mokhdzanifaeq/pyflirt)
+*   **Signature Parsing Logic:** [thebabush/nampa](https://github.com/thebabush/nampa) (Used as a reference or basis for parts of the parsing logic)
