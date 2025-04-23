@@ -680,10 +680,10 @@ class dbgDebug:
             bp_none, bp_normal, bp_hardware = 0, 1, 2
             def __str__(self):
                 return { 
-                    0:"none", 
-                    1:"soft", 
-                    2:"hard" 
-                }.get(self.value, "unknown").lower()
+                    0:"NONE", 
+                    1:"SOFT", 
+                    2:"HARDWARE" 
+                }.get(self.value, "UNKNOWN").lower()
         type:BPXTYPE
         addr:ptr_t
         enabled:bool
@@ -725,10 +725,10 @@ class dbgDebug:
         HardwareExecute = 0, 1, 2
         def __str__(self):
             return { 
-                0:"access", 
-                1:"write", 
-                2:"execute" 
-            }.get(self.value, "unknown").lower()
+                0:"ACCESS", 
+                1:"WRITE", 
+                2:"EXECUTE" 
+            }.get(self.value, "UNKNOWN").lower()
 
     @staticmethod
     def SetHardwareBreakpoint(addr:ptr_t, hard:DBGHARDWARETYPE) -> bool:
