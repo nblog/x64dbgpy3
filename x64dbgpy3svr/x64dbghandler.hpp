@@ -501,9 +501,9 @@ namespace x64dbgSvrWrapper::dbgLabel {
 		return Script::Label::IsTemporary(addr);
 	}
 
-	auto FromString(const char* label) {
+	auto FromString(const std::string& label) {
 		duint addr = 0;
-        return ptr_t(Script::Label::FromString(label, &addr) ? addr : 0);
+        return ptr_t(Script::Label::FromString(label.c_str(), &addr) ? addr : 0);
     }
 };
 

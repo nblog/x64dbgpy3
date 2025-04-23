@@ -170,9 +170,9 @@ public:
 		AddHandler(dbgArgument::Add, {  });
 		AddHandler(dbgArgument::Del, {  });
 
-		AddHandler(dbgXref::Get, {  });
-		AddHandler(dbgXref::Add, {  });
-		AddHandler(dbgXref::DelAll, {  });
+        AddHandler(dbgXref::Get, {  });
+        AddHandler(dbgXref::Add, {  });
+        AddHandler(dbgXref::DelAll, {  });
         AddHandler(dbgXref::GetCountAt, {  });
         AddHandler(dbgXref::GetTypeAt, {  });
 
