@@ -37,7 +37,7 @@ class dbgMisc:
     '''  '''
 
     class DBGWATCHINFO(DBGSTRUCT):
-        class WATCHVARTYPE(enum.IntEnum):
+        class WATCHVARTYPE(IntEnum):
             UINT, INT, FLOAT, ASCII, UNICODE, INVALID = map(int, range(0, 6))
             def __str__(self):
                 return { 
@@ -48,7 +48,7 @@ class dbgMisc:
                     4:"UNICODE", 
                     5:"INVALID" 
                 }.get(self.value, "UNKNOWN").lower()
-        class WATCHDOGMODE(enum.IntEnum):
+        class WATCHDOGMODE(IntEnum):
             DISABLED, ISTRUE, ISFALSE, CHANGED, UNCHANGED = map(int, range(0, 5))
             def __str__(self):
                 return { 
@@ -116,7 +116,7 @@ class dbgMisc:
 class dbgGui:
     '''  '''
 
-    class DBGGUIWINDOW(enum.IntEnum):
+    class DBGGUIWINDOW(IntEnum):
         DisassemblyWindow, \
         DumpWindow, \
         StackWindow, \
@@ -137,7 +137,7 @@ class dbgGui:
 
     @staticmethod
     def FocusView(win:DBGGUIWINDOW) -> None:
-        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [ win ] )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [ win.value ] )
 
     @staticmethod
     def Refresh() -> None:
@@ -154,12 +154,12 @@ class dbgGui:
 
     @staticmethod
     def SelectionSet(win:DBGGUIWINDOW, start:ptr_t, end:ptr_t) -> bool:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [ win, start, end ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [ win.value, start, end ] )
         return bool( res )
 
     @staticmethod
     def SelectionGet(win:DBGGUIWINDOW) -> tuple[ptr_t, ptr_t]:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [ win ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [ win.value ] )
         return ( ptr_t(res[0]), ptr_t(res[1]) )
 
 class dbgPattern:
@@ -178,7 +178,7 @@ class dbgAssembler:
         return bool( res )
 
     class DBGDISASMINFO(DBGSTRUCT):
-        class INSTRUCTIONTYPE(enum.IntEnum):
+        class INSTRUCTIONTYPE(IntFlag):
             VALUE, MEMORY, ADDRESS = 1, 2, 4
         type:INSTRUCTIONTYPE
         addr:ptr_t
@@ -196,7 +196,7 @@ class dbgSymbol:
     '''  '''
 
     class DBGSYMBOLINFO(DBGSTRUCT):
-        class DBGSYMBOLTYPE(enum.IntEnum):
+        class DBGSYMBOLTYPE(IntEnum):
             FUNCTION, IMPORT, EXPORT = 0, 1, 2
         mod:str
         rva:ptr_t
@@ -609,18 +609,19 @@ class dbgStack:
 class dbgRegister:
     '''  '''
 
-    class DBGFLAGENUM:
+    class DBGFLAGENUM(IntEnum):
+        ''' FLAGS '''
         ZF, OF, CF, PF, SF, TF, AF, DF, IF = \
             0, 1, 2, 3, 4, 5, 6, 7, 8
 
     @staticmethod
     def GetFlag(flag:DBGFLAGENUM) -> ptr_t:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ flag ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ flag.value ] )
         return ptr_t( res )
 
     @staticmethod
     def SetFlag(flag:DBGFLAGENUM, value:ptr_t) -> ptr_t:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ flag, value ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ flag.value, value ] )
         return ptr_t( res )
 
     class DBGREGISTERENUM_WIN32:
@@ -641,7 +642,7 @@ class dbgRegister:
         R14, R14D, R14W, R14B, R15, R15D, R15W, R15B = \
             map(int, range(31, 76))
 
-    class DBGREGISTERENUM(DBGREGISTERENUM_WIN32, DBGREGISTERENUM_WIN64):
+    class DBGREGISTERENUM(DBGREGISTERENUM_WIN32, DBGREGISTERENUM_WIN64, IntEnum):
         DR0, DR1, DR2, DR3, DR6, DR7 = \
             map(int, range(0, 6))
 
@@ -650,12 +651,12 @@ class dbgRegister:
 
     @staticmethod
     def GetRegister(reg:DBGREGISTERENUM) -> ptr_t:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ reg ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ reg.value ] )
         return ptr_t( res )
 
     @staticmethod
     def SetRegister(reg:DBGREGISTERENUM, value:ptr_t) -> ptr_t:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ reg, value ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ reg.value, value ] )
         return ptr_t( res )
 
 class dbgDebug:
@@ -686,13 +687,17 @@ class dbgDebug:
         return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
 
     class DBGBREAKPOINTINFO(DBGSTRUCT):
-        class BPXTYPE(enum.IntEnum):
-            bp_none, bp_normal, bp_hardware = 0, 1, 2
+        class BPXTYPE(IntFlag):
+            bp_none, bp_normal, bp_hardware, bp_memory, bp_dll, bp_exception = \
+                0, 1, 2, 4, 8, 16
             def __str__(self):
                 return { 
                     0:"NONE", 
-                    1:"SOFT", 
-                    2:"HARDWARE" 
+                    1:"NORMAL", 
+                    2:"HARDWARE", 
+                    4:"MEMORY", 
+                    8:"DLL", 
+                    16:"EXCEPTION" 
                 }.get(self.value, "UNKNOWN").lower()
         type:BPXTYPE
         addr:ptr_t
@@ -710,7 +715,7 @@ class dbgDebug:
 
     @staticmethod
     def GetBreakpointList(bpxtype:DBGBREAKPOINTINFO.BPXTYPE=DBGBREAKPOINTINFO.BPXTYPE.bp_none) -> list[DBGBREAKPOINTINFO]:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ bpxtype ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ bpxtype.value ] )
         if (not res): return [ ]
         return [ dbgDebug.DBGBREAKPOINTINFO(**i) for i in res ]
 
@@ -729,7 +734,7 @@ class dbgDebug:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr ] )
         return bool( res )
 
-    class DBGHARDWARETYPE(enum.IntEnum):
+    class DBGHARDWARETYPE(IntEnum):
         HardwareAccess, \
         HardwareWrite, \
         HardwareExecute = 0, 1, 2
@@ -742,7 +747,7 @@ class dbgDebug:
 
     @staticmethod
     def SetHardwareBreakpoint(addr:ptr_t, hard:DBGHARDWARETYPE) -> bool:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr, hard ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr, hard.value ] )
         return bool( res )
 
     @staticmethod

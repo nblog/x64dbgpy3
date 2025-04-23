@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, enum, inspect, base64
+import os, functools, inspect, base64
+from enum import IntEnum, IntFlag
+from typing import List, Tuple, Dict, Union, Optional, Callable, Any, get_args
 
 
 class ptr_t(int):
@@ -36,3 +38,20 @@ def get_debugger_host():
     except ValueError:
         port = 27041
     return host, str(port)
+
+
+def jsonrpc(func:Callable) -> Callable:
+    """Decorator to handle JSON-RPC calls for x64dbgpy3 methods."""
+    sig = inspect.signature(func)
+    return_annotation = sig.return_annotation
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        # Get class and function name for the JSON-RPC method
+        qualname_parts = func.__qualname__.split('.')
+        if len(qualname_parts) != 2:
+            raise TypeError(f"Decorator @jsonrpc expected to be used on a method within a class, got {func.__qualname__}")
+        class_name, func_name = qualname_parts
+        method_name = f"{class_name}::{func_name}"
+
+    return wrapper
