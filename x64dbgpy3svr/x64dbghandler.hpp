@@ -590,12 +590,6 @@ namespace x64dbgSvrWrapper::dbgArgument {
 };
 
 namespace x64dbgSvrWrapper::dbgXref {
-	auto GetCountAt(ptr_t addr) {
-		return DbgGetXrefCountAt(addr);
-	}
-	auto GetTypeAt(ptr_t addr) {
-		return DbgGetXrefTypeAt(addr);
-	}
     auto Get(ptr_t addr) {
         nlohmann::json references;
 
@@ -624,6 +618,12 @@ namespace x64dbgSvrWrapper::dbgXref {
 	auto DelAll(ptr_t addr) {
 		return DbgXrefDelAll(addr);
 	}
+    auto GetCountAt(ptr_t addr) {
+        return DbgGetXrefCountAt(addr);
+    }
+    auto GetTypeAt(ptr_t addr) {
+        return DbgGetXrefTypeAt(addr);
+    }
 };
 
 namespace x64dbgSvrWrapper::dbgModule {

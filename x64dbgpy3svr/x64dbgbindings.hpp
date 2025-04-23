@@ -124,6 +124,7 @@ public:
 
         AddHandler(dbgMisc::IsDebugging, {  });
         AddHandler(dbgMisc::IsRunning, {  });
+		AddHandler(dbgMisc::GetStringAt, {  });
         AddHandler(dbgMisc::ParseExpression, {  });
         AddHandler(dbgMisc::RemoteGetProcAddress, {  });
         AddHandler(dbgMisc::ResolveLabel, {  });
@@ -156,8 +157,8 @@ public:
 		AddHandler(dbgLabel::Get, {  });
         AddHandler(dbgLabel::Set, {  });
         AddHandler(dbgLabel::Del, {  });
-        //AddHandler(dbgLabel::IsTemporary, {  });
-        //AddHandler(dbgLabel::FromString, {  });
+        AddHandler(dbgLabel::IsTemporary, {  });
+        AddHandler(dbgLabel::FromString, {  });
 
         AddHandler(dbgFunction::GetFunctionList, {  });
 		AddHandler(dbgFunction::Get, {  });
@@ -168,6 +169,12 @@ public:
 		AddHandler(dbgArgument::Get, {  });
 		AddHandler(dbgArgument::Add, {  });
 		AddHandler(dbgArgument::Del, {  });
+
+		AddHandler(dbgXref::Get, {  });
+		AddHandler(dbgXref::Add, {  });
+		AddHandler(dbgXref::DelAll, {  });
+        AddHandler(dbgXref::GetCountAt, {  });
+        AddHandler(dbgXref::GetTypeAt, {  });
 
         AddHandler(dbgModule::GetModuleList, {  });
         AddHandler(dbgModule::GetMainModuleInfo, {  });
@@ -209,6 +216,7 @@ public:
         AddHandler(dbgRegister::SetRegister, {  });
 
         AddHandler(dbgDebug::Stop, {  });
+		AddHandler(dbgDebug::Pause, {  });
         AddHandler(dbgDebug::Run, {  });
         AddHandler(dbgDebug::StepIn, {  });
         AddHandler(dbgDebug::StepOver, {  });
