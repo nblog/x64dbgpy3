@@ -23,15 +23,15 @@ class dbgLogging:
 
     @staticmethod
     def logclear() -> None:
-        X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgLogging), [  ], True )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgLogging), [  ] )
 
     @staticmethod
     def logputs(*values) -> None:
-        X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgLogging), [ ''.join([str(i) for i in values]) ], True )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgLogging), [ ''.join([str(i) for i in values]) ] )
 
     @staticmethod
     def logprint(*values) -> None:
-        X64DBGCALL.x64dbg_call(FUNCTION_NAME(dbgLogging), [ ''.join([str(i) for i in values]) ], True)
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgLogging), [ ''.join([str(i) for i in values]) ] )
 
 class dbgMisc:
     '''  '''
@@ -45,6 +45,11 @@ class dbgMisc:
     def IsRunning() -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [  ] )
         return bool( res )
+
+    @staticmethod
+    def GetStringAt(addr:ptr_t) -> str:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [ addr ] )
+        return str( res )
 
     @staticmethod
     def ParseExpression(expr:str) -> ptr_t:
@@ -75,15 +80,15 @@ class dbgGui:
 
     @staticmethod
     def FocusView(win:DBGGUIWINDOW) -> None:
-        X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [ win ], True )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [ win ] )
 
     @staticmethod
     def Refresh() -> None:
-        X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [  ], True )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [  ] )
 
     @staticmethod
     def Message(message:str) -> None:
-        X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [ message ], True )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgGui), [ message ] )
 
     @staticmethod
     def MessageYesNo(message:str) -> bool:
@@ -105,7 +110,7 @@ class dbgPattern:
 
     @staticmethod
     def FindPattern(addr:ptr_t, pattern:str) -> None:
-        X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgPattern), [ addr, pattern ], True )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgPattern), [ addr, pattern ] )
 
 class dbgAssembler:
     '''  '''
@@ -601,23 +606,27 @@ class dbgDebug:
 
     @staticmethod
     def Stop() -> None:
-        X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ], True )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
 
     @staticmethod
     def Run() -> None:
-        X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ], True )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
+
+    @staticmethod
+    def Pause() -> None:
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
 
     @staticmethod
     def StepIn() -> None:
-        X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ], True )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
 
     @staticmethod
     def StepOver() -> None:
-        X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ], True )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
 
     @staticmethod
     def StepOut() -> None:
-        X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ], True )
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
 
     class DBGBREAKPOINTINFO(DBGSTRUCT):
         class BPXTYPE:
