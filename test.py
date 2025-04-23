@@ -14,7 +14,7 @@ if (not dbgMisc.IsDebugging()):
 
 
 for bp in dbgDebug.GetBreakpointList():
-    descriptor = []
+    descriptor = [ ]
     if (bp.breakCondition):
         descriptor.append( "breakif({})".format(bp.breakCondition) )
     if (bp.logText):
@@ -30,7 +30,7 @@ for bp in dbgDebug.GetBreakpointList():
 
     print( "bp: {}  {:#x}  {}  {}  {}  {}".format(
         ( "soft" if (1 == bp.type) else ( "hard" if (2 == bp.type) else "none?" ) ),
-        bp.addr, bp.mod, 
+        bp.addr, "<{}.{}>".format( bp.mod, dbgMisc.GetLabelAt(bp.addr) ), 
         ( "disable" if not bp.enabled else ( "enable" if not bp.singleshoot else "once" ) ),
         bp.hitCount,
         ', '.join(descriptor) ) )

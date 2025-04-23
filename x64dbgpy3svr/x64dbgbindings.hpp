@@ -124,10 +124,13 @@ public:
 
         AddHandler(dbgMisc::IsDebugging, {  });
         AddHandler(dbgMisc::IsRunning, {  });
+		AddHandler(dbgMisc::GetLabelAt, {  });
+		AddHandler(dbgMisc::GetCommentAt, {  });
 		AddHandler(dbgMisc::GetStringAt, {  });
+		AddHandler(dbgMisc::GetWatchList, {  });
         AddHandler(dbgMisc::ParseExpression, {  });
-        AddHandler(dbgMisc::RemoteGetProcAddress, {  });
         AddHandler(dbgMisc::ResolveLabel, {  });
+        AddHandler(dbgMisc::RemoteGetProcAddress, {  });
 
         AddHandler(dbgGui::Refresh, {  });
         AddHandler(dbgGui::Message, {  });
@@ -175,6 +178,12 @@ public:
         AddHandler(dbgXref::DelAll, {  });
         AddHandler(dbgXref::GetCountAt, {  });
         AddHandler(dbgXref::GetTypeAt, {  });
+
+		AddHandler(dbgScript::Load, {  });
+        AddHandler(dbgScript::Unload, {  });
+		AddHandler(dbgScript::Run, {  });
+		AddHandler(dbgScript::Abort, {  });
+		AddHandler(dbgScript::CmdExec, {  });
 
         AddHandler(dbgModule::GetModuleList, {  });
         AddHandler(dbgModule::GetMainModuleInfo, {  });

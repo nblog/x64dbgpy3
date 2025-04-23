@@ -124,6 +124,19 @@ namespace x64dbgSvrWrapper::dbgUtils {
         type, addr, enabled, singleshoot, active, name, mod, hitCount,
         breakCondition, logCondition, commandCondition, logText, commandText)
 
+    struct WATCH_INFO_WRAPPER {
+		std::string WatchName;
+		std::string Expression;
+		uint32_t window;
+		uint32_t id;
+		int32_t varType; /* WATCHVARTYPE */
+		int32_t watchdogMode; /* WATCHDOGMODE */
+		ptr_t value;
+		bool watchdogTriggered;
+	};
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(WATCH_INFO_WRAPPER, \
+		WatchName, Expression, window, id, varType, watchdogMode, value, watchdogTriggered)
+
     struct XREF_RECORD_WRAPPER {
 		ptr_t addr;
 		int32_t type; /* XREFTYPE */
@@ -286,9 +299,41 @@ namespace x64dbgSvrWrapper::dbgMisc {
         return DbgIsRunning();
     }
 
+    auto GetLabelAt(ptr_t addr) {
+        char label[MAX_LABEL_SIZE] = "";
+        return DbgGetLabelAt(addr, SEG_DEFAULT, label) ? label : std::string();
+    }
+
+	auto GetCommentAt(ptr_t addr) {
+		char comment[MAX_COMMENT_SIZE] = "";
+		return DbgGetCommentAt(addr, comment) ? comment : std::string();
+	}
+
 	auto GetStringAt(ptr_t addr) {
-		std::string text(MAX_STRING_SIZE, '\0');
-        return DbgGetStringAt(addr, text.data()) ? text : std::string();
+        char string[MAX_STRING_SIZE] = "";
+        return DbgGetStringAt(addr, string) ? string : std::string();
+	}
+
+	auto GetWatchList() {
+		nlohmann::json watches;
+
+        BridgeList<WATCHINFO> list;
+
+		if (!DbgGetWatchList(&list))
+			return watches;
+
+		for (int i = 0; i < list.Count(); i++) {
+			watches[i] = dbgUtils::WATCH_INFO_WRAPPER{
+				list[i].WatchName,
+				list[i].Expression,
+				list[i].window,
+				list[i].id,
+				list[i].varType,
+				list[i].watchdogMode,
+				list[i].value,
+				list[i].watchdogTriggered
+			};
+		} return watches;
 	}
 
     auto ParseExpression(const std::string& expr) {
@@ -296,12 +341,12 @@ namespace x64dbgSvrWrapper::dbgMisc {
         return Script::Misc::ParseExpression(expr.c_str(), &v) ? v : 0;
     }
 
-    auto RemoteGetProcAddress(const std::string& m, const std::string& a) {
-        return Script::Misc::RemoteGetProcAddress(m.c_str(), a.c_str());
-    }
-
     auto ResolveLabel(const std::string& l) {
         return Script::Misc::ResolveLabel(l.c_str());
+    }
+
+    auto RemoteGetProcAddress(const std::string& m, const std::string& a) {
+        return Script::Misc::RemoteGetProcAddress(m.c_str(), a.c_str());
     }
 };
 
@@ -624,6 +669,29 @@ namespace x64dbgSvrWrapper::dbgXref {
     auto GetTypeAt(ptr_t addr) {
         return DbgGetXrefTypeAt(addr);
     }
+};
+
+namespace x64dbgSvrWrapper::dbgScript {
+	auto Load(const std::string& filename) {
+		DbgScriptLoad(filename.c_str());
+		return nlohmann::json();
+	}
+	auto Unload() {
+		DbgScriptUnload();
+		return nlohmann::json();
+	}
+	auto Run(int destline) {
+		DbgScriptRun(destline);
+		return nlohmann::json();
+	}
+	auto Abort() {
+		DbgScriptAbort();
+		return nlohmann::json();
+	}
+	auto CmdExec(const std::string& command) {
+		DbgScriptCmdExec(command.c_str());
+		return nlohmann::json();
+	}
 };
 
 namespace x64dbgSvrWrapper::dbgModule {

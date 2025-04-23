@@ -36,6 +36,20 @@ class dbgLogging:
 class dbgMisc:
     '''  '''
 
+    class DBGWATCHINFO(DBGSTRUCT):
+        class WATCHVARTYPE:
+            UINT, INT, FLOAT, ASCII, UNICODE, INVALID = map(int, range(0, 6))
+        class WATCHDOGMODE:
+            DISABLED, ISTRUE, ISFALSE, CHANGED, UNCHANGED = map(int, range(0, 5))
+        name:str
+        expression:str
+        window:int
+        id:int
+        varType:WATCHVARTYPE
+        watchdogMode:WATCHDOGMODE
+        value:ptr_t
+        watchdogTriggered:bool
+
     @staticmethod
     def IsDebugging() -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [  ] )
@@ -47,9 +61,25 @@ class dbgMisc:
         return bool( res )
 
     @staticmethod
+    def GetLabelAt(addr:ptr_t) -> str:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [ addr ] )
+        return str( res )
+
+    @staticmethod
+    def GetCommentAt(addr:ptr_t) -> str:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [ addr ] )
+        return str( res )
+
+    @staticmethod
     def GetStringAt(addr:ptr_t) -> str:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [ addr ] )
         return str( res )
+
+    @staticmethod
+    def GetWatchList() -> list[DBGWATCHINFO]:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [  ] )
+        if (not res): return [ ]
+        return [ dbgMisc.DBGWATCHINFO(**i) for i in res ]
 
     @staticmethod
     def ParseExpression(expr:str) -> ptr_t:
