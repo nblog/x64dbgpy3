@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, inspect, base64
+import os, enum, inspect, base64
 
 
 class ptr_t(int):

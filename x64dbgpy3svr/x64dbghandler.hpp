@@ -319,8 +319,7 @@ namespace x64dbgSvrWrapper::dbgMisc {
 
         BridgeList<WATCHINFO> list;
 
-		if (!DbgGetWatchList(&list))
-			return watches;
+        DbgGetWatchList(&list);
 
 		for (int i = 0; i < list.Count(); i++) {
 			watches[i] = dbgUtils::WATCH_INFO_WRAPPER{
@@ -413,8 +412,7 @@ namespace x64dbgSvrWrapper::dbgSymbol {
 
         BridgeList<Script::Symbol::SymbolInfo> list;
 
-        if (!Script::Symbol::GetList(&list))
-            return symbols;
+        Script::Symbol::GetList(&list);
 
         for (int i = 0; i < list.Count(); i++) {
             symbols[i] = dbgUtils::SYMBOL_INFO_WRAPPER{
@@ -434,8 +432,7 @@ namespace x64dbgSvrWrapper::dbgBookmark {
 
         BridgeList<Script::Bookmark::BookmarkInfo> list;
 
-        if (!Script::Bookmark::GetList(&list))
-            return bookmarks;
+        Script::Bookmark::GetList(&list);
 
         for (int i = 0; i < list.Count(); i++) {
             bookmarks[i] = dbgUtils::BOOKMARK_INFO_WRAPPER{
@@ -471,8 +468,7 @@ namespace x64dbgSvrWrapper::dbgComment {
 
         BridgeList<Script::Comment::CommentInfo> list;
 
-        if (!Script::Comment::GetList(&list))
-            return comments;
+        Script::Comment::GetList(&list);
 
         for (int i = 0; i < list.Count(); i++) {
             comments[i] = dbgUtils::COMMENT_INFO_WRAPPER{
@@ -510,8 +506,7 @@ namespace x64dbgSvrWrapper::dbgLabel {
 
         BridgeList<Script::Label::LabelInfo> list;
 
-        if (!Script::Label::GetList(&list))
-            return labels;
+        Script::Label::GetList(&list);
 
         for (int i = 0; i < list.Count(); i++) {
             labels[i] = dbgUtils::LABEL_INFO_WRAPPER{
@@ -558,8 +553,7 @@ namespace x64dbgSvrWrapper::dbgFunction {
 
         BridgeList<Script::Function::FunctionInfo> list;
 
-        if (!Script::Function::GetList(&list))
-            return functions;
+        Script::Function::GetList(&list);
 
         for (int i = 0; i < list.Count(); i++) {
             functions[i] = dbgUtils::FUNCTION_INFO_WRAPPER{
@@ -599,8 +593,7 @@ namespace x64dbgSvrWrapper::dbgArgument {
 
         BridgeList<Script::Argument::ArgumentInfo> list;
 
-        if (!Script::Argument::GetList(&list))
-            return arguments;
+        Script::Argument::GetList(&list);
 
         for (int i = 0; i < list.Count(); i++) {
             arguments[i] = dbgUtils::ARGUMENT_INFO_WRAPPER{
@@ -640,8 +633,7 @@ namespace x64dbgSvrWrapper::dbgXref {
 
         XREF_INFO xref{};
 
-		if (!DbgXrefGet(addr, &xref))
-            return nlohmann::json();
+        DbgXrefGet(addr, &xref);
 
         for (size_t i = 0; i < xref.refcount; i++) {
             references[i] = dbgUtils::XREF_RECORD_WRAPPER{
@@ -650,7 +642,7 @@ namespace x64dbgSvrWrapper::dbgXref {
             };
         }
 
-        BridgeFree(xref.references);
+        if (xref.references) BridgeFree(xref.references);
 
         return nlohmann::json() = dbgUtils::XREF_INFO_WRAPPER{
             xref.refcount,
@@ -700,8 +692,7 @@ namespace x64dbgSvrWrapper::dbgModule {
 
         BridgeList<Script::Module::ModuleInfo> list;
 
-        if (!Script::Module::GetList(&list))
-            return modules;
+        Script::Module::GetList(&list);
 
         for (int i = 0; i < list.Count(); i++) {
             modules[i] = dbgUtils::MODULE_INFO_WRAPPER{
@@ -747,8 +738,7 @@ namespace x64dbgSvrWrapper::dbgModule {
 
         BridgeList<Script::Module::ModuleSectionInfo> list;
 
-        if (!Script::Module::GetMainModuleSectionList(&list))
-            return sections;
+        Script::Module::GetMainModuleSectionList(&list);
 
         for (int i = 0; i < list.Count(); i++) {
             sections[i] = dbgUtils::MODULE_SECTION_INFO_WRAPPER{
@@ -762,8 +752,7 @@ namespace x64dbgSvrWrapper::dbgModule {
 
         BridgeList<Script::Module::ModuleSectionInfo> list;
 
-        if (!Script::Module::SectionListFromAddr(addr, &list))
-            return sections;
+        Script::Module::SectionListFromAddr(addr, &list);
 
         for (int i = 0; i < list.Count(); i++) {
             sections[i] = dbgUtils::MODULE_SECTION_INFO_WRAPPER{
@@ -777,8 +766,7 @@ namespace x64dbgSvrWrapper::dbgModule {
 
         BridgeList<Script::Module::ModuleSectionInfo> list;
 
-        if (!Script::Module::SectionListFromName(n.c_str(), &list))
-            return sections;
+        Script::Module::SectionListFromName(n.c_str(), &list);
 
         for (int i = 0; i < list.Count(); i++) {
             sections[i] = dbgUtils::MODULE_SECTION_INFO_WRAPPER{
@@ -794,8 +782,7 @@ namespace x64dbgSvrWrapper::dbgModule {
 
         BridgeList<Script::Module::ModuleExport> list;
 
-        if (!Script::Module::GetExports(&m, &list))
-            return exports;
+        Script::Module::GetExports(&m, &list);
 
         for (int i = 0; i < list.Count(); i++) {
             exports[i] = dbgUtils::MODULE_EXPORT_WRAPPER{
@@ -817,8 +804,7 @@ namespace x64dbgSvrWrapper::dbgModule {
             
         BridgeList<Script::Module::ModuleImport> list;
 
-        if (!Script::Module::GetImports(&m, &list))
-            return imports;
+        Script::Module::GetImports(&m, &list);
 
         for (int i = 0; i < list.Count(); i++) {
             imports[i] = dbgUtils::MODULE_IMPORT_WRAPPER{
@@ -899,8 +885,7 @@ namespace x64dbgSvrWrapper::dbgMemory {
         nlohmann::json mmaps;
 
         MEMMAP maps{};
-        if (!DbgMemMap(&maps))
-            return mmaps;
+        DbgMemMap(&maps);
 
         for (int i = 0; i < maps.count; i++) {
             mmaps[i] = dbgUtils::MEMORY_INFO_WRAPPER{
@@ -967,8 +952,7 @@ namespace x64dbgSvrWrapper::dbgDebug {
         nlohmann::json breaks;
 
         BPMAP bps{};
-        if (!DbgGetBpList(BPXTYPE(bpxtype), &bps))
-            return breaks;
+        DbgGetBpList(BPXTYPE(bpxtype), &bps);
 
         for (int i = 0; i < bps.count; i++) {
             breaks[i] = dbgUtils::BREAKPOINT_INFO_WRAPPER{

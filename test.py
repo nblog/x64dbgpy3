@@ -29,11 +29,20 @@ for bp in dbgDebug.GetBreakpointList():
         )
 
     print( "bp: {}  {:#x}  {}  {}  {}  {}".format(
-        ( "soft" if (1 == bp.type) else ( "hard" if (2 == bp.type) else "none?" ) ),
+        dbgDebug.DBGBREAKPOINTINFO.BPXTYPE(bp.type),
         bp.addr, "<{}.{}>".format( bp.mod, dbgMisc.GetLabelAt(bp.addr) ), 
         ( "disable" if not bp.enabled else ( "enable" if not bp.singleshoot else "once" ) ),
         bp.hitCount,
         ', '.join(descriptor) ) )
+
+for watch in dbgMisc.GetWatchList():
+    print( "watch: {} {} {:#x} {} {} {}".format(
+        watch.WatchName, 
+        watch.Expression, 
+        watch.value, 
+        dbgMisc.DBGWATCHINFO.WATCHVARTYPE(watch.varType), 
+        dbgMisc.DBGWATCHINFO.WATCHDOGMODE(watch.watchdogMode), 
+        watch.id ) )
 
 # for sym in dbgSymbol.GetSymbolList():
 #     {  }

@@ -37,12 +37,29 @@ class dbgMisc:
     '''  '''
 
     class DBGWATCHINFO(DBGSTRUCT):
-        class WATCHVARTYPE:
+        class WATCHVARTYPE(enum.IntEnum):
             UINT, INT, FLOAT, ASCII, UNICODE, INVALID = map(int, range(0, 6))
-        class WATCHDOGMODE:
+            def __str__(self):
+                return { 
+                    0:"UINT", 
+                    1:"INT", 
+                    2:"FLOAT", 
+                    3:"ASCII", 
+                    4:"UNICODE", 
+                    5:"INVALID" 
+                }.get(self.value, "UNKNOWN").lower()
+        class WATCHDOGMODE(enum.IntEnum):
             DISABLED, ISTRUE, ISFALSE, CHANGED, UNCHANGED = map(int, range(0, 5))
-        name:str
-        expression:str
+            def __str__(self):
+                return { 
+                    0:"DISABLED", 
+                    1:"ISTRUE", 
+                    2:"ISFALSE", 
+                    3:"CHANGED", 
+                    4:"UNCHANGED" 
+                }.get(self.value, "UNKNOWN").lower()
+        WatchName:str
+        Expression:str
         window:int
         id:int
         varType:WATCHVARTYPE
@@ -99,14 +116,14 @@ class dbgMisc:
 class dbgGui:
     '''  '''
 
-    class DBGGUIWINDOW:
+    class DBGGUIWINDOW(enum.IntEnum):
         DisassemblyWindow, \
         DumpWindow, \
         StackWindow, \
         GraphWindow, \
         MemMapWindow, \
         SymModWindow, \
-        ThreadsWindow, = 0, 1, 2, 3, 4, 5, 6
+        ThreadsWindow, = map(int, range(0, 7))
 
     @staticmethod
     def FocusView(win:DBGGUIWINDOW) -> None:
@@ -151,7 +168,7 @@ class dbgAssembler:
         return bool( res )
 
     class DBGDISASMINFO(DBGSTRUCT):
-        class INSTRUCTIONTYPE:
+        class INSTRUCTIONTYPE(enum.IntEnum):
             VALUE, MEMORY, ADDRESS = 1, 2, 4
         type:INSTRUCTIONTYPE
         addr:ptr_t
@@ -169,7 +186,7 @@ class dbgSymbol:
     '''  '''
 
     class DBGSYMBOLINFO(DBGSTRUCT):
-        class DBGSYMBOLTYPE:
+        class DBGSYMBOLTYPE(enum.IntEnum):
             FUNCTION, IMPORT, EXPORT = 0, 1, 2
         mod:str
         rva:ptr_t
@@ -659,8 +676,14 @@ class dbgDebug:
         return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
 
     class DBGBREAKPOINTINFO(DBGSTRUCT):
-        class BPXTYPE:
+        class BPXTYPE(enum.IntEnum):
             bp_none, bp_normal, bp_hardware = 0, 1, 2
+            def __str__(self):
+                return { 
+                    0:"none", 
+                    1:"soft", 
+                    2:"hard" 
+                }.get(self.value, "unknown").lower()
         type:BPXTYPE
         addr:ptr_t
         enabled:bool
@@ -696,10 +719,16 @@ class dbgDebug:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr ] )
         return bool( res )
 
-    class DBGHARDWARETYPE:
+    class DBGHARDWARETYPE(enum.IntEnum):
         HardwareAccess, \
         HardwareWrite, \
         HardwareExecute = 0, 1, 2
+        def __str__(self):
+            return { 
+                0:"access", 
+                1:"write", 
+                2:"execute" 
+            }.get(self.value, "unknown").lower()
 
     @staticmethod
     def SetHardwareBreakpoint(addr:ptr_t, hard:DBGHARDWARETYPE) -> bool:
