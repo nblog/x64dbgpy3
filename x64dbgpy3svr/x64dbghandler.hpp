@@ -262,15 +262,18 @@ namespace x64dbgSvrWrapper::dbgUtils {
 
 namespace x64dbgSvrWrapper::dbgLogging {
     auto logclear() {
-        return GuiLogClear();
+        GuiLogClear();
+        return nlohmann::json();
     }
 
     auto logputs(const std::string& text) {
-        return _plugin_logputs(text.c_str());
+        _plugin_logputs(text.c_str());
+        return nlohmann::json();
     }
 
     auto logprint(const std::string& text) {
-        return _plugin_logprint(text.c_str());
+        _plugin_logprint(text.c_str());
+        return nlohmann::json();
     }
 };
 
@@ -304,13 +307,16 @@ namespace x64dbgSvrWrapper::dbgMisc {
 
 namespace x64dbgSvrWrapper::dbgGui {
     auto FocusView(int32_t win) {
-        return GuiFocusView(GUISELECTIONTYPE(win));
+        GuiFocusView(GUISELECTIONTYPE(win));
+        return nlohmann::json();
     }
     auto Refresh() {
-        return Script::Gui::Refresh();
+        Script::Gui::Refresh();
+        return nlohmann::json();
     }
     auto Message(const std::string& msg) {
-        return Script::Gui::Message(msg.c_str());
+        Script::Gui::Message(msg.c_str());
+        return nlohmann::json();
     }
     auto MessageYesNo(const std::string& msg) {
         return Script::Gui::MessageYesNo(msg.c_str());
@@ -329,7 +335,8 @@ namespace x64dbgSvrWrapper::dbgGui {
 namespace x64dbgSvrWrapper::dbgPattern {
     auto FindPattern(ptr_t addr, const std::string& pattern) {
         std::string fmtV = fmt::format("findallmem {:x},{}", addr, pattern);
-        return DbgCmdExecDirect(fmtV.c_str());
+        DbgCmdExecDirect(fmtV.c_str());
+		return nlohmann::json();
     }
 };
 
@@ -881,11 +888,12 @@ namespace x64dbgSvrWrapper::dbgRegister {
 };
 
 namespace x64dbgSvrWrapper::dbgDebug {
-    auto Stop() { Script::Debug::Stop(); }
-    auto Run() { Script::Debug::Run(); }
-    auto StepIn() { Script::Debug::StepIn(); }
-    auto StepOver() { Script::Debug::StepOver(); }
-    auto StepOut() { Script::Debug::StepOut(); }
+    auto Stop() { Script::Debug::Stop(); return nlohmann::json(); }
+	auto Run() { Script::Debug::Run(); return nlohmann::json(); }
+	auto Pause() { Script::Debug::Pause(); return nlohmann::json(); }
+	auto StepIn() { Script::Debug::StepIn(); return nlohmann::json(); }
+	auto StepOver() { Script::Debug::StepOver(); return nlohmann::json(); }
+	auto StepOut() { Script::Debug::StepOut(); return nlohmann::json(); }
 
     auto GetBreakpointList(int32_t bpxtype) {
         nlohmann::json breaks;
