@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-class RequestException(Exception):
-    '''  '''
+class JSONRPCError(Exception):
+    def __init__(self, code: int, message: str, data = None):
+        self.code = code
+        self.message = message
+        self.data = data
 
 class RequestJsonRpc:
     def __init__(self, hostUrl:str):
@@ -24,8 +27,7 @@ class RequestJsonRpc:
             json=payload
         )
 
-        if (200 != res.status_code): 
-            raise RequestException( {"code": -32003, "message": "client connector error"} )
+        res.raise_for_status()
 
         rtJson = res.json()
         if "id" in rtJson and "result" in rtJson \
@@ -33,4 +35,7 @@ class RequestJsonRpc:
             return rtJson["result"]
 
         ''' exception '''
-        raise RequestException( rtJson["error"] )
+        raise JSONRPCError( 
+            code=rtJson["error"]["code"], 
+            message=rtJson["error"]["message"], 
+            data=rtJson["error"].get("data") )
