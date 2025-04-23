@@ -124,6 +124,16 @@ class dbgGui:
         MemMapWindow, \
         SymModWindow, \
         ThreadsWindow, = map(int, range(0, 7))
+        def __str__(self):
+            return { 
+                0:"DISASSEMBLY", 
+                1:"DUMP", 
+                2:"STACK", 
+                3:"GRAPH", 
+                4:"MEMMAP", 
+                5:"SYMMOD", 
+                6:"THREADS" 
+            }.get(self.value, "UNKNOWN").lower()
 
     @staticmethod
     def FocusView(win:DBGGUIWINDOW) -> None:
