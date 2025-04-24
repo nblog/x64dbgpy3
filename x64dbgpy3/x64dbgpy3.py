@@ -409,11 +409,13 @@ class dbgXref:
 
     @staticmethod
     def Add(addr:ptr_t, from_:ptr_t) -> bool:
-        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgXref), [ addr, from_ ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgXref), [ addr, from_ ] )
+        return bool( res )
 
     @staticmethod
     def DelAll(addr:ptr_t) -> bool:
-        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgXref), [ addr ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgXref), [ addr ] )
+        return bool( res )
 
     @staticmethod
     def GetCountAt(addr:ptr_t) -> size_t:
@@ -615,6 +617,7 @@ class dbgThread:
                 return filetime_to_datetime(filetime).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
         class DBGTHREADINFO(BaseModel):
             ThreadNumber:int
+            Handle:ptr_t
             ThreadId:int
             ThreadStartAddress:ptr_t
             ThreadLocalBase:ptr_t
@@ -777,7 +780,7 @@ class dbgRegister:
         return ptr_t( res )
 
     @staticmethod
-    def SetFlag(flag:DBGFLAGENUM, value:ptr_t) -> ptr_t:
+    def SetFlag(flag:DBGFLAGENUM, value:bool) -> ptr_t:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ flag.value, value ] )
         return ptr_t( res )
 
@@ -814,9 +817,9 @@ class dbgRegister:
         return ptr_t( res )
 
     @staticmethod
-    def SetRegister(reg:DBGREGISTERENUM, value:ptr_t) -> ptr_t:
+    def SetRegister(reg:DBGREGISTERENUM, value:ptr_t) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ reg, value ] )
-        return ptr_t( res )
+        return bool( res )
 
 class dbgDebug:
     '''  '''
