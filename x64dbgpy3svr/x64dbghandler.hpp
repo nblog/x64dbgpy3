@@ -94,14 +94,15 @@ namespace x64dbgSvrWrapper {
     }
 };
 
+
 namespace x64dbgSvrWrapper::dbgUtils {
     /* FILETIME */
-	struct FILETIME_WRAPPER {
-		uint32_t dwLowDateTime;
-		uint32_t dwHighDateTime;
-	};
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FILETIME_WRAPPER, \
-		dwLowDateTime, dwHighDateTime)
+    struct FILETIME_WRAPPER {
+        uint32_t dwLowDateTime;
+        uint32_t dwHighDateTime;
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FILETIME_WRAPPER, \
+        dwLowDateTime, dwHighDateTime)
 
     /* BASIC_INSTRUCTION_INFO */
     struct INSTRUCTION_INFO_WRAPPER {
@@ -676,8 +677,8 @@ namespace x64dbgSvrWrapper::dbgArgument {
         };
     }
 
-	auto Add(ptr_t addr, ptr_t end, bool manual, size_t instructionCount) {
-		return Script::Argument::Add(addr, end, manual, instructionCount);
+	auto Add(ptr_t start, ptr_t end, bool manual, size_t instructionCount) {
+		return Script::Argument::Add(start, end, manual, instructionCount);
 	}
 
 	auto Del(ptr_t addr) {
@@ -1027,8 +1028,8 @@ namespace x64dbgSvrWrapper::dbgMemory {
     auto Free(ptr_t addr) {
         return Script::Memory::RemoteFree(addr);
     }
-    auto Alloc(ptr_t addr, size_t size) {
-        return Script::Memory::RemoteAlloc(addr, duint(size));
+    auto Alloc(size_t size, ptr_t addr) {
+        return Script::Memory::RemoteAlloc(addr, size);
     }
     auto Base(ptr_t addr, bool reserved, bool cache) {
         return Script::Memory::GetBase(addr, reserved, cache);

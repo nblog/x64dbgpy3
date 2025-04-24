@@ -570,7 +570,7 @@ class dbgModule:
         return dbgModule.DBGMODULEINFO(**res)
 
     @staticmethod
-    def InfoFromName(name:ptr_t) -> DBGMODULEINFO:
+    def InfoFromName(name:str) -> DBGMODULEINFO:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgModule), [ name ] )
         return dbgModule.DBGMODULEINFO(**res)
 
@@ -587,7 +587,7 @@ class dbgModule:
         return [ dbgModule.DBGMODULESECTIONINFO(**i) for i in res ]
 
     @staticmethod
-    def SectionListFromName(name:ptr_t) -> list[DBGMODULESECTIONINFO]:
+    def SectionListFromName(name:str) -> list[DBGMODULESECTIONINFO]:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgModule), [ name ] )
         if (not res): return [ ]
         return [ dbgModule.DBGMODULESECTIONINFO(**i) for i in res ]
@@ -728,7 +728,7 @@ class dbgMemory:
 
     @staticmethod
     def Alloc(size:size_t, addr:ptr_t=0) -> ptr_t:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMemory), [ addr, size ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMemory), [ size, addr ] )
         return ptr_t( res )
 
     @staticmethod
@@ -780,9 +780,9 @@ class dbgRegister:
         return ptr_t( res )
 
     @staticmethod
-    def SetFlag(flag:DBGFLAGENUM, value:bool) -> ptr_t:
+    def SetFlag(flag:DBGFLAGENUM, value:bool) -> bool:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ flag.value, value ] )
-        return ptr_t( res )
+        return bool( res )
 
     class DBGREGISTERENUM_DEBUG:
         ''' DEBUG '''
