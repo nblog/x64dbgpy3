@@ -10,7 +10,7 @@ X64DBGCALL = RequestJsonRpc("http://" + ':'.join(get_debugger_host()))
 
 
 ''' X64DBG INFORMATION '''
-class XDBGINFO(DBGSTRUCT):
+class XDBGINFO(BaseModel):
     plugin: str
     x64dbg: bool
     x64dbg_hwnd: ptr_t
@@ -36,7 +36,7 @@ class dbgLogging:
 class dbgMisc:
     '''  '''
 
-    class DBGWATCHINFO(DBGSTRUCT):
+    class DBGWATCHINFO(BaseModel):
         class WATCHVARTYPE(IntEnum):
             UINT, INT, FLOAT, ASCII, UNICODE, INVALID = map(int, range(0, 6))
             def __str__(self):
@@ -68,14 +68,9 @@ class dbgMisc:
         watchdogTriggered:bool
 
     @staticmethod
-    def IsDebugging() -> bool:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [  ] )
-        return bool( res )
-
-    @staticmethod
-    def IsRunning() -> bool:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [  ] )
-        return bool( res )
+    def Sleep(s:int) -> None:
+        from time import sleep; sleep(s - 1)
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgMisc), [ 1 ] )
 
     @staticmethod
     def GetLabelAt(addr:ptr_t) -> str:
@@ -177,7 +172,7 @@ class dbgAssembler:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgAssembler), [ addr, instruction ] )
         return bool( res )
 
-    class DBGDISASMINFO(DBGSTRUCT):
+    class DBGDISASMINFO(BaseModel):
         class INSTRUCTIONTYPE(IntFlag):
             VALUE, MEMORY, ADDRESS = 1, 2, 4
         type:INSTRUCTIONTYPE
@@ -195,7 +190,7 @@ class dbgAssembler:
 class dbgSymbol:
     '''  '''
 
-    class DBGSYMBOLINFO(DBGSTRUCT):
+    class DBGSYMBOLINFO2(BaseModel):
         class DBGSYMBOLTYPE(IntEnum):
             FUNCTION, IMPORT, EXPORT = 0, 1, 2
         mod:str
@@ -204,16 +199,32 @@ class dbgSymbol:
         manual:bool
         type:DBGSYMBOLTYPE
 
+    class DBGSYMBOLINFO(BaseModel):
+        class DBGSYMBOLTYPE(IntEnum):
+            sym_import, sym_export, sym_symbol = 0, 1, 2
+        addr:ptr_t
+        decoratedSymbol:str
+        undecoratedSymbol:str
+        type:DBGSYMBOLTYPE
+        freeDecorated:bool
+        freeUndecorated:bool
+        ordinal:int
+
     @staticmethod
-    def GetSymbolList() -> list[DBGSYMBOLINFO]:
+    def GetSymbolList() -> list[DBGSYMBOLINFO2]:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgSymbol), [  ] )
         if (not res): return [ ]
-        return [ dbgSymbol.DBGSYMBOLINFO(**i) for i in res ]
+        return [ dbgSymbol.DBGSYMBOLINFO2(**i) for i in res ]
+
+    @staticmethod
+    def Get(addr:ptr_t) -> DBGSYMBOLINFO:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgSymbol), [ addr ] )
+        return dbgSymbol.DBGSYMBOLINFO(**res)
 
 class dbgBookmark:
     '''  '''
 
-    class DBGBOOKMARKINFO(DBGSTRUCT):
+    class DBGBOOKMARKINFO(BaseModel):
         mod:str
         rva:ptr_t
         manual:bool
@@ -242,7 +253,7 @@ class dbgBookmark:
 class dbgComment:
     '''  '''
 
-    class DBGCOMMENTINFO(DBGSTRUCT):
+    class DBGCOMMENTINFO(BaseModel):
         mod:str
         rva:ptr_t
         text:str
@@ -272,7 +283,7 @@ class dbgComment:
 class dbgLabel:
     '''  '''
 
-    class DBGLABELINFO(DBGSTRUCT):
+    class DBGLABELINFO(BaseModel):
         mod:str
         rva:ptr_t
         text:str
@@ -312,7 +323,7 @@ class dbgLabel:
 class dbgFunction:
     '''  '''
 
-    class DBGFUNCTIONINFO(DBGSTRUCT):
+    class DBGFUNCTIONINFO(BaseModel):
         mod:str
         rvaStart:ptr_t
         rvaEnd:str
@@ -347,7 +358,7 @@ class dbgFunction:
 class dbgArgument:
     '''  '''
 
-    class DBGARGUMENTINFO(DBGSTRUCT):
+    class DBGARGUMENTINFO(BaseModel):
         mod:str
         rvaStart:ptr_t
         rvaEnd:str
@@ -379,17 +390,147 @@ class dbgArgument:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgArgument), [ addr ] )
         return bool( res )
 
+class dbgXref:
+    '''  '''
+
+    class DBGXREFINFO(BaseModel):
+        class DBGXREFRECORD(BaseModel):
+            class DBGXREFTYPE(IntEnum):
+                XREF_NONE, XREF_DATA, XREF_JMP, XREF_CALL = 0, 1, 2, 3
+            addr:ptr_t
+            type:int
+        refcount:size_t
+        xrefs:list[DBGXREFRECORD]
+
+    @staticmethod
+    def Get(addr:ptr_t) -> DBGXREFINFO:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgXref), [ addr ] )
+        return dbgXref.DBGXREFINFO(**res)
+
+    @staticmethod
+    def Add(addr:ptr_t, from_:ptr_t) -> bool:
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgXref), [ addr, from_ ] )
+
+    @staticmethod
+    def DelAll(addr:ptr_t) -> bool:
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgXref), [ addr ] )
+
+    @staticmethod
+    def GetCountAt(addr:ptr_t) -> size_t:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgXref), [ addr ] )
+        return int( res )
+
+    @staticmethod
+    def GetTypeAt(addr:ptr_t) -> DBGXREFINFO.DBGXREFRECORD.DBGXREFTYPE:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgXref), [ addr ] )
+        return dbgXref.DBGXREFINFO.DBGXREFRECORD.DBGXREFTYPE(res)
+
+class dbgScript:
+    '''  '''
+
+    @staticmethod
+    def Load(filename:str) -> None:
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgScript), [ filename ] )
+
+    @staticmethod
+    def Unload() -> None:
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgScript), [  ] )
+
+    @staticmethod
+    def Run(destline:int) -> None:
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgScript), [ destline ] )
+
+    @staticmethod
+    def Abort() -> None:
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgScript), [  ] )
+
+    @staticmethod
+    def CmdExec(command:str) -> None:
+        return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgScript), [ command ] )
+
+class dbgBreakpoint:
+    '''  '''
+
+    class DBGBREAKPOINTINFO(BaseModel):
+        class BPXTYPE(IntFlag):
+            bp_none, bp_normal, bp_hardware, bp_memory, bp_dll, bp_exception = \
+                0, 1, 2, 4, 8, 16
+            def __str__(self):
+                return { 
+                    0:"NONE", 
+                    1:"NORMAL", 
+                    2:"HARDWARE", 
+                    4:"MEMORY", 
+                    8:"DLL", 
+                    16:"EXCEPTION" 
+                }.get(self.value, "UNKNOWN").lower()
+        type:BPXTYPE
+        addr:ptr_t
+        enabled:bool
+        singleshoot:bool
+        active:bool
+        name:str
+        mod:str
+        hitCount:int
+        breakCondition:str
+        logCondition:str
+        commandCondition:str
+        logText:str
+        commandText:str
+
+    @staticmethod
+    def GetBreakpointList(bpxtype:DBGBREAKPOINTINFO.BPXTYPE=DBGBREAKPOINTINFO.BPXTYPE.bp_none) -> list[DBGBREAKPOINTINFO]:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgBreakpoint), [ bpxtype.value ] )
+        if (not res): return [ ]
+        return [ dbgBreakpoint.DBGBREAKPOINTINFO(**i) for i in res ]
+
+    @staticmethod
+    def SetBreakpoint(addr:ptr_t) -> bool:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgBreakpoint), [ addr ] )
+        return bool( res )
+
+    @staticmethod
+    def DeleteBreakpoint(addr:ptr_t) -> bool:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgBreakpoint), [ addr ] )
+        return bool( res )
+
+    @staticmethod
+    def DisableBreakpoint(addr:ptr_t) -> bool:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgBreakpoint), [ addr ] )
+        return bool( res )
+
+    class DBGHARDWARETYPE(IntEnum):
+        HardwareAccess, \
+        HardwareWrite, \
+        HardwareExecute = 0, 1, 2
+        def __str__(self):
+            return { 
+                0:"ACCESS", 
+                1:"WRITE", 
+                2:"EXECUTE" 
+            }.get(self.value, "UNKNOWN").lower()
+
+    @staticmethod
+    def SetHardwareBreakpoint(addr:ptr_t, hard:DBGHARDWARETYPE) -> bool:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgBreakpoint), [ addr, hard.value ] )
+        return bool( res )
+
+    @staticmethod
+    def DeleteHardwareBreakpoint(addr:ptr_t) -> bool:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgBreakpoint), [ addr ] )
+        return bool( res )
+
 class dbgModule:
     '''  '''
 
-    class DBGMODULEIMPORTINFO(DBGSTRUCT):
+    class DBGMODULEIMPORTINFO(BaseModel):
         iatRva:ptr_t
         iatVa:ptr_t
         ordinal:ptr_t
         name:str
         undecoratedName:str
 
-    class DBGMODULEEXPORTINFO(DBGSTRUCT):
+    class DBGMODULEEXPORTINFO(BaseModel):
         ordinal:ptr_t
         rva:ptr_t
         va:ptr_t
@@ -398,12 +539,12 @@ class dbgModule:
         name:str
         undecoratedName:str
 
-    class DBGMODULESECTIONINFO(DBGSTRUCT):
+    class DBGMODULESECTIONINFO(BaseModel):
         addr:ptr_t
         size:size_t
         name:str
 
-    class DBGMODULEINFO(DBGSTRUCT):
+    class DBGMODULEINFO(BaseModel):
         base:ptr_t
         size:size_t
         entry:ptr_t
@@ -464,19 +605,35 @@ class dbgModule:
 class dbgThread:
     '''  '''
 
-    class DBGTHREADINFO(DBGSTRUCT):
-        ThreadNumber:int
-        ThreadId:int
-        ThreadStartAddress:ptr_t
-        ThreadLocalBase:ptr_t
-        threadName:str
+    class DBGTHREADALLINFO(BaseModel):
+        class FILETIME(BaseModel):
+            dwLowDateTime:int
+            dwHighDateTime:int
+            def __str__(self):
+                filetime = (self.dwHighDateTime << 32) + self.dwLowDateTime
+                # UTC
+                return filetime_to_datetime(filetime).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        class DBGTHREADINFO(BaseModel):
+            ThreadNumber:int
+            ThreadId:int
+            ThreadStartAddress:ptr_t
+            ThreadLocalBase:ptr_t
+            threadName:str
+        BasicInfo:DBGTHREADINFO
         ThreadCip:ptr_t
         SuspendCount:int
+        Priority:int
+        WaitReason:int
+        LastError:int
+        UserTime:FILETIME
+        KernelTime:FILETIME
+        CreationTime:FILETIME
+        Cycles:int
 
     @staticmethod
-    def GetThreadList() -> list[DBGTHREADINFO]:
+    def GetThreadList() -> list[DBGTHREADALLINFO]:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgThread), [  ] )
-        return [ dbgThread.DBGTHREADINFO(**i) for i in res ]
+        return [ dbgThread.DBGTHREADALLINFO(**i) for i in res ]
 
     @staticmethod
     def GetFirstThreadId() -> int:
@@ -484,9 +641,9 @@ class dbgThread:
         return int( res )
 
     @staticmethod
-    def GetActiveThreadId() -> int:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgThread), [  ] )
-        return int( res )
+    def SetThreadName(threadid:int, name:str) -> bool:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgThread), [ threadid, name ] )
+        return bool( res )
 
     @staticmethod
     def SetActiveThreadId(threadid:int) -> bool:
@@ -541,7 +698,7 @@ class dbgMemory:
             ('w' if ( v & 4 | v & 8 | v & 0x40 | v & 0x80 ) else '-') + \
             ('x' if ( v & 0x10 | v & 0x20 | v & 0x40 | v & 0x80 ) else '-')
 
-    class DBGMEMMAPINFO(DBGSTRUCT):
+    class DBGMEMMAPINFO(BaseModel):
         BaseAddress:ptr_t
         AllocationBase:ptr_t
         AllocationProtect:int
@@ -624,6 +781,11 @@ class dbgRegister:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ flag.value, value ] )
         return ptr_t( res )
 
+    class DBGREGISTERENUM_DEBUG:
+        ''' DEBUG '''
+        DR0, DR1, DR2, DR3, DR6, DR7 = \
+            map(int, range(0, 6))
+
     class DBGREGISTERENUM_WIN32:
         ''' WIN32 '''
         EAX, AX, AH, AL, \
@@ -642,21 +804,18 @@ class dbgRegister:
         R14, R14D, R14W, R14B, R15, R15D, R15W, R15B = \
             map(int, range(31, 76))
 
-    class DBGREGISTERENUM(DBGREGISTERENUM_WIN32, DBGREGISTERENUM_WIN64, IntEnum):
-        DR0, DR1, DR2, DR3, DR6, DR7 = \
-            map(int, range(0, 6))
-
+    class DBGREGISTERENUM(DBGREGISTERENUM_DEBUG, DBGREGISTERENUM_WIN32, DBGREGISTERENUM_WIN64, IntEnum):
         CIP, CSP, CAX, CBX, CCX, CDX, CDI, CSI, CBP, CFLAGS = \
             map(int, range(76, 86)) if (X64DBGINFO.x64dbg) else map(int, range(31, 41))
 
     @staticmethod
     def GetRegister(reg:DBGREGISTERENUM) -> ptr_t:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ reg.value ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ reg ] )
         return ptr_t( res )
 
     @staticmethod
     def SetRegister(reg:DBGREGISTERENUM, value:ptr_t) -> ptr_t:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ reg.value, value ] )
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ reg, value ] )
         return ptr_t( res )
 
 class dbgDebug:
@@ -675,7 +834,7 @@ class dbgDebug:
         return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
 
     @staticmethod
-    def StepIn() -> None:
+    def StepInto() -> None:
         return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
 
     @staticmethod
@@ -686,71 +845,22 @@ class dbgDebug:
     def StepOut() -> None:
         return X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
 
-    class DBGBREAKPOINTINFO(DBGSTRUCT):
-        class BPXTYPE(IntFlag):
-            bp_none, bp_normal, bp_hardware, bp_memory, bp_dll, bp_exception = \
-                0, 1, 2, 4, 8, 16
-            def __str__(self):
-                return { 
-                    0:"NONE", 
-                    1:"NORMAL", 
-                    2:"HARDWARE", 
-                    4:"MEMORY", 
-                    8:"DLL", 
-                    16:"EXCEPTION" 
-                }.get(self.value, "UNKNOWN").lower()
-        type:BPXTYPE
-        addr:ptr_t
-        enabled:bool
-        singleshoot:bool
-        active:bool
-        name:str
-        mod:str
-        hitCount:int
-        breakCondition:str
-        logCondition:str
-        commandCondition:str
-        logText:str
-        commandText:str
-
     @staticmethod
-    def GetBreakpointList(bpxtype:DBGBREAKPOINTINFO.BPXTYPE=DBGBREAKPOINTINFO.BPXTYPE.bp_none) -> list[DBGBREAKPOINTINFO]:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ bpxtype.value ] )
-        if (not res): return [ ]
-        return [ dbgDebug.DBGBREAKPOINTINFO(**i) for i in res ]
-
-    @staticmethod
-    def SetBreakpoint(addr:ptr_t) -> bool:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr ] )
+    def IsDebugging() -> bool:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
         return bool( res )
 
     @staticmethod
-    def DeleteBreakpoint(addr:ptr_t) -> bool:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr ] )
+    def IsRunning() -> bool:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [  ] )
         return bool( res )
 
     @staticmethod
-    def DisableBreakpoint(addr:ptr_t) -> bool:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr ] )
-        return bool( res )
-
-    class DBGHARDWARETYPE(IntEnum):
-        HardwareAccess, \
-        HardwareWrite, \
-        HardwareExecute = 0, 1, 2
-        def __str__(self):
-            return { 
-                0:"ACCESS", 
-                1:"WRITE", 
-                2:"EXECUTE" 
-            }.get(self.value, "UNKNOWN").lower()
-
-    @staticmethod
-    def SetHardwareBreakpoint(addr:ptr_t, hard:DBGHARDWARETYPE) -> bool:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr, hard.value ] )
+    def RunCommand(cmd:str) -> bool:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ cmd ] )
         return bool( res )
 
     @staticmethod
-    def DeleteHardwareBreakpoint(addr:ptr_t) -> bool:
-        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ addr ] )
+    def RunCommandAsync(cmd:str) -> bool:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgDebug), [ cmd ] )
         return bool( res )

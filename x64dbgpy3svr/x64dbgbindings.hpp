@@ -122,8 +122,7 @@ public:
         AddHandler(dbgLogging::logputs, {  });
         AddHandler(dbgLogging::logprint, {  });
 
-        AddHandler(dbgMisc::IsDebugging, {  });
-        AddHandler(dbgMisc::IsRunning, {  });
+		AddHandler(dbgMisc::Sleep, {  });
 		AddHandler(dbgMisc::GetLabelAt, {  });
 		AddHandler(dbgMisc::GetCommentAt, {  });
 		AddHandler(dbgMisc::GetStringAt, {  });
@@ -145,6 +144,7 @@ public:
         AddHandler(dbgAssembler::DisasmFast, {  });
 
         AddHandler(dbgSymbol::GetSymbolList, {  });
+		AddHandler(dbgSymbol::Get, {  });
 
         AddHandler(dbgBookmark::GetBookmarkList, {  });
 		AddHandler(dbgBookmark::Get, {  });
@@ -185,6 +185,13 @@ public:
 		AddHandler(dbgScript::Abort, {  });
 		AddHandler(dbgScript::CmdExec, {  });
 
+        AddHandler(dbgBreakpoint::GetBreakpointList, {  });
+        AddHandler(dbgBreakpoint::SetBreakpoint, {  });
+        AddHandler(dbgBreakpoint::DeleteBreakpoint, {  });
+        AddHandler(dbgBreakpoint::DisableBreakpoint, {  });
+        AddHandler(dbgBreakpoint::SetHardwareBreakpoint, {  });
+        AddHandler(dbgBreakpoint::DeleteHardwareBreakpoint, {  });
+
         AddHandler(dbgModule::GetModuleList, {  });
         AddHandler(dbgModule::GetMainModuleInfo, {  });
         AddHandler(dbgModule::InfoFromAddr, {  });
@@ -197,7 +204,7 @@ public:
 
         AddHandler(dbgThread::GetThreadList, {  });
         AddHandler(dbgThread::GetFirstThreadId, {  });
-        AddHandler(dbgThread::GetActiveThreadId, {  });
+        AddHandler(dbgThread::SetThreadName, {  });
         AddHandler(dbgThread::SetActiveThreadId, {  });
         AddHandler(dbgThread::SuspendThreadId, {  });
         AddHandler(dbgThread::ResumeThreadId, {  });
@@ -225,19 +232,15 @@ public:
         AddHandler(dbgRegister::SetRegister, {  });
 
         AddHandler(dbgDebug::Stop, {  });
-		AddHandler(dbgDebug::Pause, {  });
         AddHandler(dbgDebug::Run, {  });
-        AddHandler(dbgDebug::StepIn, {  });
+		AddHandler(dbgDebug::Pause, {  });
+        AddHandler(dbgDebug::StepInto, {  });
         AddHandler(dbgDebug::StepOver, {  });
         AddHandler(dbgDebug::StepOut, {  });
-
-        AddHandler(dbgDebug::GetBreakpointList, {  });
-        AddHandler(dbgDebug::SetBreakpoint, {  });
-        AddHandler(dbgDebug::DeleteBreakpoint, {  });
-        AddHandler(dbgDebug::DisableBreakpoint, {  });
-
-        AddHandler(dbgDebug::SetHardwareBreakpoint, {  });
-        AddHandler(dbgDebug::DeleteHardwareBreakpoint, {  });
+        AddHandler(dbgDebug::IsDebugging, {  });
+        AddHandler(dbgDebug::IsRunning, {  });
+        AddHandler(dbgDebug::RunCommand, {  });
+        AddHandler(dbgDebug::RunCommandAsync, {  });
     };
 };
 

@@ -9,11 +9,11 @@ dbgLogging.logputs("hello python3")
 dbgLogging.logprint("hello", " ", "python3\n")
 
 
-if (not dbgMisc.IsDebugging()):
+if (not dbgDebug.IsDebugging()):
     dbgGui.Message( "please start debugging" ), exit(0)
 
 
-for bp in dbgDebug.GetBreakpointList():
+for bp in dbgBreakpoint.GetBreakpointList():
     descriptor = [ ]
     if (bp.breakCondition):
         descriptor.append( "breakif({})".format(bp.breakCondition) )
@@ -29,7 +29,7 @@ for bp in dbgDebug.GetBreakpointList():
         )
 
     print( "bp: {}  {:#x}  {}  {}  {}  {}".format(
-        dbgDebug.DBGBREAKPOINTINFO.BPXTYPE(bp.type),
+        dbgBreakpoint.DBGBREAKPOINTINFO.BPXTYPE(bp.type),
         bp.addr, "<{}.{}>".format( bp.mod, dbgMisc.GetLabelAt(bp.addr) ), 
         ( "disable" if not bp.enabled else ( "enable" if not bp.singleshoot else "once" ) ),
         bp.hitCount,
@@ -44,8 +44,8 @@ for watch in dbgMisc.GetWatchList():
         dbgMisc.DBGWATCHINFO.WATCHDOGMODE(watch.watchdogMode), 
         watch.id ) )
 
-# for sym in dbgSymbol.GetSymbolList():
-#     {  }
+for sym in dbgSymbol.GetSymbolList():
+    {  }
 
 for book in dbgBookmark.GetBookmarkList():
     print( "book: {}+{:#x}".format( book.mod,  book.rva ) )
@@ -73,6 +73,8 @@ print(
 assert( dbgMisc.ResolveLabel("LoadLibraryA") == \
     dbgMisc.RemoteGetProcAddress("kernel32.dll", "LoadLibraryA") )
 
+
+dbgGui.FocusView(dbgGui.DBGGUIWINDOW.DisassemblyWindow)
 a, b = dbgGui.SelectionGet( dbgGui.DBGGUIWINDOW.DisassemblyWindow )
 dbgGui.SelectionSet( dbgGui.DBGGUIWINDOW.DisassemblyWindow, a + 10, b + 10 )
 a, b = dbgGui.SelectionGet( dbgGui.DBGGUIWINDOW.DisassemblyWindow )
@@ -111,18 +113,35 @@ for eat in dbgModule.GetExportsFromAddr( m.base ):
         eat.va, eat.name
     ) )
 
-
-for t in dbgThread.GetThreadList():
-    print( "id:{} entry:{:#x} teb:{:#x} suspend:{} name:{}".format(
-        t.ThreadId, t.ThreadStartAddress, 
-        t.ThreadLocalBase, t.SuspendCount, t.threadName) )
-
+dbgThread.SetThreadName( dbgThread.GetFirstThreadId(), "😈" )
+for thread in dbgThread.GetThreadList():
+    print( "num:{} id:{} entry:{:#x} teb:{:#x} rip:{:#x} suspend:{} create:{} name:{}".format(
+        thread.BasicInfo.ThreadNumber,
+        thread.BasicInfo.ThreadId, 
+        thread.BasicInfo.ThreadStartAddress, 
+        thread.BasicInfo.ThreadLocalBase, 
+        thread.ThreadCip,
+        thread.SuspendCount,
+        thread.CreationTime,
+        thread.BasicInfo.threadName) )
 
 ''' SHELLCODE '''
-if dbgMisc.IsRunning():
-    PAYLOAD = open("test\\BINMSG.BIN", "rb").read()
+if dbgDebug.IsRunning():
+    PAYLOAD = open("test\\MSG_HELLO.BIN", "rb").read()
+    dbgBreakpoint.SetBreakpoint( dbgMisc.ParseExpression("MessageBoxA") )
     remoteaddr = dbgMemory.Alloc( 4096 )
-    dbgMemory.Write( remoteaddr, PAYLOAD ); dbgThread.CreateThread( remoteaddr, 0 )
+    dbgMemory.Write( remoteaddr, PAYLOAD )
+    dbgMisc.Sleep( 3 ); dbgThread.CreateThread( remoteaddr, 0 ); dbgMisc.Sleep( 5 )
+    assert( not dbgDebug.IsRunning() )
+    dbgDebug.StepOut()
+    for _ in range(30):
+        dbgMisc.Sleep( 1 )
+        if not dbgDebug.IsRunning(): break
+    print("shellcode: {:#x} exitcode: {:#x} ".format(
+        remoteaddr,
+        dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.RAX)))
+    dbgDebug.Run()
+    dbgMemory.Free( remoteaddr )
 
 
 ''' FLIRT '''

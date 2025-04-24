@@ -95,6 +95,14 @@ namespace x64dbgSvrWrapper {
 };
 
 namespace x64dbgSvrWrapper::dbgUtils {
+    /* FILETIME */
+	struct FILETIME_WRAPPER {
+		uint32_t dwLowDateTime;
+		uint32_t dwHighDateTime;
+	};
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FILETIME_WRAPPER, \
+		dwLowDateTime, dwHighDateTime)
+
     /* BASIC_INSTRUCTION_INFO */
     struct INSTRUCTION_INFO_WRAPPER {
         uint32_t type;
@@ -197,13 +205,33 @@ namespace x64dbgSvrWrapper::dbgUtils {
         mod, rva, manual)
 
     struct SYMBOL_INFO_WRAPPER {
+        ptr_t addr;
+        std::string decoratedSymbol;
+        std::string undecoratedSymbol;
+        int32_t type; /* SYMBOLTYPE */
+
+        // If true: Use BridgeFree(decoratedSymbol) to deallocate
+        // Else: The decoratedSymbol pointer is valid until the module unloads
+        bool freeDecorated;
+
+        // If true: Use BridgeFree(undecoratedSymbol) to deallcoate
+        // Else: The undecoratedSymbol pointer is valid until the module unloads
+        bool freeUndecorated;
+
+        // The entry point pseudo-export has ordinal == 0 (invalid ordinal value)
+        uint32_t ordinal;
+	};
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SYMBOL_INFO_WRAPPER, \
+		addr, decoratedSymbol, undecoratedSymbol, type, freeDecorated, freeUndecorated, ordinal)
+
+    struct SYMBOL_INFO2_WRAPPER {
         std::string mod;
         ptr_t rva;
         std::string name;
         bool manual;
         int32_t type; /* Script::Symbol::SymbolType */
     };
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SYMBOL_INFO_WRAPPER, \
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SYMBOL_INFO2_WRAPPER, \
         mod, rva, name, manual, type)
 
     struct MODULE_IMPORT_WRAPPER {
@@ -245,20 +273,31 @@ namespace x64dbgSvrWrapper::dbgUtils {
         base, size, entry, sectionCount, name, path)
 
     struct THREAD_INFO_WRAPPER {
-        /* THREADINFO */
-        int32_t ThreadNumber;
-        ptr_t Handle;
-        uint32_t ThreadId;
-        ptr_t ThreadStartAddress;
-        ptr_t ThreadLocalBase;
-        std::string threadName;
-        /* THREADALLINFO */
+		int32_t ThreadNumber;
+		ptr_t Handle;
+		uint32_t ThreadId;
+		ptr_t ThreadStartAddress;
+		ptr_t ThreadLocalBase;
+		std::string threadName;
+	};
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(THREAD_INFO_WRAPPER, \
+		ThreadNumber, Handle, ThreadId, ThreadStartAddress, ThreadLocalBase, threadName)
+    struct THREAD_ALL_INFO_WRAPPER {
+		THREAD_INFO_WRAPPER BasicInfo;
         ptr_t ThreadCip;
         uint32_t SuspendCount;
+		int32_t Priority; /* THREADPRIORITY */
+		int32_t WaitReason; /* THREADWAITREASON */
+		uint32_t LastError;
+        FILETIME_WRAPPER UserTime;
+        FILETIME_WRAPPER KernelTime;
+        FILETIME_WRAPPER CreationTime;
+		uint64_t Cycles; // Windows Vista or greater
     };
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(THREAD_INFO_WRAPPER, \
-        ThreadNumber, Handle, ThreadId, ThreadStartAddress, ThreadLocalBase, threadName, ThreadCip, SuspendCount)
-        
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(THREAD_ALL_INFO_WRAPPER, \
+		BasicInfo, 
+		ThreadCip, SuspendCount, Priority, WaitReason, LastError, UserTime, KernelTime, CreationTime, Cycles)
+
     /* https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-memory_basic_information */
     struct MEMORY_INFO_WRAPPER {
         ptr_t BaseAddress;
@@ -291,13 +330,10 @@ namespace x64dbgSvrWrapper::dbgLogging {
 };
 
 namespace x64dbgSvrWrapper::dbgMisc {
-    auto IsDebugging() {
-        return DbgIsDebugging();
-    }
-
-    auto IsRunning() {
-        return DbgIsRunning();
-    }
+	auto Sleep(int32_t s) {
+        std::this_thread::sleep_for(std::chrono::seconds(s));
+		return nlohmann::json();
+	}
 
     auto GetLabelAt(ptr_t addr) {
         char label[MAX_LABEL_SIZE] = "";
@@ -379,7 +415,7 @@ namespace x64dbgSvrWrapper::dbgGui {
 namespace x64dbgSvrWrapper::dbgPattern {
     auto FindPattern(ptr_t addr, const std::string& pattern) {
         std::string fmtV = fmt::format("findallmem {:x},{}", addr, pattern);
-        DbgCmdExecDirect(fmtV.c_str());
+        DbgCmdExec(fmtV.c_str());
 		return nlohmann::json();
     }
 };
@@ -415,7 +451,7 @@ namespace x64dbgSvrWrapper::dbgSymbol {
         Script::Symbol::GetList(&list);
 
         for (int i = 0; i < list.Count(); i++) {
-            symbols[i] = dbgUtils::SYMBOL_INFO_WRAPPER{
+            symbols[i] = dbgUtils::SYMBOL_INFO2_WRAPPER{
                 list[i].mod,
                 list[i].rva,
                 list[i].name,
@@ -424,6 +460,28 @@ namespace x64dbgSvrWrapper::dbgSymbol {
             };
         } return symbols;
     }
+
+	auto Get(ptr_t addr) {
+        nlohmann::json sym;
+
+		SYMBOLINFO info{};
+		DbgGetSymbolInfoAt(addr, &info);
+
+		sym = dbgUtils::SYMBOL_INFO_WRAPPER{
+			info.addr,
+			info.decoratedSymbol,
+			info.undecoratedSymbol,
+			info.type,
+			info.freeDecorated,
+			info.freeUndecorated,
+			info.ordinal
+		};
+
+        if (info.freeDecorated) BridgeFree(info.decoratedSymbol);
+        if (info.freeUndecorated) BridgeFree(info.undecoratedSymbol);
+
+		return sym;
+	}
 };
 
 namespace x64dbgSvrWrapper::dbgBookmark {
@@ -686,6 +744,48 @@ namespace x64dbgSvrWrapper::dbgScript {
 	}
 };
 
+namespace x64dbgSvrWrapper::dbgBreakpoint {
+    auto GetBreakpointList(int32_t bpxtype) {
+        nlohmann::json breaks;
+
+        BPMAP bps{};
+        DbgGetBpList(BPXTYPE(bpxtype), &bps);
+
+        for (int i = 0; i < bps.count; i++) {
+            breaks[i] = dbgUtils::BREAKPOINT_INFO_WRAPPER{
+                bps.bp[i].type,
+                bps.bp[i].addr,
+                bps.bp[i].enabled, bps.bp[i].singleshoot, bps.bp[i].active,
+                bps.bp[i].name, bps.bp[i].mod,
+                bps.bp[i].hitCount,
+                bps.bp[i].breakCondition,
+                bps.bp[i].logCondition,
+                bps.bp[i].commandCondition,
+                bps.bp[i].logText,
+                bps.bp[i].commandText,
+            };
+        }
+        BridgeFree(bps.bp); return breaks;
+    }
+
+    auto SetBreakpoint(ptr_t addr) {
+        return Script::Debug::SetBreakpoint(addr);
+    }
+    auto DeleteBreakpoint(ptr_t addr) {
+        return Script::Debug::DeleteBreakpoint(addr);
+    }
+    auto DisableBreakpoint(ptr_t addr) {
+        return Script::Debug::DisableBreakpoint(addr);
+    }
+
+    auto SetHardwareBreakpoint(ptr_t addr, int32_t hard) {
+        return Script::Debug::SetHardwareBreakpoint(addr, Script::Debug::HardwareType(hard));
+    }
+    auto DeleteHardwareBreakpoint(ptr_t addr) {
+        return Script::Debug::DeleteHardwareBreakpoint(addr);
+    }
+};
+
 namespace x64dbgSvrWrapper::dbgModule {
     auto GetModuleList() {
         nlohmann::json modules;
@@ -827,15 +927,33 @@ namespace x64dbgSvrWrapper::dbgThread {
 		DbgGetThreadList(&list);
 
         for (int i = 0; i < list.count; i++) {
-            threads[i] = dbgUtils::THREAD_INFO_WRAPPER{
-                list.list[i].BasicInfo.ThreadNumber,
-                ptr_t(list.list[i].BasicInfo.Handle),
-                list.list[i].BasicInfo.ThreadId,
-                list.list[i].BasicInfo.ThreadStartAddress,
-                list.list[i].BasicInfo.ThreadLocalBase,
-                list.list[i].BasicInfo.threadName,
-                list.list[i].ThreadCip,
-                list.list[i].SuspendCount,
+            threads[i] = dbgUtils::THREAD_ALL_INFO_WRAPPER{
+				dbgUtils::THREAD_INFO_WRAPPER{
+					list.list[i].BasicInfo.ThreadNumber,
+					ptr_t(list.list[i].BasicInfo.Handle),
+					list.list[i].BasicInfo.ThreadId,
+					list.list[i].BasicInfo.ThreadStartAddress,
+					list.list[i].BasicInfo.ThreadLocalBase,
+					list.list[i].BasicInfo.threadName
+				},
+				list.list[i].ThreadCip,
+				list.list[i].SuspendCount,
+				list.list[i].Priority,
+				list.list[i].WaitReason,
+				list.list[i].LastError,
+				dbgUtils::FILETIME_WRAPPER{
+					list.list[i].UserTime.dwLowDateTime,
+					list.list[i].UserTime.dwHighDateTime
+				},
+				dbgUtils::FILETIME_WRAPPER{
+					list.list[i].KernelTime.dwLowDateTime,
+					list.list[i].KernelTime.dwHighDateTime
+				},
+				dbgUtils::FILETIME_WRAPPER{
+					list.list[i].CreationTime.dwLowDateTime,
+					list.list[i].CreationTime.dwHighDateTime
+				},
+				list.list[i].Cycles,
             };
         }
         BridgeFree(list.list); return threads;
@@ -843,6 +961,7 @@ namespace x64dbgSvrWrapper::dbgThread {
 
     auto GetFirstThreadId() {
         for (const auto& t : dbgThread::GetThreadList()) {
+			std::string raw = t.dump();
             if (0 == t["BasicInfo"]["ThreadNumber"]) {
                 return uint32_t(t["BasicInfo"]["ThreadId"]);
             }
@@ -850,9 +969,10 @@ namespace x64dbgSvrWrapper::dbgThread {
         return uint32_t(GuiGetMainThreadId());
     }
 
-    auto GetActiveThreadId() {
-        return uint32_t(DbgGetThreadId());
-    }
+	auto SetThreadName(uint32_t threadId, const std::string& name) {
+		std::string fmtV = fmt::format("setthreadname {:x},{}", threadId, name);
+		return DbgCmdExecDirect(fmtV.c_str());
+	}
     auto SetActiveThreadId(uint32_t threadId) {
         std::string fmtV = fmt::format("switchthread {:x}", threadId);
         return DbgCmdExecDirect(fmtV.c_str());
@@ -941,50 +1061,42 @@ namespace x64dbgSvrWrapper::dbgRegister {
 };
 
 namespace x64dbgSvrWrapper::dbgDebug {
-    auto Stop() { Script::Debug::Stop(); return nlohmann::json(); }
-	auto Run() { Script::Debug::Run(); return nlohmann::json(); }
-	auto Pause() { Script::Debug::Pause(); return nlohmann::json(); }
-	auto StepIn() { Script::Debug::StepIn(); return nlohmann::json(); }
-	auto StepOver() { Script::Debug::StepOver(); return nlohmann::json(); }
-	auto StepOut() { Script::Debug::StepOut(); return nlohmann::json(); }
-
-    auto GetBreakpointList(int32_t bpxtype) {
-        nlohmann::json breaks;
-
-        BPMAP bps{};
-        DbgGetBpList(BPXTYPE(bpxtype), &bps);
-
-        for (int i = 0; i < bps.count; i++) {
-            breaks[i] = dbgUtils::BREAKPOINT_INFO_WRAPPER{
-                bps.bp[i].type,
-                bps.bp[i].addr,
-                bps.bp[i].enabled, bps.bp[i].singleshoot, bps.bp[i].active,
-                bps.bp[i].name, bps.bp[i].mod,
-                bps.bp[i].hitCount,
-                bps.bp[i].breakCondition,
-                bps.bp[i].logCondition,
-                bps.bp[i].commandCondition,
-                bps.bp[i].logText,
-                bps.bp[i].commandText,
-            };
-        }
-        BridgeFree(bps.bp); return breaks;
+    auto RunCommand(const std::string& cmd) {
+        return DbgCmdExecDirect(cmd.c_str());
+    }
+    auto RunCommandAsync(const std::string& cmd) {
+        return DbgCmdExec(cmd.c_str());
     }
 
-    auto SetBreakpoint(ptr_t addr) {
-        return Script::Debug::SetBreakpoint(addr);
+    auto Stop() {
+        RunCommandAsync("StopDebug"); //Script::Debug::Stop();
+        return nlohmann::json();
     }
-    auto DeleteBreakpoint(ptr_t addr) {
-        return Script::Debug::DeleteBreakpoint(addr);
+	auto Run() { 
+        RunCommandAsync("run"); //Script::Debug::Run();
+        return nlohmann::json();
     }
-    auto DisableBreakpoint(ptr_t addr) {
-        return Script::Debug::DisableBreakpoint(addr);
+	auto Pause() { 
+        RunCommandAsync("pause"); //Script::Debug::Pause();
+        return nlohmann::json();
+    }
+	auto StepInto() {
+        RunCommandAsync("StepInto"); //Script::Debug::StepIn();
+        return nlohmann::json();
+    }
+	auto StepOver() { 
+        RunCommandAsync("StepOver"); //Script::Debug::StepOver();
+        return nlohmann::json();
+    }
+	auto StepOut() { 
+        RunCommandAsync("StepOut"); //Script::Debug::StepOut();
+        return nlohmann::json();
     }
 
-    auto SetHardwareBreakpoint(ptr_t addr, int32_t hard) {
-        return Script::Debug::SetHardwareBreakpoint(addr, Script::Debug::HardwareType(hard));
+    auto IsDebugging() {
+        return DbgIsDebugging();
     }
-    auto DeleteHardwareBreakpoint(ptr_t addr) {
-        return Script::Debug::DeleteHardwareBreakpoint(addr);
+    auto IsRunning() {
+        return DbgIsRunning();
     }
 };

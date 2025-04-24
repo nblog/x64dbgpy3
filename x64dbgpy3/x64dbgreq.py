@@ -9,18 +9,20 @@ class JSONRPCError(Exception):
 
 class RequestJsonRpc:
     def __init__(self, hostUrl:str):
-        from httpx import Client
+        from httpx import Client, Timeout
         self.hostUrl, self.session = hostUrl, \
-            Client()
+            Client(timeout=Timeout(10.0))
 
     def x64dbg_info(self):
         res = self.session.get( "/".join( [ self.hostUrl, "x64dbg", "api", "info" ] ) )
+        res.raise_for_status()
         return res.json()
 
     def x64dbg_call(self, method:str, args:...):
         from uuid import uuid4
         payload = \
-            dict( **{ "id": str(uuid4()), "jsonrpc": "2.0", "method": method, "params": args } )
+            dict( { "id": str(uuid4()) } if True else { },
+            **{ "jsonrpc": "2.0", "method": method, "params": args } )
 
         res = self.session.post(
             "/".join( [ self.hostUrl, "x64dbg", "api", "call" ] ), 
@@ -36,6 +38,6 @@ class RequestJsonRpc:
 
         ''' exception '''
         raise JSONRPCError( 
-            code=rtJson["error"]["code"], 
-            message=rtJson["error"]["message"], 
+            code=int(rtJson["error"]["code"]), 
+            message=str(rtJson["error"]["message"]), 
             data=rtJson["error"].get("data") )
