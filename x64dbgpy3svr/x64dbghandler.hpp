@@ -1062,6 +1062,7 @@ namespace x64dbgSvrWrapper::dbgRegister {
 };
 
 namespace x64dbgSvrWrapper::dbgDebug {
+    /* https://github.com/x64dbg/x64dbg/blob/development/src/dbg/x64dbg.cpp#L100 */
     auto RunCommand(const std::string& cmd) {
         return DbgCmdExecDirect(cmd.c_str());
     }
