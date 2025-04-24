@@ -44,8 +44,8 @@ for watch in dbgMisc.GetWatchList():
         dbgMisc.DBGWATCHINFO.WATCHDOGMODE(watch.watchdogMode), 
         watch.id ) )
 
-for sym in dbgSymbol.GetSymbolList():
-    {  }
+# for sym in dbgSymbol.GetSymbolList():
+#     print( "symbol: {} {}+{:#x} {}".format(sym.name, sym.mod, sym.rva, sym.type ) )
 
 for book in dbgBookmark.GetBookmarkList():
     print( "book: {}+{:#x}".format( book.mod,  book.rva ) )
@@ -62,10 +62,10 @@ for label in dbgLabel.GetLabelList():
 # for args in dbgArgument.GetArgumentList():
 #     print( "arg: {}+{:#x} - {}+{:#x}".format( args.mod, args.rvaStart, args.mod, args.rvaEnd ) )
 
-print( "id: {}, handle: {:#x}".format( dbgProcess.ProcessId(), dbgProcess.NativeHandle() ) )
 
 print(
-    "peb: {:#x}\nteb: {:#x}".format( 
+    "id: {}, handle: {:#x}\npeb: {:#x}\nteb: {:#x}".format( 
+        dbgProcess.ProcessId(), dbgProcess.NativeHandle(),
         dbgMisc.ParseExpression("peb()"), dbgMisc.ParseExpression("teb()")
     )
 )
