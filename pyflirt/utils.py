@@ -3,10 +3,6 @@
 
 from x64dbgpy3.x64dbgpy3 import *
 
-from capstone import *
-from capstone.x86 import *
-
-
 class utils:
     @staticmethod
     def read(addr, size):
@@ -29,6 +25,9 @@ class utils:
 
     @staticmethod
     def exec_formblock(buffer, base=0):
+        from capstone.x86 import X86_INS_CALL
+        from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_MODE_32
+
         calls: dict[ptr_t, utils.signinfo] = { }
         md = Cs(CS_ARCH_X86, CS_MODE_64 if (X64DBGINFO.x64dbg) else CS_MODE_32)
         md.skipdata = True
