@@ -104,20 +104,3 @@ def filetime_to_datetime(filetime_int: int) -> datetime.datetime:
              # Technically FILETIME shouldn't represent dates before 1601,
              # but if the input was somehow small...
              return datetime.datetime.min.replace(tzinfo=datetime.timezone.utc)
-
-
-def jsonrpc(func:Callable) -> Callable:
-    """Decorator to handle JSON-RPC calls for x64dbgpy3 methods."""
-    sig = inspect.signature(func)
-    return_annotation = sig.return_annotation
-
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        # Get class and function name for the JSON-RPC method
-        qualname_parts = func.__qualname__.split('.')
-        if len(qualname_parts) != 2:
-            raise TypeError(f"Decorator @jsonrpc expected to be used on a method within a class, got {func.__qualname__}")
-        class_name, func_name = qualname_parts
-        method_name = f"{class_name}::{func_name}"
-
-    return wrapper
