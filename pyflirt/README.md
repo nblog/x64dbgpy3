@@ -19,6 +19,6 @@ FLIRT relies on signature files (`.sig`) to identify functions. Here are some so
 
 ## Credits & References
 
-*   **Original pyflirt (Python 2):** [mokhdzanifaeq/pyflirt](https://github.com/mokhdzanifaeq/pyflirt) - The initial Python 2 implementation this project was inspired by.
-*   **Signature Parsing Logic:** [thebabush/nampa](https://github.com/thebabush/nampa) - Provided valuable insights into parsing the `.sig` file format.
-*   **lancelot's pyflirt:** [williballenthin/lancelot/pyflirt](https://github.com/williballenthin/lancelot/tree/master/pyflirt) - Another Python FLIRT implementation, part of the lancelot project.
+*   [mokhdzanifaeq/pyflirt](https://github.com/mokhdzanifaeq/pyflirt)
+*   [thebabush/nampa](https://github.com/thebabush/nampa)
+*   [williballenthin/lancelot/pyflirt](https://github.com/williballenthin/lancelot/tree/master/pyflirt) - Another Python FLIRT implementation, part of the lancelot project.
