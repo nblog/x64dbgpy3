@@ -17,10 +17,7 @@ struct HttpServer : public CppHttpLibServerConnector {
     }
 public:
     static inline void clear(std::optional<HttpServer>& self) {
-        if (self) {
-            self->StopListening();
-            self.reset();
-        }
+        if (self) self.reset();
     }
 private:
     X64DbgServerBindings x64dbg_;

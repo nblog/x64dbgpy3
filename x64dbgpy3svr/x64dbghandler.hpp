@@ -85,6 +85,10 @@ namespace x64dbgSvrWrapper {
     using ptr_t = duint;
 	using size_t = duint;
 
+    static void sleep(const uint32_t s) {
+        return std::this_thread::sleep_for(std::chrono::seconds(s));
+    }
+
     static void rtcmsgbox(const std::string& msg) {
         return Script::Gui::Message(msg.c_str());
     }
@@ -331,9 +335,8 @@ namespace x64dbgSvrWrapper::dbgLogging {
 };
 
 namespace x64dbgSvrWrapper::dbgMisc {
-	auto Sleep(int32_t s) {
-        std::this_thread::sleep_for(std::chrono::seconds(s));
-		return nlohmann::json();
+	auto Sleep(uint32_t s) {
+        x64dbgSvrWrapper::sleep(s); return nlohmann::json();
 	}
 
     auto GetLabelAt(ptr_t addr) {

@@ -13,7 +13,9 @@
 /* https://github.com/jsonrpcx/json-rpc-cxx/blob/master/examples/cpphttplibconnector.hpp#L23 */
 class CppHttpLibServerConnector {
 public:
-    ~CppHttpLibServerConnector() { this->StopListening(); }
+    ~CppHttpLibServerConnector() { 
+        this->StopListening();
+    }
 
     explicit CppHttpLibServerConnector(jsonrpccxx::JsonRpcServer& server, int port, std::string host="localhost") :
         server_(server),
@@ -74,6 +76,7 @@ public:
 
         this->thread_ = std::make_unique<std::thread>([this]() { 
             this->http_server_.listen(this->host_.c_str(), this->port_); });
+
         return this->thread_ ? true : false;
     }
 
