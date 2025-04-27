@@ -425,8 +425,14 @@ namespace x64dbgSvrWrapper::dbgPattern {
 };
 
 namespace x64dbgSvrWrapper::dbgAssembler {
-    auto Assemble(ptr_t addr, const std::string& ins) {
-        return DbgAssembleAt(addr, ins.c_str());
+    auto Assemble(ptr_t addr, const std::string& instruction) {
+        return DbgAssembleAt(addr, instruction.c_str());
+    }
+
+    auto AssembleEx(ptr_t addr, const std::string& instruction, bool fillnop) {
+        char retError[MAX_ERROR_SIZE] = { };
+        int size = 0;
+        return Script::Assembler::AssembleMemEx(addr, instruction.c_str(), &size, retError, fillnop) ? std::string() : retError;
     }
 
     auto DisasmFast(ptr_t addr) {

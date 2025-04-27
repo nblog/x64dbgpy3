@@ -172,6 +172,11 @@ class dbgAssembler:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgAssembler), [ addr, instruction ] )
         return bool( res )
 
+    @staticmethod
+    def AssembleEx(addr:ptr_t, instruction:str, fillnop:bool=True) -> str:
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgAssembler), [ addr, instruction, fillnop ] )
+        return str( res )
+
     class DBGDISASMINFO(BaseModel):
         class INSTRUCTIONTYPE(IntFlag):
             VALUE, MEMORY, ADDRESS = 1, 2, 4

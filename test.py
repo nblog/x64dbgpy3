@@ -87,6 +87,15 @@ print( "CPU Viewer: {:#x}-{:#x}\npc: {:#x}  flags:{:#x}".format( a, b, \
     dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.CIP),
     dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.CFLAGS) ) )
 
+assert( "int3" == dbgAssembler.DisasmFast( dbgMisc.ResolveLabel("ntdll.DbgBreakPoint") ).instruction )
+assert( "invalidInstruction" == \
+       dbgAssembler.AssembleEx(
+           dbgMisc.ResolveLabel("kernel32.DebugBreak"), "ccc") )
+assert( '' == dbgAssembler.AssembleEx(
+    dbgMisc.ResolveLabel("kernel32.DebugBreak"), 
+    dbgAssembler.DisasmFast( dbgMisc.ResolveLabel("kernel32.DebugBreak")).instruction ))
+
+
 for m in dbgMemory.MemMaps():
     print( "{:#x}  {:#x}  {}  {}  {}".format(
         m.BaseAddress, m.RegionSize, 

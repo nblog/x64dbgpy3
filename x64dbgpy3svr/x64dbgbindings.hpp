@@ -144,6 +144,7 @@ public:
         AddHandler(dbgPattern::FindPattern, {  });
 
         AddHandler(dbgAssembler::Assemble, {  });
+        AddHandler(dbgAssembler::AssembleEx, {  });
         AddHandler(dbgAssembler::DisasmFast, {  });
 
         AddHandler(dbgSymbol::GetSymbolList, {  });
