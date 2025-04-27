@@ -695,17 +695,17 @@ class dbgProcess:
 class dbgMemory:
     '''  '''
 
-    class MEM_TYPE:
-        @staticmethod
-        def str(v): 
-            return { 0x1000000:"IMG", 0x40000:"MAP", 0x20000:"PRV" }.get(v, "N/A")
-
-    class MEM_PROTECT:
+    class MEM_PROTECT(IntFlag):
         @staticmethod
         def str(v): return \
             ('r' if ( v & 2 | v & 4 | v & 0x20 ) else '-') + \
             ('w' if ( v & 4 | v & 8 | v & 0x40 | v & 0x80 ) else '-') + \
             ('x' if ( v & 0x10 | v & 0x20 | v & 0x40 | v & 0x80 ) else '-')
+
+    class MEM_TYPE(IntEnum):
+        @staticmethod
+        def str(v): return \
+            { 0x1000000:"IMG", 0x40000:"MAP", 0x20000:"PRV" }.get(v, "N/A")
 
     class DBGMEMMAPINFO(BaseModel):
         BaseAddress:ptr_t
