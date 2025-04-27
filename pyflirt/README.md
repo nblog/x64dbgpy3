@@ -1,6 +1,6 @@
 # pyflirt for x64dbgpy3
 
-This library provides FLIRT (Fast Library Identification and Recognition Technology) signature matching capabilities for the [x64dbgpy3](https://github.com/nblog/x64dbgpy3) plugin.
+This library provides IDA FLIRT (Fast Library Identification and Recognition Technology) signature matching capabilities for the [x64dbgpy3](https://github.com/nblog/x64dbgpy3) plugin.
 
 The core Python code was adapted from the C implementation found in [radare2/libr/anal/flirt.c](https://github.com/radareorg/radare2/blob/master/libr/anal/flirt.c), primarily using AI for the initial translation.
 
