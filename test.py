@@ -44,24 +44,29 @@ for watch in dbgMisc.GetWatchList():
         dbgMisc.DBGWATCHINFO.WATCHDOGMODE(watch.watchdogMode), 
         watch.id ) )
 
-# for sym in dbgSymbol.GetSymbolList():
-#     print( "symbol: {} {}+{:#x} {}".format(sym.name, sym.mod, sym.rva, sym.type ) )
+for sym in dbgSymbol.GetSymbolList():
+    continue
+    print( "symbol: {}[{}] {}+{:#x}".format(sym.name, dbgSymbol.DBGSYMBOLINFO2.DBGSYMBOLTYPE(sym.type), sym.mod, sym.rva ) )
 
 for book in dbgBookmark.GetBookmarkList():
+    continue
     print( "book: {}+{:#x}".format( book.mod,  book.rva ) )
 
 for note in dbgComment.GetCommentList():
+    continue
     print( "note: {}  {}+{:#x}".format( note.text, note.mod,  note.rva ) )
 
 for label in dbgLabel.GetLabelList():
+    continue
     print( "label: {}  {}+{:#x}".format( label.text, label.mod,  label.rva ) )
 
-# for func in dbgFunction.GetFunctionList():
-#     print( "func: {}+{:#x} - {}+{:#x}".format( func.mod, func.rvaStart, func.mod, func.rvaEnd ) )
+for func in dbgFunction.GetFunctionList():
+    continue
+    print( "func: {}+{:#x}  size:{:#x}".format( func.mod, func.rvaStart, func.rvaEnd - func.rvaStart) )
 
-# for args in dbgArgument.GetArgumentList():
-#     print( "arg: {}+{:#x} - {}+{:#x}".format( args.mod, args.rvaStart, args.mod, args.rvaEnd ) )
-
+for args in dbgArgument.GetArgumentList():
+    continue
+    print( "args: {}+{:#x} - {}+{:#x}".format( func.mod, func.rvaStart, func.mod, func.rvaEnd) )
 
 print(
     "id: {}, handle: {:#x}\npeb: {:#x}\nteb: {:#x}".format( 
@@ -134,6 +139,7 @@ if dbgDebug.IsRunning():
     dbgMisc.Sleep( 3 ); dbgThread.CreateThread( remoteaddr, 0 ); dbgMisc.Sleep( 5 )
     assert( not dbgDebug.IsRunning() )
     dbgDebug.StepOut()
+    print( "Check to see if the program has popped up a message box?" )
     for _ in range(30):
         dbgMisc.Sleep( 1 )
         if not dbgDebug.IsRunning(): break

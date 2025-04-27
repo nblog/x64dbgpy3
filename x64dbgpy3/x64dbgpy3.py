@@ -193,6 +193,12 @@ class dbgSymbol:
     class DBGSYMBOLINFO2(BaseModel):
         class DBGSYMBOLTYPE(IntEnum):
             FUNCTION, IMPORT, EXPORT = 0, 1, 2
+            def __str__(self):
+                return { 
+                    0:"FUN/SYM", 
+                    1:"IMPORT", 
+                    2:"EXPORT",
+                }.get(self.value, "UNKNOWN").lower()
         mod:str
         rva:ptr_t
         name:str
@@ -326,7 +332,7 @@ class dbgFunction:
     class DBGFUNCTIONINFO(BaseModel):
         mod:str
         rvaStart:ptr_t
-        rvaEnd:str
+        rvaEnd:ptr_t
         manual:bool
         instructioncount:size_t
 
@@ -361,7 +367,7 @@ class dbgArgument:
     class DBGARGUMENTINFO(BaseModel):
         mod:str
         rvaStart:ptr_t
-        rvaEnd:str
+        rvaEnd:ptr_t
         manual:bool
         instructioncount:size_t
 
