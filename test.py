@@ -158,6 +158,6 @@ header, root_node = load_flirt_file(
 matches = scan_buffer_with_flirt(root_node, data, sec.addr)
 for addr, func in matches:
     print("found: {:#x}  {}".format(addr, func.name))
-    dbgLabel.Set( addr, func.name )
+    dbgLabel.Set( addr, f"flirt.{func.name}" )
 
 ''' BYE '''
