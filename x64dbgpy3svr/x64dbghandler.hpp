@@ -108,6 +108,19 @@ namespace x64dbgSvrWrapper::dbgUtils {
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FILETIME_WRAPPER, \
         dwLowDateTime, dwHighDateTime)
 
+    /* https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-memory_basic_information */
+    struct MEMORY_INFO_WRAPPER {
+        ptr_t BaseAddress;
+        ptr_t AllocationBase;
+        uint32_t AllocationProtect;
+        size_t RegionSize;
+        uint32_t State;
+        uint32_t Protect;
+        uint32_t Type;
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MEMORY_INFO_WRAPPER, \
+        BaseAddress, AllocationBase, AllocationProtect, RegionSize, State, Protect, Type)
+
     /* BASIC_INSTRUCTION_INFO */
     struct INSTRUCTION_INFO_WRAPPER {
         uint32_t type;
@@ -299,22 +312,206 @@ namespace x64dbgSvrWrapper::dbgUtils {
         FILETIME_WRAPPER CreationTime;
 		uint64_t Cycles; // Windows Vista or greater
     };
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(THREAD_ALL_INFO_WRAPPER, \
-		BasicInfo, 
-		ThreadCip, SuspendCount, Priority, WaitReason, LastError, UserTime, KernelTime, CreationTime, Cycles)
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(THREAD_ALL_INFO_WRAPPER, \
+        BasicInfo,
+        ThreadCip, SuspendCount, Priority, WaitReason, LastError, UserTime, KernelTime, CreationTime, Cycles)
 
-    /* https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-memory_basic_information */
-    struct MEMORY_INFO_WRAPPER {
-        ptr_t BaseAddress;
-        ptr_t AllocationBase;
-        uint32_t AllocationProtect;
-        size_t RegionSize;
-        uint32_t State;
-        uint32_t Protect;
-        uint32_t Type;
+
+    // Based on XMMREGISTER in bridgemain.h
+    struct XMMREGISTER_WRAPPER {
+        uint64_t Low;
+        int64_t High;
     };
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MEMORY_INFO_WRAPPER, \
-        BaseAddress, AllocationBase, AllocationProtect, RegionSize, State, Protect, Type)
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(XMMREGISTER_WRAPPER, Low, High)
+
+    // Based on YMMREGISTER in bridgemain.h
+    struct YMMREGISTER_WRAPPER {
+        XMMREGISTER_WRAPPER Low;
+        XMMREGISTER_WRAPPER High;
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(YMMREGISTER_WRAPPER, Low, High)
+
+    // Based on X87FPU in bridgemain.h
+    struct X87FPU_WRAPPER {
+        uint16_t ControlWord;
+        uint16_t StatusWord;
+        uint16_t TagWord;
+        uint32_t ErrorOffset;
+        uint32_t ErrorSelector;
+        uint32_t DataOffset;
+        uint32_t DataSelector;
+        uint32_t Cr0NpxState;
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(X87FPU_WRAPPER, ControlWord, StatusWord, TagWord, ErrorOffset, ErrorSelector, DataOffset, DataSelector, Cr0NpxState)
+
+    // Based on REGISTERCONTEXT in bridgemain.h
+    struct REGISTER_CONTEXT_WRAPPER {
+        ptr_t cax;
+        ptr_t ccx;
+        ptr_t cdx;
+        ptr_t cbx;
+        ptr_t csp;
+        ptr_t cbp;
+        ptr_t csi;
+        ptr_t cdi;
+#ifdef _WIN64
+        ptr_t r8;
+        ptr_t r9;
+        ptr_t r10;
+        ptr_t r11;
+        ptr_t r12;
+        ptr_t r13;
+        ptr_t r14;
+        ptr_t r15;
+#endif //_WIN64
+        ptr_t cip;
+        ptr_t eflags;
+        uint16_t gs;
+        uint16_t fs;
+        uint16_t es;
+        uint16_t ds;
+        uint16_t cs;
+        uint16_t ss;
+        ptr_t dr0;
+        ptr_t dr1;
+        ptr_t dr2;
+        ptr_t dr3;
+        ptr_t dr6;
+        ptr_t dr7;
+        std::array<uint8_t, 80> RegisterArea;
+        X87FPU_WRAPPER x87fpu;
+        uint32_t MxCsr;
+#ifdef _WIN64
+        std::array<XMMREGISTER_WRAPPER, 16> XmmRegisters;
+        std::array<YMMREGISTER_WRAPPER, 16> YmmRegisters;
+#else // x86
+        std::array<XMMREGISTER_WRAPPER, 8> XmmRegisters;
+        std::array<YMMREGISTER_WRAPPER, 8> YmmRegisters;
+#endif
+    };
+#ifdef _WIN64
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(REGISTER_CONTEXT_WRAPPER, \
+        cax, ccx, cdx, cbx, csp, cbp, csi, cdi, \
+        r8, r9, r10, r11, r12, r13, r14, r15, /* Included even if not _WIN64 */ \
+        cip, eflags, gs, fs, es, ds, cs, ss, \
+        dr0, dr1, dr2, dr3, dr6, dr7, \
+        RegisterArea, x87fpu, MxCsr, \
+        XmmRegisters, YmmRegisters)
+#else
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(REGISTER_CONTEXT_WRAPPER, \
+        cax, ccx, cdx, cbx, csp, cbp, csi, cdi, \
+        cip, eflags, gs, fs, es, ds, cs, ss, \
+        dr0, dr1, dr2, dr3, dr6, dr7, \
+        RegisterArea, x87fpu, MxCsr, \
+        XmmRegisters, YmmRegisters)
+#endif
+
+    // Based on FLAGS in bridgemain.h
+    struct FLAGS_WRAPPER {
+        bool c;
+        bool p;
+        bool a;
+        bool z;
+        bool s;
+        bool t;
+        bool i;
+        bool d;
+        bool o;
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLAGS_WRAPPER, c, p, a, z, s, t, i, d, o)
+
+    // Based on X87FPUREGISTER in bridgemain.h
+    struct X87FPUREGISTER_WRAPPER {
+        std::array<uint8_t, 10> data;
+        int32_t st_value;
+        int32_t tag;
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(X87FPUREGISTER_WRAPPER, data, st_value, tag)
+
+    // Based on MXCSRFIELDS in bridgemain.h
+    struct MXCSRFIELDS_WRAPPER {
+        bool FZ;
+        bool PM;
+        bool UM;
+        bool OM;
+        bool ZM;
+        bool IM;
+        bool DM;
+        bool DAZ;
+        bool PE;
+        bool UE;
+        bool OE;
+        bool ZE;
+        bool DE;
+        bool IE;
+        uint16_t RC;
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MXCSRFIELDS_WRAPPER, FZ, PM, UM, OM, ZM, IM, DM, DAZ, PE, UE, OE, ZE, DE, IE, RC)
+
+    // Based on X87STATUSWORDFIELDS in bridgemain.h
+    struct X87STATUSWORDFIELDS_WRAPPER {
+        bool B;
+        bool C3;
+        bool C2;
+        bool C1;
+        bool C0;
+        bool ES;
+        bool SF;
+        bool P;
+        bool U;
+        bool O;
+        bool Z;
+        bool D;
+        bool I;
+        uint16_t TOP;
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(X87STATUSWORDFIELDS_WRAPPER, B, C3, C2, C1, C0, ES, SF, P, U, O, Z, D, I, TOP)
+
+    // Based on X87CONTROLWORDFIELDS in bridgemain.h
+    struct X87CONTROLWORDFIELDS_WRAPPER {
+        bool IC;
+        bool IEM;
+        bool PM;
+        bool UM;
+        bool OM;
+        bool ZM;
+        bool DM;
+        bool IM;
+        uint16_t RC;
+        uint16_t PC;
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(X87CONTROLWORDFIELDS_WRAPPER, IC, IEM, PM, UM, OM, ZM, DM, IM, RC, PC)
+
+    // Based on LASTERROR in bridgemain.h
+    struct LASTERROR_WRAPPER {
+        uint32_t code;
+        std::string name; // Assuming MAX_STRING_SIZE is sufficient
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LASTERROR_WRAPPER, code, name)
+
+    // Based on LASTSTATUS in bridgemain.h
+    struct LASTSTATUS_WRAPPER {
+        uint32_t code;
+        std::string name; // Assuming MAX_STRING_SIZE is sufficient
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LASTSTATUS_WRAPPER, code, name)
+
+    // Based on REGDUMP in bridgemain.h
+    struct REG_DUMP_WRAPPER {
+        REGISTER_CONTEXT_WRAPPER regcontext;
+        FLAGS_WRAPPER flags;
+        std::array<X87FPUREGISTER_WRAPPER, 8> x87FPURegisters;
+        std::array<uint64_t, 8> mmx;
+        MXCSRFIELDS_WRAPPER MxCsrFields;
+        X87STATUSWORDFIELDS_WRAPPER x87StatusWordFields;
+        X87CONTROLWORDFIELDS_WRAPPER x87ControlWordFields;
+        LASTERROR_WRAPPER lastError;
+        LASTSTATUS_WRAPPER lastStatus;
+    };
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(REG_DUMP_WRAPPER, \
+        regcontext, flags, x87FPURegisters, mmx, MxCsrFields, \
+        x87StatusWordFields, x87ControlWordFields, lastError, lastStatus)
+
 };
 
 namespace x64dbgSvrWrapper::dbgLogging {
@@ -1068,6 +1265,152 @@ namespace x64dbgSvrWrapper::dbgRegister {
 
     auto GetRegister(int32_t r) { return Script::Register::Get(Script::Register::RegisterEnum(r)); }
     auto SetRegister(int32_t r, ptr_t v) { return Script::Register::Set(Script::Register::RegisterEnum(r), v); }
+
+    auto GetRegisterDumpEx() {
+        REGDUMP rd{};
+        DbgGetRegDumpEx(&rd, sizeof(rd));
+
+        dbgUtils::REG_DUMP_WRAPPER result{};
+
+        // Populate REGISTER_CONTEXT_WRAPPER
+        result.regcontext.cax = rd.regcontext.cax;
+        result.regcontext.ccx = rd.regcontext.ccx;
+        result.regcontext.cdx = rd.regcontext.cdx;
+        result.regcontext.cbx = rd.regcontext.cbx;
+        result.regcontext.csp = rd.regcontext.csp;
+        result.regcontext.cbp = rd.regcontext.cbp;
+        result.regcontext.csi = rd.regcontext.csi;
+        result.regcontext.cdi = rd.regcontext.cdi;
+    #ifdef _WIN64
+        result.regcontext.r8 = rd.regcontext.r8;
+        result.regcontext.r9 = rd.regcontext.r9;
+        result.regcontext.r10 = rd.regcontext.r10;
+        result.regcontext.r11 = rd.regcontext.r11;
+        result.regcontext.r12 = rd.regcontext.r12;
+        result.regcontext.r13 = rd.regcontext.r13;
+        result.regcontext.r14 = rd.regcontext.r14;
+        result.regcontext.r15 = rd.regcontext.r15;
+    #endif //_WIN64
+        result.regcontext.cip = rd.regcontext.cip;
+        result.regcontext.eflags = rd.regcontext.eflags;
+        result.regcontext.gs = rd.regcontext.gs;
+        result.regcontext.fs = rd.regcontext.fs;
+        result.regcontext.es = rd.regcontext.es;
+        result.regcontext.ds = rd.regcontext.ds;
+        result.regcontext.cs = rd.regcontext.cs;
+        result.regcontext.ss = rd.regcontext.ss;
+        result.regcontext.dr0 = rd.regcontext.dr0;
+        result.regcontext.dr1 = rd.regcontext.dr1;
+        result.regcontext.dr2 = rd.regcontext.dr2;
+        result.regcontext.dr3 = rd.regcontext.dr3;
+        result.regcontext.dr6 = rd.regcontext.dr6;
+        result.regcontext.dr7 = rd.regcontext.dr7;
+
+        // Copy RegisterArea
+        std::copy(std::begin(rd.regcontext.RegisterArea), std::end(rd.regcontext.RegisterArea), result.regcontext.RegisterArea.begin());
+
+        // Populate x87fpu
+        result.regcontext.x87fpu.ControlWord = rd.regcontext.x87fpu.ControlWord;
+        result.regcontext.x87fpu.StatusWord = rd.regcontext.x87fpu.StatusWord;
+        result.regcontext.x87fpu.TagWord = rd.regcontext.x87fpu.TagWord;
+        result.regcontext.x87fpu.ErrorOffset = rd.regcontext.x87fpu.ErrorOffset;
+        result.regcontext.x87fpu.ErrorSelector = rd.regcontext.x87fpu.ErrorSelector;
+        result.regcontext.x87fpu.DataOffset = rd.regcontext.x87fpu.DataOffset;
+        result.regcontext.x87fpu.DataSelector = rd.regcontext.x87fpu.DataSelector;
+        result.regcontext.x87fpu.Cr0NpxState = rd.regcontext.x87fpu.Cr0NpxState;
+
+        result.regcontext.MxCsr = rd.regcontext.MxCsr;
+
+        // Copy XmmRegisters
+        for (size_t i = 0; i < result.regcontext.XmmRegisters.size(); ++i) {
+            result.regcontext.XmmRegisters[i].Low = rd.regcontext.XmmRegisters[i].Low;
+            result.regcontext.XmmRegisters[i].High = rd.regcontext.XmmRegisters[i].High;
+        }
+
+        // Copy YmmRegisters
+        for (size_t i = 0; i < result.regcontext.YmmRegisters.size(); ++i) {
+            result.regcontext.YmmRegisters[i].Low.Low = rd.regcontext.YmmRegisters[i].Low.Low;
+            result.regcontext.YmmRegisters[i].Low.High = rd.regcontext.YmmRegisters[i].Low.High;
+            result.regcontext.YmmRegisters[i].High.Low = rd.regcontext.YmmRegisters[i].High.Low;
+            result.regcontext.YmmRegisters[i].High.High = rd.regcontext.YmmRegisters[i].High.High;
+        }
+
+        // Populate flags
+        result.flags.c = rd.flags.c;
+        result.flags.p = rd.flags.p;
+        result.flags.a = rd.flags.a;
+        result.flags.z = rd.flags.z;
+        result.flags.s = rd.flags.s;
+        result.flags.t = rd.flags.t;
+        result.flags.i = rd.flags.i;
+        result.flags.d = rd.flags.d;
+        result.flags.o = rd.flags.o;
+
+        // Copy x87FPURegisters
+        for (size_t i = 0; i < result.x87FPURegisters.size(); ++i) {
+            std::copy(std::begin(rd.x87FPURegisters[i].data), std::end(rd.x87FPURegisters[i].data), result.x87FPURegisters[i].data.begin());
+            result.x87FPURegisters[i].st_value = rd.x87FPURegisters[i].st_value;
+            result.x87FPURegisters[i].tag = rd.x87FPURegisters[i].tag;
+        }
+
+        // Copy mmx
+        std::copy(std::begin(rd.mmx), std::end(rd.mmx), result.mmx.begin());
+
+        // Populate MxCsrFields
+        result.MxCsrFields.FZ = rd.MxCsrFields.FZ;
+        result.MxCsrFields.PM = rd.MxCsrFields.PM;
+        result.MxCsrFields.UM = rd.MxCsrFields.UM;
+        result.MxCsrFields.OM = rd.MxCsrFields.OM;
+        result.MxCsrFields.ZM = rd.MxCsrFields.ZM;
+        result.MxCsrFields.IM = rd.MxCsrFields.IM;
+        result.MxCsrFields.DM = rd.MxCsrFields.DM;
+        result.MxCsrFields.DAZ = rd.MxCsrFields.DAZ;
+        result.MxCsrFields.PE = rd.MxCsrFields.PE;
+        result.MxCsrFields.UE = rd.MxCsrFields.UE;
+        result.MxCsrFields.OE = rd.MxCsrFields.OE;
+        result.MxCsrFields.ZE = rd.MxCsrFields.ZE;
+        result.MxCsrFields.DE = rd.MxCsrFields.DE;
+        result.MxCsrFields.IE = rd.MxCsrFields.IE;
+        result.MxCsrFields.RC = rd.MxCsrFields.RC;
+
+        // Populate x87StatusWordFields
+        result.x87StatusWordFields.B = rd.x87StatusWordFields.B;
+        result.x87StatusWordFields.C3 = rd.x87StatusWordFields.C3;
+        result.x87StatusWordFields.C2 = rd.x87StatusWordFields.C2;
+        result.x87StatusWordFields.C1 = rd.x87StatusWordFields.C1;
+        result.x87StatusWordFields.C0 = rd.x87StatusWordFields.C0;
+        result.x87StatusWordFields.ES = rd.x87StatusWordFields.ES;
+        result.x87StatusWordFields.SF = rd.x87StatusWordFields.SF;
+        result.x87StatusWordFields.P = rd.x87StatusWordFields.P;
+        result.x87StatusWordFields.U = rd.x87StatusWordFields.U;
+        result.x87StatusWordFields.O = rd.x87StatusWordFields.O;
+        result.x87StatusWordFields.Z = rd.x87StatusWordFields.Z;
+        result.x87StatusWordFields.D = rd.x87StatusWordFields.D;
+        result.x87StatusWordFields.I = rd.x87StatusWordFields.I;
+        result.x87StatusWordFields.TOP = rd.x87StatusWordFields.TOP;
+
+        // Populate x87ControlWordFields
+        result.x87ControlWordFields.IC = rd.x87ControlWordFields.IC;
+        result.x87ControlWordFields.IEM = rd.x87ControlWordFields.IEM;
+        result.x87ControlWordFields.PM = rd.x87ControlWordFields.PM;
+        result.x87ControlWordFields.UM = rd.x87ControlWordFields.UM;
+        result.x87ControlWordFields.OM = rd.x87ControlWordFields.OM;
+        result.x87ControlWordFields.ZM = rd.x87ControlWordFields.ZM;
+        result.x87ControlWordFields.DM = rd.x87ControlWordFields.DM;
+        result.x87ControlWordFields.IM = rd.x87ControlWordFields.IM;
+        result.x87ControlWordFields.RC = rd.x87ControlWordFields.RC;
+        result.x87ControlWordFields.PC = rd.x87ControlWordFields.PC;
+
+        // Populate lastError
+        result.lastError.code = rd.lastError.code;
+        result.lastError.name = rd.lastError.name; // Assuming MAX_STRING_SIZE is handled correctly
+
+        // Populate lastStatus
+        result.lastStatus.code = rd.lastStatus.code;
+        result.lastStatus.name = rd.lastStatus.name; // Assuming MAX_STRING_SIZE is handled correctly
+
+        return result;
+    }
 };
 
 namespace x64dbgSvrWrapper::dbgDebug {

@@ -832,6 +832,136 @@ class dbgRegister:
         res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [ reg, value ] )
         return bool( res )
 
+
+    class DBGREGDUMP(BaseModel):
+        class XMMREGISTER(BaseModel):
+            Low: int
+            High: int
+        class YMMREGISTER(BaseModel):
+            Low: 'dbgRegister.DBGREGDUMP.XMMREGISTER'
+            High: 'dbgRegister.DBGREGDUMP.XMMREGISTER'
+        class X87FPU(BaseModel):
+            ControlWord: int
+            StatusWord: int
+            TagWord: int
+            ErrorOffset: int
+            ErrorSelector: int
+            DataOffset: int
+            DataSelector: int
+            Cr0NpxState: int
+        class REGISTERCONTEXT(BaseModel):
+            cax: ptr_t
+            ccx: ptr_t
+            cdx: ptr_t
+            cbx: ptr_t
+            csp: ptr_t
+            cbp: ptr_t
+            csi: ptr_t
+            cdi: ptr_t
+            r8: Optional[ptr_t] = None # WIN64 only
+            r9: Optional[ptr_t] = None # WIN64 only
+            r10: Optional[ptr_t] = None # WIN64 only
+            r11: Optional[ptr_t] = None # WIN64 only
+            r12: Optional[ptr_t] = None # WIN64 only
+            r13: Optional[ptr_t] = None # WIN64 only
+            r14: Optional[ptr_t] = None # WIN64 only
+            r15: Optional[ptr_t] = None # WIN64 only
+            cip: ptr_t
+            eflags: ptr_t
+            gs: int
+            fs: int
+            es: int
+            ds: int
+            cs: int
+            ss: int
+            dr0: ptr_t
+            dr1: ptr_t
+            dr2: ptr_t
+            dr3: ptr_t
+            dr6: ptr_t
+            dr7: ptr_t
+            RegisterArea: list[int] # std::array<uint8_t, 80>
+            x87fpu: 'dbgRegister.DBGREGDUMP.X87FPU'
+            MxCsr: int
+            XmmRegisters: list['dbgRegister.DBGREGDUMP.XMMREGISTER'] # std::array<XMMREGISTER_WRAPPER, 16/8>
+            YmmRegisters: list['dbgRegister.DBGREGDUMP.YMMREGISTER'] # std::array<YMMREGISTER_WRAPPER, 16/8>
+        class FLAGS(BaseModel):
+            c: bool
+            p: bool
+            a: bool
+            z: bool
+            s: bool
+            t: bool
+            i: bool
+            d: bool
+            o: bool
+        class X87FPUREGISTER(BaseModel):
+            data: list[int] # std::array<uint8_t, 10>
+            st_value: int
+            tag: int
+        class MXCSRFIELDS(BaseModel):
+            FZ: bool
+            PM: bool
+            UM: bool
+            OM: bool
+            ZM: bool
+            IM: bool
+            DM: bool
+            DAZ: bool
+            PE: bool
+            UE: bool
+            OE: bool
+            ZE: bool
+            DE: bool
+            IE: bool
+            RC: int
+        class X87STATUSWORDFIELDS(BaseModel):
+            B: bool
+            C3: bool
+            C2: bool
+            C1: bool
+            C0: bool
+            ES: bool
+            SF: bool
+            P: bool
+            U: bool
+            O: bool
+            Z: bool
+            D: bool
+            I: bool
+            TOP: int
+        class X87CONTROLWORDFIELDS(BaseModel):
+            IC: bool
+            IEM: bool
+            PM: bool
+            UM: bool
+            OM: bool
+            ZM: bool
+            DM: bool
+            IM: bool
+            RC: int
+            PC: int
+        class LASTERROR(BaseModel):
+            code: int
+            name: str
+        class LASTSTATUS(BaseModel):
+            code: int
+            name: str
+        regcontext: REGISTERCONTEXT
+        flags: FLAGS
+        x87FPURegisters: list[X87FPUREGISTER] # std::array<X87FPUREGISTER_WRAPPER, 8>
+        mmx: list[int] # std::array<uint64_t, 8>
+        MxCsrFields: MXCSRFIELDS
+        x87StatusWordFields: X87STATUSWORDFIELDS
+        x87ControlWordFields: X87CONTROLWORDFIELDS
+        lastError: LASTERROR
+        lastStatus: LASTSTATUS
+
+    @staticmethod
+    def GetRegisterDumpEx():
+        res = X64DBGCALL.x64dbg_call( FUNCTION_NAME(dbgRegister), [  ] )
+        return dbgRegister.DBGREGDUMP(**res)
+
 class dbgDebug:
     '''  '''
 

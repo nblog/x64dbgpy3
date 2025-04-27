@@ -154,7 +154,7 @@ if dbgDebug.IsRunning():
         if not dbgDebug.IsRunning(): break
     print("shellcode: {:#x} exitcode: {:#x} ".format(
         remoteaddr,
-        dbgRegister.GetRegister(dbgRegister.DBGREGISTERENUM.RAX)))
+        dbgRegister.GetRegisterDumpEx().regcontext.cax))
     dbgDebug.Run()
     dbgMemory.Free( remoteaddr )
 

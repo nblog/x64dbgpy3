@@ -234,6 +234,7 @@ public:
         AddHandler(dbgRegister::SetFlag, {  });
         AddHandler(dbgRegister::GetRegister, {  });
         AddHandler(dbgRegister::SetRegister, {  });
+        AddHandler(dbgRegister::GetRegisterDumpEx, {  });
 
         AddHandler(dbgDebug::Stop, {  });
         AddHandler(dbgDebug::Run, {  });
