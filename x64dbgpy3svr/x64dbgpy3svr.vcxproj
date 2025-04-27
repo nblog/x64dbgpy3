@@ -137,7 +137,8 @@ xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
       <Command>set X64DBG=$(USERPROFILE)\Downloads\tools\x64dbg\
 set X64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
+xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"
+xcopy /Y "$(TargetPath)" "$(OutputPath)..\release\x$(PlatformArchitecture)\plugins\$(TargetFileName)*"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -187,7 +188,8 @@ xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
       <Command>set X64DBG=$(USERPROFILE)\Downloads\tools\x64dbg\
 set X64DBGPLUGIN=%X64DBG%release\x$(PlatformArchitecture)\plugins\
 
-xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
+xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"
+xcopy /Y "$(TargetPath)" "$(OutputPath)..\release\x$(PlatformArchitecture)\plugins\$(TargetFileName)*"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
