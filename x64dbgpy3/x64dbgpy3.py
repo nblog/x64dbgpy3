@@ -624,7 +624,6 @@ class dbgThread:
             dwHighDateTime:int
             def __str__(self):
                 filetime = (self.dwHighDateTime << 32) + self.dwLowDateTime
-                # UTC
                 return filetime_to_datetime(filetime).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
         class DBGTHREADINFO(BaseModel):
             ThreadNumber:int
