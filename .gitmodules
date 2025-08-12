@@ -12,3 +12,4 @@
 [submodule "x64dbgpy3svr/third_party/simdutf"]
 	path = x64dbgpy3svr/third_party/simdutf
 	url = https://github.com/simdutf/simdutf
+	branch = v7.3.5
