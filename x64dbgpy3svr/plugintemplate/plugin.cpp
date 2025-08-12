@@ -38,7 +38,7 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
     switch (info->hEntry)
     {
     case X64DBGPY3MENUMENTRY::X64DBG_ABOUT: {
-        x64dbgSvrWrapper::rtcmsgbox(fmt::format("Hi"));
+        x64dbgSvrWrapper::rtcmsgbox(x64dbgSvrWrapper::format("Hi"));
     } break;
     case X64DBGPY3MENUMENTRY::X64DBG_STARTSVR: {
 

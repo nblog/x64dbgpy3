@@ -37,7 +37,7 @@ public:
                 try
                 {
                     res.set_content(nlohmann::json({
-                        { "plugin", fmt::format("{}.{}.{}", ((PLUGIN_VERSION >> 16) & 0xFF), ((PLUGIN_VERSION >> 8) & 0xFF), (PLUGIN_VERSION & 0xFF)) },
+                        { "plugin", x64dbgSvrWrapper::format("{}.{}.{}", ((PLUGIN_VERSION >> 16) & 0xFF), ((PLUGIN_VERSION >> 8) & 0xFF), (PLUGIN_VERSION & 0xFF)) },
 #ifdef _WIN64
                         { "x64dbg", true },
 #else
@@ -121,6 +121,7 @@ public:
         using namespace jsonrpccxx;
         using namespace x64dbgSvrWrapper;
 
+        AddHandler(dbgLogging::logdump, {  });
         AddHandler(dbgLogging::logclear, {  });
         AddHandler(dbgLogging::logputs, {  });
         AddHandler(dbgLogging::logprint, {  });
@@ -134,6 +135,7 @@ public:
         AddHandler(dbgMisc::ResolveLabel, {  });
         AddHandler(dbgMisc::RemoteGetProcAddress, {  });
 
+		AddHandler(dbgGui::Snapshot, {  });
         AddHandler(dbgGui::Refresh, {  });
         AddHandler(dbgGui::Message, {  });
         AddHandler(dbgGui::MessageYesNo, {  });

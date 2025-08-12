@@ -85,17 +85,21 @@ namespace x64dbgSvrWrapper {
     using ptr_t = duint;
 	using size_t = duint;
 
+    static auto format = [](const std::string& fmt, auto&&... args) {
+        return fmt::format(fmt, std::forward<decltype(args)>(args)...);
+    };
+
     static void sleep(const uint32_t s) {
         return std::this_thread::sleep_for(std::chrono::seconds(s));
-    }
+    };
 
-    static void rtcmsgbox(const std::string& msg) {
-        return Script::Gui::Message(msg.c_str());
-    }
+    static void rtcmsgbox(const std::string& message) {
+        return Script::Gui::Message(message.c_str());
+    };
 
     static std::vector<uint8_t> PluginIcon() {
         return std::vector<uint8_t>();
-    }
+    };
 };
 
 
@@ -515,6 +519,11 @@ namespace x64dbgSvrWrapper::dbgUtils {
 };
 
 namespace x64dbgSvrWrapper::dbgLogging {
+    auto logdump(const std::string& filename) {
+        GuiLogSave(filename.c_str());
+        return nlohmann::json();
+    }
+
     auto logclear() {
         GuiLogClear();
         return nlohmann::json();
@@ -587,6 +596,10 @@ namespace x64dbgSvrWrapper::dbgMisc {
 };
 
 namespace x64dbgSvrWrapper::dbgGui {
+    auto Snapshot(const std::string& filename) {
+		return nlohmann::json();
+    }
+
     auto FocusView(int32_t win) {
         GuiFocusView(GUISELECTIONTYPE(win));
         return nlohmann::json();
@@ -615,7 +628,7 @@ namespace x64dbgSvrWrapper::dbgGui {
 
 namespace x64dbgSvrWrapper::dbgPattern {
     auto FindPattern(ptr_t addr, const std::string& pattern) {
-        std::string fmtV = fmt::format("findallmem {:x},{}", addr, pattern);
+        std::string fmtV = x64dbgSvrWrapper::format("findallmem {:x},{}", addr, pattern);
         DbgCmdExec(fmtV.c_str());
 		return nlohmann::json();
     }
@@ -1177,27 +1190,27 @@ namespace x64dbgSvrWrapper::dbgThread {
     }
 
 	auto SetThreadName(uint32_t threadId, const std::string& name) {
-		std::string fmtV = fmt::format("setthreadname {:x},{}", threadId, name);
+		std::string fmtV = x64dbgSvrWrapper::format("setthreadname {:x},{}", threadId, name);
 		return DbgCmdExecDirect(fmtV.c_str());
 	}
     auto SetActiveThreadId(uint32_t threadId) {
-        std::string fmtV = fmt::format("switchthread {:x}", threadId);
+        std::string fmtV = x64dbgSvrWrapper::format("switchthread {:x}", threadId);
         return DbgCmdExecDirect(fmtV.c_str());
     }
     auto SuspendThreadId(uint32_t threadId) {
-        std::string fmtV = fmt::format("suspendthread {:x}", threadId);
+        std::string fmtV = x64dbgSvrWrapper::format("suspendthread {:x}", threadId);
         return DbgCmdExecDirect(fmtV.c_str());
     }
     auto ResumeThreadId(uint32_t threadId) {
-        std::string fmtV = fmt::format("resumethread {:x}", threadId);
+        std::string fmtV = x64dbgSvrWrapper::format("resumethread {:x}", threadId);
         return DbgCmdExecDirect(fmtV.c_str());
     }
     auto KillThread(uint32_t threadId, uint32_t exitcode) {
-        std::string fmtV = fmt::format("killthread {:x},{:x}", threadId, exitcode);
+        std::string fmtV = x64dbgSvrWrapper::format("killthread {:x},{:x}", threadId, exitcode);
         return DbgCmdExecDirect(fmtV.c_str());
     }
     auto CreateThread(ptr_t entry, ptr_t arg) {
-        std::string fmtV = fmt::format("createthread {:x},{:x}", entry, arg);
+        std::string fmtV = x64dbgSvrWrapper::format("createthread {:x},{:x}", entry, arg);
         return DbgCmdExecDirect(fmtV.c_str());
     }
 };
