@@ -97,7 +97,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;X64DBGPY3SVR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor;$(ProjectDir)third_party\simdutf\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -122,7 +122,7 @@ xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
       <PreprocessorDefinitions>WIN32;NDEBUG;X64DBGPY3SVR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor;$(ProjectDir)third_party\simdutf\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -148,7 +148,7 @@ xcopy /Y "$(TargetPath)" "$(OutputPath)..\release\x$(PlatformArchitecture)\plugi
       <PreprocessorDefinitions>_DEBUG;X64DBGPY3SVR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor;$(ProjectDir)third_party\simdutf\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -173,7 +173,7 @@ xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
       <PreprocessorDefinitions>NDEBUG;X64DBGPY3SVR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor;$(ProjectDir)third_party\simdutf\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>

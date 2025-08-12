@@ -9,3 +9,6 @@
 	path = x64dbgpy3svr/third_party/glaze
 	url = https://github.com/stephenberry/glaze
 	branch = v5.1.0
+[submodule "x64dbgpy3svr/third_party/simdutf"]
+	path = x64dbgpy3svr/third_party/simdutf
+	url = https://github.com/simdutf/simdutf

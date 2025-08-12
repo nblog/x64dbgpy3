@@ -15,8 +15,8 @@
 #pragma comment(lib, "pluginsdk/lz4/lz4_x86.lib")
 #endif
 
-#include "third_party/simdutf-6.5.0/singleheader/simdutf.cpp"
-#include "third_party/simdutf-6.5.0/singleheader/simdutf.h"
+#include "third_party/simdutf/src/simdutf.cpp"
+#include "third_party/simdutf/include/simdutf.h"
 
 
 namespace x64dbgSvrUtil {
