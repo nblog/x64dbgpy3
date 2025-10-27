@@ -80,10 +80,30 @@ public:
         if (this->http_server_.is_running())
             return false;
 
+        // Reset the ready flag
+        this->server_ready_.store(false, std::memory_order_release);
+        
         this->thread_ = std::make_unique<std::thread>([this]()
-                                                      { this->http_server_.listen(this->host_.c_str(), this->port_); });
+        {
+            // Signal that we're about to start listening
+            this->server_ready_.store(true, std::memory_order_release);
+            this->http_server_.listen(this->host_.c_str(), this->port_);
+        });
 
-        return this->thread_ ? true : false;
+        // Wait briefly for the thread to start
+        if (this->thread_)
+        {
+            // Give the thread a moment to actually start listening
+            auto start_time = std::chrono::steady_clock::now();
+            while (!this->server_ready_.load(std::memory_order_acquire) && 
+                   std::chrono::steady_clock::now() - start_time < std::chrono::milliseconds(100))
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+            return this->server_ready_.load(std::memory_order_acquire);
+        }
+        
+        return false;
     }
 
     void StopListening() noexcept
@@ -94,6 +114,7 @@ public:
             this->http_server_.stop();
             this->thread_->join();
             this->thread_.reset();
+            this->server_ready_.store(false, std::memory_order_release);
         }
     }
 
@@ -102,6 +123,7 @@ private:
     int port_;
     std::unique_ptr<std::thread> thread_;
     std::mutex mutex_;
+    std::atomic<bool> server_ready_{false};
     jsonrpccxx::JsonRpcServer &server_;
     httplib::Server http_server_;
 

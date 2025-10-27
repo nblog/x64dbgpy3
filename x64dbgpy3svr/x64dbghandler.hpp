@@ -2,6 +2,8 @@
 
 #include <array>
 #include <memory>
+#include <atomic>
+#include <chrono>
 #include <optional>
 
 #define FMT_HEADER_ONLY
