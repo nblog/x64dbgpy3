@@ -1,7 +1,32 @@
+
+#ifdef _WIN64
+#pragma comment(lib, "pluginsdk/x64dbg.lib")
+#pragma comment(lib, "pluginsdk/x64bridge.lib")
+//#pragma comment(lib, "pluginsdk/dbghelp/dbghelp_x64.lib")
+//#pragma comment(lib, "pluginsdk/DeviceNameResolver/DeviceNameResolver_x64.lib")
+//#pragma comment(lib, "pluginsdk/jansson/jansson_x64.lib")
+//#pragma comment(lib, "pluginsdk/lz4/lz4_x64.lib")
+//#pragma comment(lib, "pluginsdk/TitanEngine/TitanEngine_x64.lib")
+//#pragma comment(lib, "pluginsdk/XEDParse/XEDParse_x64.lib")
+#else
+#pragma comment(lib, "pluginsdk/x32dbg.lib")
+#pragma comment(lib, "pluginsdk/x32bridge.lib")
+//#pragma comment(lib, "pluginsdk/dbghelp/dbghelp_x86.lib")
+//#pragma comment(lib, "pluginsdk/DeviceNameResolver/DeviceNameResolver_x86.lib")
+//#pragma comment(lib, "pluginsdk/jansson/jansson_x86.lib")
+//#pragma comment(lib, "pluginsdk/lz4/lz4_x86.lib")
+//#pragma comment(lib, "pluginsdk/TitanEngine/TitanEngine_x86.lib")
+//#pragma comment(lib, "pluginsdk/XEDParse/XEDParse_x86.lib")
+#endif
+
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include "plugin.h"
 #include <x64dbgbindings.hpp>
+
+#define PLUGIN_NAME "x64dbgpy3svr"
+#define PLUGIN_VERSION 0x010102  // 1.1.2
+
 
 // Examples: https://github.com/x64dbg/x64dbg/wiki/Plugins
 // References:

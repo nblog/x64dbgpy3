@@ -4,3 +4,7 @@
 
 pluginsdk/
 out/
+
+.specify/
+.github/
+.vscode/
