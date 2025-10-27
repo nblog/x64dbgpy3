@@ -2,9 +2,9 @@
 
 // Plugin information
 #ifndef PLUGIN_NAME
-#error You need to define PLUGIN_NAME
+#define PLUGIN_NAME "x64dbgpy3svr"
 #endif // PLUGIN_NAME
-#define PLUGIN_VERSION 1
+#define PLUGIN_VERSION 0x010102 // 1.1.2
 
 #include "pluginsdk/bridgemain.h"
 #include "pluginsdk/_plugins.h"

@@ -24,8 +24,6 @@
 #include "plugin.h"
 #include <x64dbgbindings.hpp>
 
-#define PLUGIN_NAME "x64dbgpy3svr"
-#define PLUGIN_VERSION 0x010102 // 1.1.2
 
 // Examples: https://github.com/x64dbg/x64dbg/wiki/Plugins
 // References:

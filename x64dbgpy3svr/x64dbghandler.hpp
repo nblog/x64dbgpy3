@@ -560,10 +560,25 @@ namespace x64dbgSvrWrapper::dbgUtils
 
 namespace x64dbgSvrWrapper::dbgLogging
 {
-    auto logdump(const std::string &filename)
+    auto logdump(int32_t lines = 10)
     {
-        GuiLogSave(filename.c_str());
-        return nlohmann::json();
+        constexpr auto tempFile = "x64dbgpy3svr_logdump_temp_cache.txt";
+        
+        GuiLogSave(tempFile);
+        
+        std::ifstream file(tempFile);
+        if (!file.is_open())
+            return nlohmann::json::array();
+        
+        std::vector<std::string> allLines;
+        for (std::string line; std::getline(file, line);)
+            allLines.push_back(std::move(line));
+        
+        if (lines == -1)
+            return nlohmann::json(allLines);
+        
+        auto startIdx = std::max(0, static_cast<int32_t>(allLines.size()) - lines);
+        return nlohmann::json(std::vector<std::string>(allLines.begin() + startIdx, allLines.end()));
     }
 
     auto logclear()
@@ -707,8 +722,8 @@ namespace x64dbgSvrWrapper::dbgAssembler
 
     auto AssembleEx(ptr_t addr, const std::string &instruction, bool fillnop)
     {
-        char retError[MAX_ERROR_SIZE] = {};
         int size = 0;
+        char retError[MAX_ERROR_SIZE] = {};
         return Script::Assembler::AssembleMemEx(addr, instruction.c_str(), &size, retError, fillnop) ? std::string() : retError;
     }
 
