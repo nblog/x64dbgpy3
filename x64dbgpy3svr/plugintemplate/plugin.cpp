@@ -59,7 +59,7 @@ enum X64DBGPY3MENUMENTRY
     X64DBG_STARTSVR,
 };
 
-#define X64DBGPY3_DEFAULT_HOST "0.0.0.0"
+#define X64DBGPY3_DEFAULT_HOST "localhost"
 #define X64DBGPY3_DEFAULT_PORT 27041
 
 //
@@ -86,6 +86,7 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY *info)
 // NOTE: arguments are separated by a COMMA (not space like WinDbg)
 static bool cbExampleCommand(int argc, char **argv)
 {
+    std::string server_host = X64DBGPY3_DEFAULT_HOST;
     int server_port = X64DBGPY3_DEFAULT_PORT;
     if (argc > 2)
     {
@@ -103,7 +104,10 @@ static bool cbExampleCommand(int argc, char **argv)
         }
     }
 
-    std::string server_host = 3 > argc ? X64DBGPY3_DEFAULT_HOST : argv[2];
+    if (argc > 3)
+    {
+        server_host = argv[2];
+    }
 
     HttpServer::clear(svr);
     svr.emplace(server_port, server_host);
