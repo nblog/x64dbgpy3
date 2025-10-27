@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, datetime, functools, inspect, base64
+import os, datetime, functools, inspect, base64, logging
 from enum import IntEnum, IntFlag
 from typing import List, Tuple, Dict, Union, Optional, Callable, Any, get_args
 from pydantic import BaseModel, Field
@@ -94,13 +94,14 @@ def filetime_to_datetime(filetime_int: int) -> datetime.datetime:
         unix_epoch = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
         dt = unix_epoch + td
         return dt
-    except OverflowError:
+    except OverflowError as e:
         # Handle cases where the resulting date might be outside Python's datetime range
         # This is unlikely with typical FILETIME values but good practice
-        print(f"Warning: FILETIME {filetime_int} resulted in overflow, returning max/min datetime.")
+        logging.warning(f"FILETIME {filetime_int} overflow: {e}")
+        # Consider raising exception instead of returning sentinel value
         if filetime_int > EPOCH_AS_FILETIME:
-             return datetime.datetime.max.replace(tzinfo=datetime.timezone.utc)
+            return datetime.datetime.max.replace(tzinfo=datetime.timezone.utc)
         else:
-             # Technically FILETIME shouldn't represent dates before 1601,
-             # but if the input was somehow small...
-             return datetime.datetime.min.replace(tzinfo=datetime.timezone.utc)
+            # Technically FILETIME shouldn't represent dates before 1601,
+            # but if the input was somehow small...
+            return datetime.datetime.min.replace(tzinfo=datetime.timezone.utc)

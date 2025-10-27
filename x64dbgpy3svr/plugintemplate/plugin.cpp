@@ -2,21 +2,21 @@
 #ifdef _WIN64
 #pragma comment(lib, "pluginsdk/x64dbg.lib")
 #pragma comment(lib, "pluginsdk/x64bridge.lib")
-//#pragma comment(lib, "pluginsdk/dbghelp/dbghelp_x64.lib")
-//#pragma comment(lib, "pluginsdk/DeviceNameResolver/DeviceNameResolver_x64.lib")
-//#pragma comment(lib, "pluginsdk/jansson/jansson_x64.lib")
-//#pragma comment(lib, "pluginsdk/lz4/lz4_x64.lib")
-//#pragma comment(lib, "pluginsdk/TitanEngine/TitanEngine_x64.lib")
-//#pragma comment(lib, "pluginsdk/XEDParse/XEDParse_x64.lib")
+// #pragma comment(lib, "pluginsdk/dbghelp/dbghelp_x64.lib")
+// #pragma comment(lib, "pluginsdk/DeviceNameResolver/DeviceNameResolver_x64.lib")
+// #pragma comment(lib, "pluginsdk/jansson/jansson_x64.lib")
+// #pragma comment(lib, "pluginsdk/lz4/lz4_x64.lib")
+// #pragma comment(lib, "pluginsdk/TitanEngine/TitanEngine_x64.lib")
+// #pragma comment(lib, "pluginsdk/XEDParse/XEDParse_x64.lib")
 #else
 #pragma comment(lib, "pluginsdk/x32dbg.lib")
 #pragma comment(lib, "pluginsdk/x32bridge.lib")
-//#pragma comment(lib, "pluginsdk/dbghelp/dbghelp_x86.lib")
-//#pragma comment(lib, "pluginsdk/DeviceNameResolver/DeviceNameResolver_x86.lib")
-//#pragma comment(lib, "pluginsdk/jansson/jansson_x86.lib")
-//#pragma comment(lib, "pluginsdk/lz4/lz4_x86.lib")
-//#pragma comment(lib, "pluginsdk/TitanEngine/TitanEngine_x86.lib")
-//#pragma comment(lib, "pluginsdk/XEDParse/XEDParse_x86.lib")
+// #pragma comment(lib, "pluginsdk/dbghelp/dbghelp_x86.lib")
+// #pragma comment(lib, "pluginsdk/DeviceNameResolver/DeviceNameResolver_x86.lib")
+// #pragma comment(lib, "pluginsdk/jansson/jansson_x86.lib")
+// #pragma comment(lib, "pluginsdk/lz4/lz4_x86.lib")
+// #pragma comment(lib, "pluginsdk/TitanEngine/TitanEngine_x86.lib")
+// #pragma comment(lib, "pluginsdk/XEDParse/XEDParse_x86.lib")
 #endif
 
 #define NOMINMAX
@@ -25,8 +25,7 @@
 #include <x64dbgbindings.hpp>
 
 #define PLUGIN_NAME "x64dbgpy3svr"
-#define PLUGIN_VERSION 0x010102  // 1.1.2
-
+#define PLUGIN_VERSION 0x010102 // 1.1.2
 
 // Examples: https://github.com/x64dbg/x64dbg/wiki/Plugins
 // References:
@@ -35,20 +34,27 @@
 // - https://x64dbg.com/blog/2016/10/20/threading-model.html
 // - https://x64dbg.com/blog/2016/07/30/x64dbg-plugin-sdk.html
 
-
-struct HttpServer : public CppHttpLibServerConnector {
+struct HttpServer : public CppHttpLibServerConnector
+{
     HttpServer(int port, std::string host)
-        : CppHttpLibServerConnector(this->x64dbg_.x64dbgBindings(), port, host) {
+        : CppHttpLibServerConnector(this->x64dbg_.x64dbgBindings(), port, host)
+    {
     }
+
 public:
-    static inline void clear(std::optional<HttpServer>& self) {
-        if (self) self.reset();
+    static inline void clear(std::optional<HttpServer> &self)
+    {
+        if (self)
+            self.reset();
     }
+
 private:
     X64DbgServerBindings x64dbg_;
-}; std::optional<HttpServer> svr;
+};
+std::optional<HttpServer> svr;
 
-enum X64DBGPY3MENUMENTRY {
+enum X64DBGPY3MENUMENTRY
+{
     X64DBG_ABOUT = 20250501,
     X64DBG_STARTSVR,
 };
@@ -56,18 +62,20 @@ enum X64DBGPY3MENUMENTRY {
 #define X64DBGPY3_DEFAULT_HOST "0.0.0.0"
 #define X64DBGPY3_DEFAULT_PORT 27041
 
-
-// 
-PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
+//
+PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY *info)
 {
     switch (info->hEntry)
     {
-    case X64DBGPY3MENUMENTRY::X64DBG_ABOUT: {
+    case X64DBGPY3MENUMENTRY::X64DBG_ABOUT:
+    {
         x64dbgSvrWrapper::rtcmsgbox(x64dbgSvrWrapper::format("Hi"));
-    } break;
-    case X64DBGPY3MENUMENTRY::X64DBG_STARTSVR: {
-
-    } break;
+    }
+    break;
+    case X64DBGPY3MENUMENTRY::X64DBG_STARTSVR:
+    {
+    }
+    break;
     default:
         break;
     }
@@ -76,19 +84,37 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
 // Command use the same signature as main in C
 // argv[0] contains the full command, after that are the arguments
 // NOTE: arguments are separated by a COMMA (not space like WinDbg)
-static bool cbExampleCommand(int argc, char** argv)
+static bool cbExampleCommand(int argc, char **argv)
 {
-    int server_port = 2 > argc ? X64DBGPY3_DEFAULT_PORT : int(strtol(argv[1], 0, 0));
+    int server_port = X64DBGPY3_DEFAULT_PORT;
+    if (argc > 2)
+    {
+        char *endptr;
+        errno = 0;
+        long port = strtol(argv[1], &endptr, 10);
+        if (errno == 0 && endptr != argv[1] && *endptr == '\0' &&
+            port > 0 && port <= 65535)
+        {
+            server_port = static_cast<int>(port);
+        }
+        else
+        {
+            dprintf("Invalid port number, using default %d\n", X64DBGPY3_DEFAULT_PORT);
+        }
+    }
 
-	std::string server_host = 3 > argc ? X64DBGPY3_DEFAULT_HOST : argv[2];
+    std::string server_host = 3 > argc ? X64DBGPY3_DEFAULT_HOST : argv[2];
 
-	HttpServer::clear(svr); svr.emplace(server_port, server_host);
+    HttpServer::clear(svr);
+    svr.emplace(server_port, server_host);
 
     bool isOk = svr->StartListening();
-    if (isOk) {
-		dprintf("Server started on %s:%d\n", server_host.c_str(), server_port);
-	}
-    else {
+    if (isOk)
+    {
+        dprintf("Server started on %s:%d\n", server_host.c_str(), server_port);
+    }
+    else
+    {
         dprintf("Failed to start server on %s:%d\n", server_host.c_str(), server_port);
     }
 
@@ -96,7 +122,7 @@ static bool cbExampleCommand(int argc, char** argv)
 }
 
 // Initialize your plugin data here.
-bool pluginInit(PLUG_INITSTRUCT* initStruct)
+bool pluginInit(PLUG_INITSTRUCT *initStruct)
 {
     dprintf("pluginInit(pluginHandle: %d)\n", pluginHandle);
 
