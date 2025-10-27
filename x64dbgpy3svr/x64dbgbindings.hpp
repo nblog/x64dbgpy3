@@ -46,7 +46,7 @@ public:
 #ifdef _WIN64
                                                                           {"x64dbg", true},
 #else
-                                                                          { "x64dbg", false },
+                                                                          {"x64dbg", false},
 #endif
                                                                           {"x64dbg_hwnd", uintptr_t(GuiGetWindowHandle())},
                                                                           {"x64dbg_dir", BridgeUserDirectory()},
