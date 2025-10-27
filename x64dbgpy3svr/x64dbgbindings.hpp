@@ -18,9 +18,11 @@ public:
         this->StopListening();
     }
 
-    explicit CppHttpLibServerConnector(jsonrpccxx::JsonRpcServer &server, int port, std::string host = "localhost") : server_(server),
-                                                                                                                      port_(port),
-                                                                                                                      host_(host)
+    explicit CppHttpLibServerConnector(
+        jsonrpccxx::JsonRpcServer &server,
+        int port, std::string host = "localhost") : server_(server),
+                                                    port_(port),
+                                                    host_(host)
     {
         this->http_server_.Get("/", [=](const httplib::Request & /*req*/, httplib::Response &res)
                                {
@@ -44,13 +46,12 @@ public:
 #ifdef _WIN64
                                                                           {"x64dbg", true},
 #else
-                        { "x64dbg", false },
+                                                                          { "x64dbg", false },
 #endif
                                                                           {"x64dbg_hwnd", uintptr_t(GuiGetWindowHandle())},
                                                                           {"x64dbg_dir", BridgeUserDirectory()},
                                                                       })
-                                                           .dump(),
-                                                       "application/json");
+                                                           .dump(), "application/json");
                                    }
                                    catch (const std::exception &e)
                                    {
