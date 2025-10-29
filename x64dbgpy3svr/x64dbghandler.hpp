@@ -153,9 +153,9 @@ namespace x64dbgSvrWrapper
 			return fmt::format(fmt, std::forward<decltype(args)>(args)...);
 		};
 
-	static void sleep(const uint32_t s)
+	static void sleep(const uint32_t seconds)
 	{
-		return std::this_thread::sleep_for(std::chrono::seconds(s));
+		return std::this_thread::sleep_for(std::chrono::seconds(seconds));
 	};
 
 	static void rtcmsgbox(const std::string& message)
@@ -662,12 +662,54 @@ namespace x64dbgSvrWrapper::dbgMisc
 {
 	auto Snapshot()
 	{
-		return nlohmann::json();
+		HWND hwnd = ::GuiGetWindowHandle();
+		if (!hwnd) throw std::runtime_error("Invalid window handle");
+
+		RECT rect;
+		::GetClientRect(hwnd, &rect);
+		int w = rect.right, h = rect.bottom;
+
+		HDC hdcWnd = ::GetDC(hwnd);
+		HDC hdcMem = ::CreateCompatibleDC(hdcWnd);
+		HBITMAP hBmp = ::CreateCompatibleBitmap(hdcWnd, w, h);
+		::SelectObject(hdcMem, hBmp);
+		::BitBlt(hdcMem, 0, 0, w, h, hdcWnd, 0, 0, SRCCOPY);
+
+		BITMAPINFOHEADER bi{};
+		bi.biSize = sizeof(BITMAPINFOHEADER);
+		bi.biWidth = w;
+		bi.biHeight = -h;
+		bi.biPlanes = 1;
+		bi.biBitCount = 24;
+		bi.biCompression = BI_RGB;
+
+		size_t imgSize = ((w * 3 + 3) & ~3) * h;
+		std::vector<uint8_t> pixels(imgSize);
+		::GetDIBits(hdcMem, hBmp, 0, h, pixels.data(), (BITMAPINFO*)&bi, DIB_RGB_COLORS);
+
+		::DeleteObject(hBmp);
+		::DeleteDC(hdcMem);
+		::ReleaseDC(hwnd, hdcWnd);
+
+		std::vector<uint8_t> bmpData(sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + imgSize);
+		BITMAPFILEHEADER* bfh = (BITMAPFILEHEADER*)bmpData.data();
+		bfh->bfType = 0x4D42;
+		bfh->bfSize = (DWORD)bmpData.size();
+		bfh->bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+		memcpy(bmpData.data() + sizeof(BITMAPFILEHEADER), &bi, sizeof(BITMAPINFOHEADER));
+		memcpy(bmpData.data() + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER), pixels.data(), imgSize);
+
+		nlohmann::json result;
+		result["format"] = "bmp";
+		result["width"] = w;
+		result["height"] = h;
+		result["data"] = x64dbgSvrUtil::RequestBuffer::Serialize(bmpData);
+		return result;
 	}
 
-	auto Sleep(uint32_t s)
+	auto Sleep(uint32_t seconds)
 	{
-		x64dbgSvrWrapper::sleep(s);
+		x64dbgSvrWrapper::sleep(seconds);
 		return nlohmann::json();
 	}
 
