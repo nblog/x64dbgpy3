@@ -81,11 +81,8 @@ class dbgMisc:
         watchdogTriggered: bool
 
     @staticmethod
-    def Sleep(s: int) -> None:
-        from time import sleep
-
-        sleep(s - 1)
-        return X64DBGCALL.x64dbg_call(FUNCTION_NAME(dbgMisc), [1])
+    def Sleep(seconds: int) -> None:
+        return X64DBGCALL.x64dbg_call(FUNCTION_NAME(dbgMisc), [seconds])
 
     @staticmethod
     def GetLabelAt(addr: ptr_t) -> str:
