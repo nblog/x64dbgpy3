@@ -5,17 +5,14 @@ description = "A Python 3 framework for automating x64dbg operations via scripti
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "lz4==0.18.0",
     "httpx",
     "pydantic",
-    "lz4==0.18.0",
 ]
 
 [project.optional-dependencies]
 dev = ["yara-python", "capstone"]
-mcp = [
-    "semantic-kernel[mcp]",
-    # "agent-framework"
-]
+mcp = ["agent-framework"]
 
 [project.scripts]
 x64dbgpy3-mcp = "x64dbgmcp:main"
