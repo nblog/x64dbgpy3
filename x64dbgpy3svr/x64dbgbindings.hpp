@@ -44,9 +44,9 @@ public:
                                        res.set_content(nlohmann::json({
                                                                           {"plugin", x64dbgSvrWrapper::format("{}.{}.{}", ((PLUGIN_VERSION >> 16) & 0xFF), ((PLUGIN_VERSION >> 8) & 0xFF), (PLUGIN_VERSION & 0xFF))},
 #ifdef _WIN64
-                                                                          {"x64dbg", true},
+                                                                          {"platform", BridgeIsARM64Emulated() ? "ARM64" : "X64"},
 #else
-                                                                          {"x64dbg", false},
+                                                                          {"platform", "X86"},
 #endif
                                                                           {"x64dbg_hwnd", uintptr_t(GuiGetWindowHandle())},
                                                                           {"x64dbg_dir", BridgeUserDirectory()},
@@ -262,6 +262,7 @@ public:
         AddHandler(dbgMemory::Write, {});
         AddHandler(dbgMemory::Read, {});
 
+		AddHandler(dbgStack::CallStack, {});
         AddHandler(dbgStack::Pop, {});
         AddHandler(dbgStack::Push, {});
 

@@ -379,6 +379,22 @@ namespace x64dbgSvrWrapper::dbgUtils
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MODULE_INFO_WRAPPER,
 		base, size, entry, sectionCount, name, path)
 
+		struct DBGCALL_STACK_ENTRY_WRAPPER
+	{
+		ptr_t addr;
+		ptr_t from;
+		ptr_t to;
+		std::string comment;
+	};
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DBGCALL_STACK_ENTRY_WRAPPER,
+		addr, from, to, comment)
+		struct DBGCALL_STACK_WRAPPER
+	{
+		int32_t total;
+		std::vector<DBGCALL_STACK_ENTRY_WRAPPER> entries;
+	};
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DBGCALL_STACK_WRAPPER
+		, total, entries)
 		struct THREAD_INFO_WRAPPER
 	{
 		int32_t ThreadNumber;
@@ -780,6 +796,18 @@ namespace x64dbgSvrWrapper::dbgGui
 	}
 	auto Refresh()
 	{
+		/*
+		GuiUpdateRegisterView();
+		GuiUpdateDumpView();
+		GuiUpdateDisassemblyView();
+		GuiUpdateGraphView();
+		GuiUpdateBreakpointsView();
+		GuiUpdateMemoryView();
+		GuiUpdateTypeWidget();
+		GuiUpdateCallStack();
+		GuiUpdateAllViews();
+		*/
+
 		Script::Gui::Refresh();
 		return nlohmann::json();
 	}
@@ -1435,13 +1463,23 @@ namespace x64dbgSvrWrapper::dbgThread
 	{
 		for (const auto& t : dbgThread::GetThreadList())
 		{
-			std::string raw = t.dump();
 			if (0 == t["BasicInfo"]["ThreadNumber"])
 			{
 				return uint32_t(t["BasicInfo"]["ThreadId"]);
 			}
 		}
 		return uint32_t(GuiGetMainThreadId());
+	}
+	auto GetThreadHandleFromId(uint32_t threadId)
+	{
+		for (const auto& t : dbgThread::GetThreadList())
+		{
+			if (threadId == uint32_t(t["BasicInfo"]["ThreadId"]))
+			{
+				return ptr_t(t["BasicInfo"]["Handle"]);
+			}
+		}
+		return ptr_t(DbgGetThreadHandle());
 	}
 
 	auto SetThreadName(uint32_t threadId, const std::string& name)
@@ -1541,6 +1579,32 @@ namespace x64dbgSvrWrapper::dbgMemory
 
 namespace x64dbgSvrWrapper::dbgStack
 {
+	auto CallStack(uint32_t threadId) {
+		DBGCALLSTACK callstack{};
+		memset(&callstack, 0, sizeof(DBGCALLSTACK));
+
+		auto threadHandle = HANDLE(x64dbgSvrWrapper::dbgThread::GetThreadHandleFromId(threadId));
+
+		DbgFunctions()->GetCallStackByThread(threadHandle, &callstack);
+
+		nlohmann::json entries;
+
+		for (size_t i = 0; i < callstack.total; i++)
+		{
+			entries[i] = dbgUtils::DBGCALL_STACK_ENTRY_WRAPPER{
+				callstack.entries[i].addr,
+				callstack.entries[i].from,
+				callstack.entries[i].to,
+				callstack.entries[i].comment,
+			};
+		}
+
+		if (callstack.total)
+			BridgeFree(callstack.entries);
+
+		return nlohmann::json() = dbgUtils::DBGCALL_STACK_WRAPPER{
+			callstack.total, entries };
+	}
 	auto Pop() { return Script::Stack::Pop(); }
 	auto Push(ptr_t value) { return Script::Stack::Push(value); }
 };

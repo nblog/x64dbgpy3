@@ -14,7 +14,7 @@ X64DBGCALL = RequestJsonRpc("http://" + ":".join(get_debugger_host()))
 
 class XDBGINFO(BaseModel):
     plugin: str
-    x64dbg: bool
+    platform: str
     x64dbg_hwnd: ptr_t
     x64dbg_dir: str
 

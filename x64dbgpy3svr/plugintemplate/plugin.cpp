@@ -67,7 +67,25 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY *info)
     {
     case X64DBGPY3MENUMENTRY::X64DBG_ABOUT:
     {
-        x64dbgSvrWrapper::rtcmsgbox(x64dbgSvrWrapper::format("Hi"));
+        std::string aboutMsg = 
+            "╔══════════════════════════════════╗\n"
+			"          x64dbg HTTP Server Plugin                                    ""\n"
+            "╠══════════════════════════════════╣\n"
+			"                                                                       ""\n"
+            "  🚀 Features:                                                        ""\n"
+            "    • HTTP JSON-RPC Server Integration                                 ""\n"
+            "    • Remote Control & Automation                                      ""\n"
+            "    • RESTful API Interface                                            ""\n"
+            "                                                                       ""\n"
+            "  📌 Usage:                                                           ""\n"
+            "    Command: " PLUGIN_NAME " [port],[host]                             ""\n"
+            "                                                                       ""\n"
+            "  💡 Example:                                                         ""\n"
+            "    " PLUGIN_NAME " 27041, 0.0.0.0                                     ""\n"
+            "                                                                       ""\n"
+            "╚══════════════════════════════════╝\n";
+        
+        x64dbgSvrWrapper::rtcmsgbox(aboutMsg);
     }
     break;
     case X64DBGPY3MENUMENTRY::X64DBG_STARTSVR:

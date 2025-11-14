@@ -99,6 +99,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor;$(ProjectDir)third_party\simdutf\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,6 +125,7 @@ xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor;$(ProjectDir)third_party\simdutf\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,6 +152,7 @@ xcopy /Y "$(TargetPath)" "$(OutputPath)..\release\x$(PlatformArchitecture)\plugi
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor;$(ProjectDir)third_party\simdutf\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -175,6 +178,7 @@ xcopy /Y "$(TargetPath)" "%X64DBGPLUGIN%$(TargetFileName)*"</Command>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\json-rpc-cxx\include;$(ProjectDir)third_party\json-rpc-cxx\vendor;$(ProjectDir)third_party\simdutf\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
