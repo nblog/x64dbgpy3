@@ -1,0 +1,12 @@
+[submodule "x64dbgpy3svr/third_party/json-rpc-cxx"]
+	path = x64dbgpy3svr/third_party/json-rpc-cxx
+	url = https://github.com/jsonrpcx/json-rpc-cxx
+[submodule "x64dbgpy3svr/third_party/fmt"]
+	path = x64dbgpy3svr/third_party/fmt
+	url = https://github.com/fmtlib/fmt
+[submodule "x64dbgpy3svr/third_party/glaze"]
+	path = x64dbgpy3svr/third_party/glaze
+	url = https://github.com/stephenberry/glaze
+[submodule "x64dbgpy3svr/third_party/simdutf"]
+	path = x64dbgpy3svr/third_party/simdutf
+	url = https://github.com/simdutf/simdutf
