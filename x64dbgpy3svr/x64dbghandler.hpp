@@ -716,7 +716,7 @@ namespace x64dbgSvrWrapper::dbgMisc
 		memcpy(bmpData.data() + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER), pixels.data(), imgSize);
 
 		nlohmann::json result;
-		result["format"] = "bmp";
+		result["mime"] = "image/bmp";
 		result["width"] = w;
 		result["height"] = h;
 		result["data"] = x64dbgSvrUtil::RequestBuffer::Serialize(bmpData);
