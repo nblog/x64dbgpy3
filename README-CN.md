@@ -1,5 +1,10 @@
 ## x64dbgpy3
 
+> [!WARNING]
+> **本项目已不再积极维护。**
+> 我将其归类为"x64dbg SDK 的薄包装层"，本身也不值得继续投入维护，且该项目并非为 AI 工作流而设计。
+> 它的继任者提供了对 AI 更友好的支持：[x64dbgMCP](https://github.com/nblog/x64dbgMCP)，一个将 MCP server 嵌入 x64dbg 的 C++/CLI 插件（a vibe coding project; keep the vibes immaculate）。
+
 x64dbgpy3 是 [x64dbg](https://x64dbg.com/) 的一个插件，通过 [HTTP-RPC](https://github.com/jsonrpcx/json-rpc-cxx) 和 `x64dbgpy3svr` 服务端实现远程调用，便于与 Python 等外部工具和脚本集成。欢迎[PRs](https://github.com/nblog/x64dbgpy3/pulls)，提 issues 请谨慎。
 
 ---
